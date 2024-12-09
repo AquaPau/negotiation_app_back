@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    implementation("io.github.oshai:kotlin-logging-jvm:4.0.0")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.telegram:telegrambots-springboot-longpolling-starter:8.0.0")
