@@ -34,13 +34,17 @@ dependencies {
     implementation("org.springframework.security:spring-security-web")
     implementation("org.springframework.security:spring-security-config")
 
+    //Swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+
+
     // Для работы с Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // Для тестирования
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.5.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
 
     implementation("io.github.oshai:kotlin-logging-jvm:4.0.0")
     implementation("org.telegram:telegrambots-springboot-longpolling-starter:8.0.0")

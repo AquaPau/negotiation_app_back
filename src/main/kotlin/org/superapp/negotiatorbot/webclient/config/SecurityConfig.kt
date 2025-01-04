@@ -18,12 +18,17 @@ class SecurityConfig {
 
     @Value("\${spring.profiles.active}")
     private lateinit var activeProfile: String
+
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .authorizeHttpRequests { authz ->
                 authz
                     .requestMatchers("/", "/home").permitAll()
+                    .requestMatchers(
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html").permitAll()
                     .anyRequest().authenticated()
             }
             .oauth2Login { oauth2 ->
