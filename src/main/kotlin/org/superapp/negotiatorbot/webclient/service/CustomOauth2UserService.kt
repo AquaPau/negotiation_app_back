@@ -7,7 +7,7 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.entity.CustomOAuth2User
-import org.superapp.negotiatorbot.webclient.entity.User
+import org.superapp.negotiatorbot.webclient.entity.UserProfile
 import org.superapp.negotiatorbot.webclient.repository.UserRepository
 
 @Service
@@ -26,7 +26,7 @@ class CustomOAuth2UserService : OAuth2UserService<OAuth2UserRequest, OAuth2User>
         val userId = userAttributes["sub"] as String  // ID пользователя из Google
 
         val existingUser = userRepository.findById(userId).orElse(null)
-        val userEntity = existingUser ?: User(
+        val userEntity = existingUser ?: UserProfile(
             id = userId,
             name = name,
             email = email,

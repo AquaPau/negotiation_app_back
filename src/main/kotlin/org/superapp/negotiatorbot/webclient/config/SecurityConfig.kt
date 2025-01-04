@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.config
+package org.superapp.negotiatorbot.webclient.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

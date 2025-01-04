@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17  # Используем официальный образ PostgreSQL версии 14
+    container_name: postgres_db  # Имя контейнера
+    environment:
+      - POSTGRES_USER=postgres_user  # Имя пользователя PostgreSQL
+      - POSTGRES_PASSWORD=postgres_password  # Пароль для пользователя PostgreSQL
+      - POSTGRES_DB=mydb  # Имя базы данных, которая будет создана при запуске
+    ports:
+      - "5432:5432"  # Проброс порта 5432 для подключения к базе данных
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Монтирование тома для хранения данных
+    networks:
+      - app-network  # Подключение к пользовательской сети
+
+volumes:
+  postgres_data:  # Объявление тома для данных PostgreSQL
+
+networks:
+  app-network:  # Объявление сети для контейнеров
+    driver: bridge  # Используем стандартный мостовой драйвер сети

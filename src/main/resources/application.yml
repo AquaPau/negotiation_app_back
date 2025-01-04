@@ -31,10 +31,10 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: postgres_user
+    password: postgres_password
+    driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5
   jpa:
@@ -42,7 +42,6 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
     show-sql: true
 

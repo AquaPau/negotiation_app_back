@@ -1,6 +1,7 @@
 package org.superapp.negotiatorbot.botclient.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.message.Message
@@ -10,6 +11,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient
 private val log = KotlinLogging.logger {}
 
 @Service
+@Profile("telegram")
 class SenderService(val telegramClient: TelegramClient) {
 
     fun send(message: String, chatId: Long): Message {
