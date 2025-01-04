@@ -1,4 +1,4 @@
-package org.semenova.negotiatorbot.botclient.service
+package org.superapp.negotiatorbot.botclient.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service

@@ -1,6 +1,6 @@
-package org.semenova.negotiatorbot.botclient.command
+package org.superapp.negotiatorbot.botclient.command
 
-import org.semenova.negotiatorbot.botclient.service.SenderService
+import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.message.Message
 

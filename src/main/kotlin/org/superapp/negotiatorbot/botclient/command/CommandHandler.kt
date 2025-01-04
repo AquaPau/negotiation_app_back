@@ -1,4 +1,4 @@
-package org.semenova.negotiatorbot.botclient.command
+package org.superapp.negotiatorbot.botclient.command
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
