@@ -1,7 +1,7 @@
-package org.semenova.negotiatorbot.botclient
+package org.superapp.negotiatorbot.botclient
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.semenova.negotiatorbot.botclient.command.CommandHandler
+import org.superapp.negotiatorbot.botclient.command.CommandHandler
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.objects.message.Message
 

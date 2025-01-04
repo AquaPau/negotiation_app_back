@@ -1,4 +1,4 @@
-package org.semenova.negotiatorbot.botclient.command
+package org.superapp.negotiatorbot.botclient.command
 
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.message.Message

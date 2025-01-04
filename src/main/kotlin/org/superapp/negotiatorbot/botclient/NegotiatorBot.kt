@@ -1,7 +1,7 @@
-package org.semenova.negotiatorbot.botclient
+package org.superapp.negotiatorbot.botclient
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.semenova.negotiatorbot.config.BotConfig
+import org.superapp.negotiatorbot.config.BotConfig
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.longpolling.BotSession
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer
