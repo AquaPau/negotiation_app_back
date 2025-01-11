@@ -24,6 +24,9 @@ spring:
 telegram:
   token: 1234
 
+open-ai:
+  model: gpt-3.5-turbo
+  token: someToken
 ---
 
 spring:
