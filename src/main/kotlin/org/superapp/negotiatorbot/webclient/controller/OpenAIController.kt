@@ -1,5 +1,6 @@
 package org.superapp.negotiatorbot.webclient.controller
 
+import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,8 +15,8 @@ import org.superapp.negotiatorbot.webclient.service.OpenAIService
 class OpenAIController(val openAIService: OpenAIService) {
 
     @PostMapping
-    suspend fun simplePrompt(@RequestParam prompt: String): ResponseEntity<String> {
-        val result = openAIService.userRoleStringPrompt(prompt)
-        return ResponseEntity.ok(result)
+    fun simplePrompt(@RequestParam prompt: String): ResponseEntity<String?> {
+        val result = runBlocking { return@runBlocking ResponseEntity.ok(openAIService.userRoleStringPrompt(prompt)) }
+        return result;
     }
 }
