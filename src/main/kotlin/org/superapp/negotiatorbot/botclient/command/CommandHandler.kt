@@ -12,7 +12,7 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 @Profile("telegram")
-class CommandHandler(val commands: List<AbstractCommand>, private val client: TelegramClient) {
+class CommandHandler(private final val commands: List<AbstractCommand>, private val client: TelegramClient) {
     private val commandsMap = commands.associateBy { it.name }
 
     fun handle(commandName: String, message: Message) {

@@ -17,9 +17,11 @@ interface OpenAIService {
 }
 
 @Service
-class OpenAIServiceImpl  (val client: OpenAI,@Value("\${open-ai.model}")
-val model: String) : OpenAIService {
-
+class OpenAIServiceImpl(
+    val client: OpenAI,
+    @Value("\${open-ai.model}")
+    val model: String
+) : OpenAIService {
 
 
     override suspend fun userRoleStringPrompt(prompt: String): String? {

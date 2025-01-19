@@ -37,6 +37,8 @@ dependencies {
     //Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
 
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+
     // import OpenAI API client BOM
     implementation(platform("com.aallam.openai:openai-client-bom:3.8.2"))
     implementation("com.aallam.openai:openai-client")
