@@ -1,12 +1,8 @@
 package org.superapp.negotiatorbot.webclient.controller
 
-import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.superapp.negotiatorbot.webclient.service.OpenAIService
 
 @RestController
@@ -14,9 +10,19 @@ import org.superapp.negotiatorbot.webclient.service.OpenAIService
 @RequestMapping("/openai")
 class OpenAIController(val openAIService: OpenAIService) {
 
-    @PostMapping
-    fun simplePrompt(@RequestParam prompt: String): ResponseEntity<String?> {
-        val result = runBlocking { return@runBlocking ResponseEntity.ok(openAIService.userRoleStringPrompt(prompt)) }
-        return result;
+    @GetMapping
+    fun config(): ResponseEntity<String> {
+        return ResponseEntity.ok("success")
     }
+
+    @PostMapping("/{userId}")
+    fun simplePrompt(@PathVariable userId: Long, @RequestParam prompt: String): ResponseEntity<String> {
+        return ResponseEntity.ok(openAIService.userPrompt(userId, prompt))
+    }
+
+    @ExceptionHandler(NoSuchElementException::class)
+    fun handleNoSuchElementException(): ResponseEntity<String> {
+        return ResponseEntity.notFound().build()
+    }
+
 }

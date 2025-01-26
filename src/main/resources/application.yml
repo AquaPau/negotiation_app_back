@@ -15,8 +15,11 @@ telegram:
   token: 1234
 
 open-ai:
-  model: gpt-3.5-turbo
-  token: someToken
+  token: sometoken
+  assistant:
+    model: gpt-3.5-turbo
+    instructions: you are assistant fro explaining files content
+
 ---
 
 spring:

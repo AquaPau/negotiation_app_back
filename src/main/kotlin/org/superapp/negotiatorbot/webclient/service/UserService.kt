@@ -12,6 +12,7 @@ import org.superapp.negotiatorbot.webclient.repository.UserRepository
 interface UserService {
     fun saveUser(userDto: UserDto)
     fun findUserByEmail(email: String): User?
+    fun findById(userId: Long): User?
     fun findAllUsers(): List<UserDto?>?
 }
 
@@ -39,6 +40,10 @@ class UserServiceImpl(
 
     override fun findUserByEmail(email: String): User? {
         return userRepository.findByEmail(email).orElseGet { null }
+    }
+
+    override fun findById(userId: Long): User? {
+        return userRepository.findById(userId).orElseGet { null }
     }
 
     override fun findAllUsers(): List<UserDto> {
