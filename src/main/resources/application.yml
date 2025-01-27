@@ -1,28 +1,24 @@
 spring:
   application:
     name: NegotiatorBot
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: YOUR_GOOGLE_CLIENT_ID
-            client-secret: YOUR_GOOGLE_CLIENT_SECRET
-            scope: profile, email
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/google"
-            client-name: Google
-        provider:
-          google:
-            authorization-uri: https://accounts.google.com/o/oauth2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
 
   profiles:
     active: dev
 
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+
 telegram:
   token: 1234
+
+open-ai:
+  token: sometoken
+  assistant:
+    model: gpt-3.5-turbo
+    instructions: you are assistant fro explaining files content
 
 ---
 
