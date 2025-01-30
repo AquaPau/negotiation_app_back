@@ -4,6 +4,10 @@ import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.assistant.AssistantId
 import com.aallam.openai.api.core.Role
 import com.aallam.openai.api.core.Status
+import com.aallam.openai.api.file.FileId
+import com.aallam.openai.api.file.FileSource
+import com.aallam.openai.api.file.FileUpload
+import com.aallam.openai.api.file.Purpose
 import com.aallam.openai.api.message.Message
 import com.aallam.openai.api.message.MessageContent
 import com.aallam.openai.api.message.MessageRequest
@@ -15,15 +19,18 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.content.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import okio.source
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.entity.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.entity.User
+import java.io.InputStream
 
 private val log = KotlinLogging.logger {}
 
 interface OpenAIService {
     @Throws(NoSuchElementException::class)
     fun userPrompt(userId: Long, prompt: String): String?
+    suspend fun uploadFile(userId: Long, fileContent: InputStream, fileName: String)
 }
 
 @Service
@@ -41,6 +48,24 @@ class OpenAIServiceImpl(
         return formResponse(response.first())
 
     }
+
+    @OptIn(BetaOpenAI::class)
+    override suspend fun uploadFile(userId: Long, fileContent: InputStream, fileName: String) {
+        val assistantId = getAssistant(userId).getAssistantId()
+        val fileId = uploadToOpenAiFile(fileContent, fileName)
+        openAiAssistantService.connectFileToAssistant(assistantId, fileId)
+    }
+
+    suspend fun uploadToOpenAiFile(fileContent: InputStream, fileName: String): FileId {
+        val fileSource = FileSource(name = fileName, source = fileContent.source())
+        return openAI.file(
+            request = FileUpload(
+                file = fileSource,
+                purpose = Purpose("assistants")
+            )
+        ).id
+    }
+
 
     @OptIn(BetaOpenAI::class)
     private fun formResponse(message: Message): String {
@@ -84,7 +109,7 @@ class OpenAIServiceImpl(
             delay(1000)
         } while (retrievedRun.status != Status.Completed)
         log.debug("Finished run for thread [${threadId}]")
-        return openAI.messages(threadId);
+        return openAI.messages(threadId)
     }
 
 }

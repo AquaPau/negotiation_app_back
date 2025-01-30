@@ -1,5 +1,7 @@
 package org.superapp.negotiatorbot.webclient.entity
 
+import com.aallam.openai.api.BetaOpenAI
+import com.aallam.openai.api.assistant.AssistantId
 import jakarta.persistence.*
 
 @Entity
@@ -23,4 +25,8 @@ class OpenAiAssistant {
     @JoinColumn(name = "user_id", nullable = false)
     var user: User? = null
 
+    @OptIn(BetaOpenAI::class)
+    fun getAssistantId(): AssistantId {
+        return AssistantId(assistantId!!)
+    }
 }
