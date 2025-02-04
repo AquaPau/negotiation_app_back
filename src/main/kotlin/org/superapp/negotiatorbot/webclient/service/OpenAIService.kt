@@ -31,6 +31,7 @@ interface OpenAIService {
     @Throws(NoSuchElementException::class)
     fun userPrompt(userId: Long, prompt: String): String?
     suspend fun uploadFile(userId: Long, fileContent: InputStream, fileName: String)
+    suspend fun deleteFile(userId: Long)
 }
 
 @Service
@@ -66,6 +67,15 @@ class OpenAIServiceImpl(
         ).id
     }
 
+    override suspend fun deleteFile(userId: Long) {
+        val assistant = getAssistant(userId)
+        openAiAssistantService.deleteVectorStoreFromAssistant(assistant)
+        removeOpenAiFile(assistant.fileId)
+    }
+
+    suspend fun removeOpenAiFile(fileId: String?) {
+        fileId?.let { openAI.delete(FileId(fileId)) }
+    }
 
     @OptIn(BetaOpenAI::class)
     private fun formResponse(message: Message): String {

@@ -29,6 +29,12 @@ class OpenAIController(val openAIService: OpenAIService) {
         return ResponseEntity.status(201).body("your file is: ${fileName}")
     }
 
+    @DeleteMapping("/file/{userId}")
+    fun deleteFile(@PathVariable userId: Long): ResponseEntity<String> {
+        coroutineScope.launch { openAIService.deleteFile(userId) }
+        return ResponseEntity.ok("File is being deleted")
+    }
+
     @ExceptionHandler(NoSuchElementException::class)
     fun handleNoSuchElementException(): ResponseEntity<String> {
         return ResponseEntity.notFound().build()

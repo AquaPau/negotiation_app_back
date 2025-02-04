@@ -18,8 +18,11 @@ class OpenAiAssistant {
     @Column(nullable = false, unique = true)
     var threadId: String? = null
 
-    @Column(nullable = true)
+    @Column(nullable = true, unique = true)
     var fileId: String? = null
+
+    @Column(nullable = true, unique = true)
+    var vectorStoreId: String? = null
 
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)

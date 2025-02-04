@@ -6,6 +6,7 @@ import com.aallam.openai.api.file.FileId
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.api.thread.Thread
 import com.aallam.openai.api.thread.ThreadRequest
+import com.aallam.openai.api.vectorstore.VectorStoreId
 import com.aallam.openai.api.vectorstore.VectorStoreRequest
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.runBlocking
@@ -17,8 +18,10 @@ import org.superapp.negotiatorbot.webclient.repository.OpenAiAssistantRepository
 
 interface OpenAiAssistantService {
     fun getAssistant(user: User): OpenAiAssistant
+
     @OptIn(BetaOpenAI::class)
     suspend fun connectFileToAssistant(assistantId: AssistantId, fileId: FileId)
+    suspend fun deleteVectorStoreFromAssistant(assistant: OpenAiAssistant)
 }
 
 @Service
@@ -40,7 +43,7 @@ class OpenAiAssistantServiceImpl(
         val vectorId = openAI.createVectorStore(
             request = VectorStoreRequest(
                 name = "Store for assistant id: $assistantId",
-                fileIds = listOf(fileId),
+                fileIds = listOf(fileId)
             )
         ).id
 
@@ -56,6 +59,22 @@ class OpenAiAssistantServiceImpl(
             )
         )
 
+        val toUpdate = openAiAssistantRepository.findByAssistantId(assistantId.id)
+            ?: throw IllegalStateException("Cannot find assistant for id: $assistantId")
+        toUpdate.vectorStoreId = vectorId.id
+        toUpdate.fileId = fileId.id
+        openAiAssistantRepository.save(toUpdate)
+    }
+
+    override suspend fun deleteVectorStoreFromAssistant(assistant: OpenAiAssistant) {
+        assistant.vectorStoreId?.let {
+            deleteVectorStore(VectorStoreId(it))
+        }
+    }
+
+    @OptIn(BetaOpenAI::class)
+    private suspend fun deleteVectorStore(vectorStoreId: VectorStoreId) {
+        openAI.delete(id = vectorStoreId)
     }
 
     @OptIn(BetaOpenAI::class)
