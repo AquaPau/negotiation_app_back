@@ -2,6 +2,7 @@ package org.superapp.negotiatorbot.webclient.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -16,7 +17,6 @@ import org.superapp.negotiatorbot.webclient.service.CustomUserDetailsService
 
 
 @Configuration
-@EnableWebSecurity
 class SecurityConfig(private val userRepository: UserRepository) {
 
     @Throws(Exception::class)
@@ -31,14 +31,13 @@ class SecurityConfig(private val userRepository: UserRepository) {
         return BCryptPasswordEncoder(5)
     }
 
+    @Profile("!dev")
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
             .authorizeHttpRequests { authz ->
                 authz
-                    .requestMatchers(HttpMethod.POST, "/openai/**","openai/file/**").permitAll()
-                    .requestMatchers(HttpMethod.DELETE, "/openai/**","openai/file/**").permitAll()
                     .requestMatchers(
                         "/login", "logout", "/register/**",
                         "/v3/api-docs/**",

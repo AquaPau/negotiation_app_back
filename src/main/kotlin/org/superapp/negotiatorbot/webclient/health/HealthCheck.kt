@@ -2,7 +2,6 @@ package org.superapp.negotiatorbot.webclient.health
 
 import io.awspring.cloud.s3.S3Template
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.HealthIndicator
 import org.springframework.stereotype.Component

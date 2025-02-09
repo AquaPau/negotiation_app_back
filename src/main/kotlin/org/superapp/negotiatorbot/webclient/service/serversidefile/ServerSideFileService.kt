@@ -6,25 +6,38 @@ import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.entity.ServerSideFile
 import org.superapp.negotiatorbot.webclient.entity.User
-import java.util.StringJoiner
+import org.superapp.negotiatorbot.webclient.repository.ServerSideFileRepository
+import org.superapp.negotiatorbot.webclient.service.s3.S3Service
 
-interface ServerSideFileService {}
-
-
-
-@Service
-class ServerSideFileServiceImpl(private val serverSideFileFactory: ServerSideFileFactory) : ServerSideFileService {
-
-    @Transactional
+interface ServerSideFileService {
     fun save(
         user: User,
         businessType: BusinessType,
         fileNameWithExtension: String,
         multipartFile: MultipartFile
-    ): ServerSideFile {
-        TODO("Not impl")
-    }
+    ): ServerSideFile
+}
 
+
+@Service
+class ServerSideFileServiceImpl(
+    private val serverSideFileFactory: ServerSideFileFactory,
+    private val serverSideFileRepository: ServerSideFileRepository,
+    private val s3Service: S3Service
+) : ServerSideFileService {
+
+    @Transactional
+    override fun save(
+        user: User,
+        businessType: BusinessType,
+        fileNameWithExtension: String,
+        multipartFile: MultipartFile
+    ): ServerSideFile {
+        val file = serverSideFileFactory.createFile(user, businessType, fileNameWithExtension)
+        serverSideFileRepository.save(file)
+        s3Service.upload(file.path!!, multipartFile)
+        return file;
+    }
 
 
 }

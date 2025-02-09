@@ -15,7 +15,7 @@ interface S3Service {
 }
 
 @Service
-class S3ServiceImpl(private val s3Template: S3Template, private val s3Config: S3Config) : S3Service {
+class S3ServiceImpl(private val s3Template: S3Template, s3Config: S3Config) : S3Service {
 
     val bucketName = s3Config.bucketName
 

@@ -31,6 +31,7 @@ class ServerSideFileFactoryImpl : ServerSideFileFactory {
         fileNameWithExtension: String,
     ): ServerSideFile {
         val newFile = ServerSideFile()
+        newFile.user = user
         newFile.setNameAndExtension(fileNameWithExtension)
         newFile.businessType = businessType
         newFile.setPath(user, fileNameWithExtension)
@@ -48,7 +49,7 @@ class ServerSideFileFactoryImpl : ServerSideFileFactory {
         validateName(fileName)
 
         this.extension = extension
-        this.name = fileName;
+        this.name = fileName
     }
 
     @Throws(IllegalArgumentException::class)
