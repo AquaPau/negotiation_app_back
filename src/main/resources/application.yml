@@ -11,6 +11,16 @@ spring:
     mode: HTML
     encoding: UTF-8
 
+  cloud:
+    aws:
+      credentials:
+        access-key: somekey
+        secret-key: somekey
+      s3:
+        region: eu-central-1
+        endpoint: http://127.0.0.1:9000/
+        bucket-name: bucket1
+
 telegram:
   token: 1234
 
