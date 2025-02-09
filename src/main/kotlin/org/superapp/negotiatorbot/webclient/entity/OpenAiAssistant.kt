@@ -1,5 +1,7 @@
 package org.superapp.negotiatorbot.webclient.entity
 
+import com.aallam.openai.api.BetaOpenAI
+import com.aallam.openai.api.assistant.AssistantId
 import jakarta.persistence.*
 
 @Entity
@@ -16,11 +18,18 @@ class OpenAiAssistant {
     @Column(nullable = false, unique = true)
     var threadId: String? = null
 
-    @Column(nullable = true)
+    @Column(nullable = true, unique = true)
     var fileId: String? = null
+
+    @Column(nullable = true, unique = true)
+    var vectorStoreId: String? = null
 
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     var user: User? = null
 
+    @OptIn(BetaOpenAI::class)
+    fun getAssistantId(): AssistantId {
+        return AssistantId(assistantId!!)
+    }
 }

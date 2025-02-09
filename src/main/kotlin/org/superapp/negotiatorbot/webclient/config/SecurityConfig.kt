@@ -37,7 +37,8 @@ class SecurityConfig(private val userRepository: UserRepository) {
             .csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
             .authorizeHttpRequests { authz ->
                 authz
-                    .requestMatchers(HttpMethod.POST, "/openai/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/openai/**","openai/file/**").permitAll()
+                    .requestMatchers(HttpMethod.DELETE, "/openai/**","openai/file/**").permitAll()
                     .requestMatchers(
                         "/login", "logout", "/register/**",
                         "/v3/api-docs/**",
