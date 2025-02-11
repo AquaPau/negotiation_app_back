@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.superapp.negotiatorbot.webclient.repository.UserRepository
-import org.superapp.negotiatorbot.webclient.service.CustomUserDetailsService
+import org.superapp.negotiatorbot.webclient.service.user.CustomUserDetailsService
 
 
 @Configuration
