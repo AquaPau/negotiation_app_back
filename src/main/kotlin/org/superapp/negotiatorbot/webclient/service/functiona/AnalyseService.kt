@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.webclient.service
+package org.superapp.negotiatorbot.webclient.service.functiona
 
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.dto.result.BeneficiaryDto

@@ -23,11 +23,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.3.0")
+
 
     //БД
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
     implementation("com.h2database:h2")
+
+    //Feign client
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0")
 
     // Для работы с OAuth2
     implementation("org.springframework.security:spring-security-oauth2-client")
