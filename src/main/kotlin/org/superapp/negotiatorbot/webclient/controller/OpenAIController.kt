@@ -1,6 +1,9 @@
 package org.superapp.negotiatorbot.webclient.controller
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -24,7 +27,11 @@ class OpenAIController(val openAiUserService: OpenAiUserService) {
     }
 
     @PostMapping("/file/{userId}")
-    fun fileUpload(@PathVariable userId: Long,@RequestParam(required = true) fileName: String, @RequestBody(required = true) file: MultipartFile): ResponseEntity<String> {
+    fun fileUpload(
+        @PathVariable userId: Long,
+        @RequestParam(required = true) fileName: String,
+        @RequestBody(required = true) file: MultipartFile
+    ): ResponseEntity<String> {
         coroutineScope.launch { openAiUserService.doSmthWithLoadedFile(userId, file.inputStream, fileName) }
         return ResponseEntity.status(201).body("your file is: ${fileName}")
     }

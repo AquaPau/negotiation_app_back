@@ -29,6 +29,9 @@ dependencies {
     implementation("org.postgresql:postgresql")
     implementation("com.h2database:h2")
 
+    //Feign client
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0")
+
     // Для работы с OAuth2
     implementation("org.springframework.security:spring-security-oauth2-client")
     implementation("org.springframework.security:spring-security-web")
