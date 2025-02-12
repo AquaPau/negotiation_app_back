@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.webclient.service
+package org.superapp.negotiatorbot.webclient.service.user
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User

@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.webclient.service
+package org.superapp.negotiatorbot.webclient.service.user
 
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
