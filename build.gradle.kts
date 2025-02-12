@@ -31,6 +31,9 @@ dependencies {
     implementation("org.postgresql:postgresql")
     implementation("com.h2database:h2")
 
+    //Feign client
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0")
+
     // Для работы с OAuth2
     implementation("org.springframework.security:spring-security-oauth2-client")
     implementation("org.springframework.security:spring-security-web")
@@ -44,7 +47,6 @@ dependencies {
     // import OpenAI API client BOM
     implementation(platform("com.aallam.openai:openai-client-bom:3.8.2"))
     implementation("com.aallam.openai:openai-client")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
     runtimeOnly("io.ktor:ktor-client-okhttp")
 
     // Для работы с Kotlin

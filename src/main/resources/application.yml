@@ -25,10 +25,14 @@ telegram:
   token: 1234
 
 open-ai:
-  token: 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
+  token: sometoken
   assistant:
     model: gpt-3.5-turbo
-    instructions: you are assistant for explaining files content
+    instructions: you are assistant fro explaining files content
+
+dadata:
+  url: http://suggestions.dadata.ru/suggestions/api/4_1/rs
+  token: "Token here should be a valid token"
 
 ---
 
