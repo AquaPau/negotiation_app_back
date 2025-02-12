@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
-import org.superapp.negotiatorbot.webclient.service.UserService
 import org.superapp.negotiatorbot.webclient.service.serversidefile.ServerSideFileService
+import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 @RestController
 @RequestMapping("/file")

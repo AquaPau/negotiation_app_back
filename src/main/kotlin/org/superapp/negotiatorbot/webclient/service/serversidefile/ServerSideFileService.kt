@@ -1,7 +1,6 @@
 package org.superapp.negotiatorbot.webclient.service.serversidefile
 
 import io.awspring.cloud.s3.S3Resource
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -20,7 +19,7 @@ interface ServerSideFileService {
     ): ServerSideFile
 
     @Throws(NoSuchElementException::class)
-    fun get(serverSideFileId: Long) : S3Resource
+    fun get(serverSideFileId: Long): S3Resource
 }
 
 
@@ -41,7 +40,7 @@ class ServerSideFileServiceImpl(
         val file = serverSideFileFactory.createFile(user, businessType, fileNameWithExtension)
         serverSideFileRepository.save(file)
         s3Service.upload(file.path!!, multipartFile)
-        return file;
+        return file
     }
 
     override fun get(serverSideFileId: Long): S3Resource {

@@ -24,6 +24,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.3.0")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
 
     //БД
