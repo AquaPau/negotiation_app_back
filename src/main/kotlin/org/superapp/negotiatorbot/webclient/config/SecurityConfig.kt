@@ -12,11 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.superapp.negotiatorbot.webclient.repository.UserRepository
-import org.superapp.negotiatorbot.webclient.service.user.CustomUserDetailsService
+import org.superapp.negotiatorbot.webclient.service.CustomUserDetailsService
 
 
 @Configuration
-@EnableWebSecurity
 class SecurityConfig(private val userRepository: UserRepository) {
 
     @Throws(Exception::class)
@@ -31,14 +30,13 @@ class SecurityConfig(private val userRepository: UserRepository) {
         return BCryptPasswordEncoder(5)
     }
 
+    @Profile("!dev")
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
             .authorizeHttpRequests { authz ->
                 authz
-                    .requestMatchers(HttpMethod.POST, "/openai/**","openai/file/**").permitAll()
-                    .requestMatchers(HttpMethod.DELETE, "/openai/**","openai/file/**").permitAll()
                     .requestMatchers(
                         "/login", "logout", "/register/**",
                         "/v3/api-docs/**",
