@@ -7,6 +7,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
+import org.superapp.negotiatorbot.webclient.dto.document.DocumentDataWithName
 import org.superapp.negotiatorbot.webclient.entity.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.service.user.UserService
@@ -20,7 +21,13 @@ private val log = KotlinLogging.logger {}
 interface OpenAiUserService {
     @Throws(NoSuchElementException::class)
     fun startDialogWIthUserPrompt(userId: Long, prompt: String): String?
-    suspend fun doSmthWithLoadedFile(userId: Long, fileContent: InputStream, fileName: String)
+    suspend fun uploadFiles(userId: Long, fileContent: InputStream, fileName: String)
+    suspend fun uploadFilesAndExtractCompanyData(
+        userId: Long,
+        documents: List<DocumentDataWithName>,
+        prompt: String
+    ): String
+
     suspend fun deleteFile(userId: Long)
 }
 
@@ -40,9 +47,20 @@ class OpenAiUserServiceImpl(
     }
 
     @OptIn(BetaOpenAI::class)
-    override suspend fun doSmthWithLoadedFile(userId: Long, fileContent: InputStream, fileName: String) {
+    override suspend fun uploadFiles(userId: Long, fileContent: InputStream, fileName: String) {
         val assistantId = getAssistant(userId).getAssistantId()
         return openAiAssistantService.uploadFile(assistantId, fileContent, fileName)
+    }
+
+    @OptIn(BetaOpenAI::class)
+    override suspend fun uploadFilesAndExtractCompanyData(
+        userId: Long,
+        documents: List<DocumentDataWithName>,
+        prompt: String
+    ): String {
+        val assistantId = getAssistant(userId).getAssistantId()
+        documents.forEach { openAiAssistantService.uploadFile(assistantId, it.fileContent, it.fileName) }
+        return startDialogWIthUserPrompt(userId, prompt)
     }
 
     override suspend fun deleteFile(userId: Long) {

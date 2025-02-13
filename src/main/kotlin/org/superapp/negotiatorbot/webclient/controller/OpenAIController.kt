@@ -32,7 +32,7 @@ class OpenAIController(val openAiUserService: OpenAiUserService) {
         @RequestParam(required = true) fileName: String,
         @RequestBody(required = true) file: MultipartFile
     ): ResponseEntity<String> {
-        coroutineScope.launch { openAiUserService.doSmthWithLoadedFile(userId, file.inputStream, fileName) }
+        coroutineScope.launch { openAiUserService.uploadFiles(userId, file.inputStream, fileName) }
         return ResponseEntity.status(201).body("your file is: ${fileName}")
     }
 

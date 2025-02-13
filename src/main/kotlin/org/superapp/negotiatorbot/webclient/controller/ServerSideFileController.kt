@@ -15,9 +15,18 @@ class ServerSideFileController(
 ) {
 
     @PostMapping("/{userId}")
-    fun fileUpload(@PathVariable userId: Long, @RequestParam(required = true) nameWithExtension: String, @RequestBody(required = true) file: MultipartFile): ResponseEntity<String> {
-        val user = userService.findById(userId) ?: throw NoSuchElementException()
-        val serverSideFile = serverSideFileService.save(user, BusinessType.USER,nameWithExtension,file) //todo catch constraint violation exception (user cannot have not unique file names for this user)
+    fun fileUpload(
+        @PathVariable userId: Long,
+        @RequestParam(required = true) nameWithExtension: String,
+        @RequestBody(required = true) file: MultipartFile
+    ): ResponseEntity<String> {
+        val user = userService.findById(userId) ?: throw NoSuchElementException("User is not found")
+        val serverSideFile = serverSideFileService.save(
+            user,
+            BusinessType.USER,
+            nameWithExtension,
+            file
+        ) //todo catch constraint violation exception (user cannot have not unique file names for this user)
         return ResponseEntity.status(201).body("your file is: ${serverSideFile.path}")
     }
 

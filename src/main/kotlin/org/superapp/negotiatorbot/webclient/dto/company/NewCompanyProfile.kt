@@ -6,5 +6,6 @@ import org.superapp.negotiatorbot.webclient.enum.CompanyRegion.*
 data class NewCompanyProfile(
     val customUserGeneratedName: String,
     val region: CompanyRegion = RU,
-    val userId: Int
+    val userId: Long,
+    val isOwn: Boolean
 )
