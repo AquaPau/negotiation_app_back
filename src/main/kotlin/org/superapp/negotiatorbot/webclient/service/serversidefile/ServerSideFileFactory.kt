@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.entity.ServerSideFile
 import org.superapp.negotiatorbot.webclient.entity.User
+import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import java.util.*
 import kotlin.jvm.Throws
 
@@ -18,6 +19,14 @@ interface ServerSideFileFactory {
         businessType: BusinessType,
         fileNameWithExtension: String,
     ): ServerSideFile
+
+    @Throws(IllegalArgumentException::class)
+    fun createFiles(
+        user: User,
+        businessType: BusinessType,
+        fileNameWithExtension: List<String>,
+        documentTypes: List<DocumentType>
+    ): List<ServerSideFile>
 }
 
 @Service
@@ -37,6 +46,25 @@ class ServerSideFileFactoryImpl : ServerSideFileFactory {
         newFile.setPath(user, fileNameWithExtension)
         return newFile
     }
+
+
+    override fun createFiles(
+        user: User,
+        businessType: BusinessType,
+        fileNameWithExtension: List<String>,
+        documentTypes: List<DocumentType>
+    ): List<ServerSideFile> {
+        return fileNameWithExtension.mapIndexed { index, it ->
+            val newFile = ServerSideFile()
+            newFile.user = user
+            newFile.setNameAndExtension(it)
+            newFile.businessType = businessType
+            newFile.documentType = documentTypes[index]
+            newFile.setPath(user, it)
+            newFile
+        }
+    }
+
 
     @Throws(IllegalArgumentException::class)
     private fun ServerSideFile.setNameAndExtension(fileNameWithExtension: String) {

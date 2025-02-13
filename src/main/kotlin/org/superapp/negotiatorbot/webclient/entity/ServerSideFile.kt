@@ -1,6 +1,7 @@
 package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
+import org.superapp.negotiatorbot.webclient.enum.DocumentType
 
 
 @Entity
@@ -20,6 +21,10 @@ class ServerSideFile{
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     var businessType: BusinessType? = null
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    var documentType: DocumentType? = null
 
     @Column(nullable = false)
     var path: String? = null

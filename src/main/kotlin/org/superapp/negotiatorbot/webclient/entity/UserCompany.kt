@@ -1,6 +1,7 @@
 package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
+import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
 
 @Entity
@@ -17,21 +18,37 @@ data class UserCompany(
     val customUserGeneratedName: String,
 
     @Column
-    val inn: Long,
+    var inn: String? = null,
 
     @Column
-    val ogrn: Long,
+    var ogrn: String? = null,
 
     @Enumerated(value = EnumType.STRING)
     @Column
-    val residence: CompanyRegion,
+    val residence: CompanyRegion = CompanyRegion.RU,
 
     @Column
-    val shortName: String,
+    var address: String? = null,
 
     @Column
-    val address: String,
+    var managerTitle: String? = null,
 
     @Column
-    val fullName: String
+    var managerName: String? = null,
+
+    @Column
+    var fullName: String? = null
+)
+
+
+fun UserCompany.toThinDto(): CompanyProfileDto = CompanyProfileDto(
+    id = this.id!!,
+    customUserGeneratedName = this.customUserGeneratedName,
+    userId = this.user.id!!,
+    inn = this.inn.toString(),
+    ogrn = this.ogrn.toString(),
+    fullName = this.fullName,
+    managerName = this.managerName,
+    managerTitle = this.managerTitle,
+    documents = emptyList()
 )

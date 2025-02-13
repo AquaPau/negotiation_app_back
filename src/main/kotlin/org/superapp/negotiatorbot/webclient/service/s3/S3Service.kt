@@ -20,9 +20,9 @@ class S3ServiceImpl(private val s3Template: S3Template, s3Config: S3Config) : S3
     val bucketName = s3Config.bucketName
 
     override fun upload(fullS3Location: String, multipartFile: MultipartFile) {
-        s3Template.upload(bucketName, fullS3Location, multipartFile.inputStream)
-        log.info("File uploaded successfully to ${fullS3Location}")
+        s3Template.upload(bucketName!!, fullS3Location, multipartFile.inputStream)
+        log.info("File uploaded successfully to $fullS3Location")
     }
 
-    override fun download(fullS3Location: String) = s3Template.download(bucketName, fullS3Location)
+    override fun download(fullS3Location: String): S3Resource = s3Template.download(bucketName!!, fullS3Location)
 }
