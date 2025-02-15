@@ -4,14 +4,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
-import org.superapp.negotiatorbot.webclient.service.serversidefile.ServerSideFileService
+import org.superapp.negotiatorbot.webclient.service.serversidefile.DocumentService
 import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 @RestController
 @RequestMapping("/file")
 class ServerSideFileController(
     private val userService: UserService,
-    private val serverSideFileService: ServerSideFileService
+    private val documentService: DocumentService
 ) {
 
     @PostMapping("/{userId}")
@@ -21,7 +21,7 @@ class ServerSideFileController(
         @RequestBody(required = true) file: MultipartFile
     ): ResponseEntity<String> {
         val user = userService.findById(userId) ?: throw NoSuchElementException("User is not found")
-        val serverSideFile = serverSideFileService.save(
+        val serverSideFile = documentService.save(
             user,
             BusinessType.USER,
             nameWithExtension,

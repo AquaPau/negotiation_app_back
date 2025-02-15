@@ -1,54 +1,36 @@
 package org.superapp.negotiatorbot.webclient.controller
 
-import jakarta.validation.Valid
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Controller
-import org.springframework.ui.Model
-import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.bind.annotation.PostMapping
-import org.superapp.negotiatorbot.webclient.dto.user.UserDto
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import org.superapp.negotiatorbot.webclient.dto.user.LoginUser
+import org.superapp.negotiatorbot.webclient.dto.user.UserRegistrationDto
 import org.superapp.negotiatorbot.webclient.service.user.UserService
 
+@RestController
+@RequestMapping("/api/auth")
+class AuthController(private val userService: UserService) {
 
-@Controller
-class AuthController @Autowired constructor(
-    private val userService: UserService
-) {
-
-    @GetMapping("/register")
-    fun showRegistrationForm(model: Model): String {
-        // create model object to store form data
-        val user = UserDto()
-        model.addAttribute("user", user)
-        return "register"
+    @PostMapping("/register")
+    fun register(@RequestBody user: UserRegistrationDto) {
+        userService.saveUser(user)
     }
 
-    // handler method to handle user registration form submit request
-    @PostMapping("/register/save")
-    fun registration(
-        @ModelAttribute("user") userDto: @Valid UserDto?,
-        result: BindingResult,
-        model: Model
-    ): String {
-        val existingUser = userDto!!.email?.let { userService.findUserByEmail(it) }
-        if (existingUser?.email != null && existingUser.email!!.isNotEmpty()) {
-            result.rejectValue(
-                "email", "404",
-                "There is already an account registered with the same email"
-            )
-        }
-        if (result.hasErrors()) {
-            model.addAttribute("user", userDto)
-            return "/register"
-        }
-        userService.saveUser(userDto)
-        return "redirect:/register?success"
+    @PostMapping("/login")
+    fun login(
+        @RequestBody requestParameters: LoginUser,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): Long? {
+
+        return userService.login(requestParameters.email, requestParameters.password, request, response)
     }
 
-    @GetMapping("/login")
-    fun login(): String {
-        return "login"
+    @PostMapping("/logout")
+    fun logout() {
+        userService.logout()
     }
 }

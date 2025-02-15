@@ -1,10 +1,6 @@
 package org.superapp.negotiatorbot.webclient.controller
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.service.functiona.AnalyseService
 
@@ -18,18 +14,13 @@ class AnalysisController(
     fun analyseUsingPrompt(@RequestBody data: MultipartFile) {
     }
 
-    @PutMapping("/beneficiary")
-    fun getBeneficiary(@RequestBody data: MultipartFile) {
+    @PutMapping("/document/{documentId}/risks")
+    fun analyseRisks(@PathVariable documentId: Long) {
 
     }
 
-    @PutMapping("/risks")
-    fun analyseRisks(@RequestBody data: MultipartFile) {
-
-    }
-
-    @PutMapping("/opportunities")
-    fun analyseOpportunities(@RequestBody data: MultipartFile) {
+    @PutMapping("/counterparty/{counterPartyId}/opportunities")
+    fun analyseOpportunities(@PathVariable counterPartyId: Long) {
 
     }
 }

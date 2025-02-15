@@ -1,13 +1,50 @@
 package org.superapp.negotiatorbot.webclient.dto.user
 
-import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotEmpty
+import com.fasterxml.jackson.annotation.JsonIgnore
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 
+data class UserDto(
+    var id: Long,
+    var firstName: String,
+    var lastName: String,
+    var email: String,
+    private var password: String
+) : UserDetails {
 
-class UserDto {
-    var id: Long? = null
-    var firstName: @NotEmpty String? = null
-    var lastName: @NotEmpty String? = null
-    var email: @NotEmpty(message = "Email should not be empty") @Email String? = null
-    var password: @NotEmpty(message = "Password should be empty") String? = null
+    @JsonIgnore
+    override fun getAuthorities(): Collection<GrantedAuthority> {
+        return emptyList()
+    }
+
+    @JsonIgnore
+    override fun getUsername() = email
+
+    @JsonIgnore
+    override fun getPassword(): String {
+        return password
+    }
+
+    /**
+     * Если с аккаунтом что-то не так, то успешно залогиниться нельзя, поэтому везде ниже возвращаем true
+     */
+    @JsonIgnore
+    override fun isEnabled(): Boolean {
+        return true
+    }
+
+    @JsonIgnore
+    override fun isCredentialsNonExpired(): Boolean {
+        return true
+    }
+
+    @JsonIgnore
+    override fun isAccountNonExpired(): Boolean {
+        return true
+    }
+
+    @JsonIgnore
+    override fun isAccountNonLocked(): Boolean {
+        return true
+    }
 }

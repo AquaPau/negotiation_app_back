@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
+import org.superapp.negotiatorbot.webclient.dto.company.CounterpartyDto
 import org.superapp.negotiatorbot.webclient.dto.company.NewCompanyProfile
 import org.superapp.negotiatorbot.webclient.dto.dadata.DadataRequest
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentDataWithName
@@ -19,7 +20,7 @@ import org.superapp.negotiatorbot.webclient.repository.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.UserCounterpartyRepository
 import org.superapp.negotiatorbot.webclient.repository.UserRepository
 import org.superapp.negotiatorbot.webclient.service.functiona.OpenAiUserService
-import org.superapp.negotiatorbot.webclient.service.serversidefile.ServerSideFileService
+import org.superapp.negotiatorbot.webclient.service.serversidefile.DocumentService
 
 interface CompanyService {
 
@@ -31,6 +32,8 @@ interface CompanyService {
         companyId: Long,
         type: BusinessType
     )
+
+    fun getCounterparties(companyId: Long): List<CounterpartyDto>
 }
 
 @Service
@@ -38,7 +41,7 @@ class CompanyServiceImpl(
     private val userRepository: UserRepository,
     private val userCompanyRepository: UserCompanyRepository,
     private val userCounterpartyRepository: UserCounterpartyRepository,
-    private val serverSideFileService: ServerSideFileService,
+    private val documentService: DocumentService,
     private val openAiUserService: OpenAiUserService,
     private val dadataPort: DadataPort,
     @Value("\${dadata.token}") private val dadataToken: String
@@ -79,9 +82,10 @@ class CompanyServiceImpl(
             BusinessType.PARTNER -> userCounterpartyRepository.findById(companyId)
                 .orElseThrow { NoSuchElementException("Counterparty is not found") }.user
         }
-        serverSideFileService.batchSave(
+        documentService.batchSave(
             user,
             type,
+            companyId,
             documentTypes.mapIndexed { index, documentType -> RawDocumentAndMetatype(documentType, files[index]) })
 
         // here we should load documents with the prompt of extract company data to chatgpt and then update info about
@@ -123,6 +127,14 @@ class CompanyServiceImpl(
             }
         }
 
+    }
+
+    override fun getCounterparties(companyId: Long): List<CounterpartyDto> {
+        val user = userCompanyRepository.findById(companyId)
+            .orElseThrow { NoSuchElementException("Company is not found") }.user
+        return userCounterpartyRepository.findAllByUser(user).map {
+            CounterpartyDto(it.id!!, it.customUserGeneratedName)
+        }
     }
 
 }

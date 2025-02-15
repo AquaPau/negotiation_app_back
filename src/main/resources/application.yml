@@ -8,12 +8,6 @@ spring:
   profiles:
     active: dev
 
-  thymeleaf:
-    prefix: classpath:/templates/
-    suffix: .html
-    mode: HTML
-    encoding: UTF-8
-
   cloud:
     aws:
       credentials:
@@ -23,6 +17,12 @@ spring:
         region: eu-central-1
         endpoint: http://127.0.0.1:9000/
         bucket-name: bucket1
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
 
 telegram:
   token: 1234

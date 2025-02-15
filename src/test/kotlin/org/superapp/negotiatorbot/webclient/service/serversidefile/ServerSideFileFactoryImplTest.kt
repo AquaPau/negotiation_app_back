@@ -9,9 +9,7 @@ import org.mockito.Mockito.`when`
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.entity.User
 
-class ServerSideFileFactoryTest {
-
-    private val serverSideFileFactory = ServerSideFileFactoryImpl()
+class DocumentMetadataFactoryTest {
 
     @Test
     fun `createFile should create file with valid extension`() {
@@ -22,7 +20,7 @@ class ServerSideFileFactoryTest {
         val fileName = "test.csv"
 
         //when
-        val file = serverSideFileFactory.createFile(user, businessType, fileName)
+        val file = DocumentHelper.createFile(user, businessType, fileName)
 
         assertEquals("csv", file.extension)
         assertEquals("test", file.name)
@@ -43,7 +41,7 @@ class ServerSideFileFactoryTest {
             val fileName = "test.invalid"
             //then
             assertThrows<IllegalArgumentException> {
-                serverSideFileFactory.createFile(user, businessType, fileName)
+                DocumentHelper.createFile(user, businessType, fileName)
             }
         }
 
@@ -55,7 +53,7 @@ class ServerSideFileFactoryTest {
 
             val fileName = "test."
             assertThrows<IllegalArgumentException> {
-                serverSideFileFactory.createFile(user, businessType, fileName)
+                DocumentHelper.createFile(user, businessType, fileName)
             }
         }
 
@@ -67,7 +65,7 @@ class ServerSideFileFactoryTest {
 
             val fileName = ""
             assertThrows<IllegalArgumentException> {
-                serverSideFileFactory.createFile(user, businessType, fileName)
+                DocumentHelper.createFile(user, businessType, fileName)
             }
         }
 
@@ -79,7 +77,7 @@ class ServerSideFileFactoryTest {
 
             val fileName = " "
             assertThrows<IllegalArgumentException> {
-                serverSideFileFactory.createFile(user, businessType, fileName)
+                DocumentHelper.createFile(user, businessType, fileName)
             }
         }
 
@@ -92,7 +90,7 @@ class ServerSideFileFactoryTest {
             val fileName = ".txt"
 
             assertThrows<IllegalArgumentException> {
-                serverSideFileFactory.createFile(user, businessType, fileName)
+                DocumentHelper.createFile(user, businessType, fileName)
             }
         }
 
@@ -105,7 +103,7 @@ class ServerSideFileFactoryTest {
             val fileName = "."
 
             assertThrows<IllegalArgumentException> {
-                serverSideFileFactory.createFile(user, businessType, fileName)
+                DocumentHelper.createFile(user, businessType, fileName)
             }
         }
 
@@ -118,7 +116,7 @@ class ServerSideFileFactoryTest {
             val fileName = "..."
 
             assertThrows<IllegalArgumentException> {
-                serverSideFileFactory.createFile(user, businessType, fileName)
+                DocumentHelper.createFile(user, businessType, fileName)
             }
         }
     }

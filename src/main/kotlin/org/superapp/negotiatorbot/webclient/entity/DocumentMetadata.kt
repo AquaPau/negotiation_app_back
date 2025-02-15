@@ -5,8 +5,8 @@ import org.superapp.negotiatorbot.webclient.enum.DocumentType
 
 
 @Entity
-@Table(name = "server_side_file", uniqueConstraints = [UniqueConstraint(columnNames = ["name","user_id"])])
-class ServerSideFile{
+@Table(name = "document_metadata", uniqueConstraints = [UniqueConstraint(columnNames = ["name","user_id"])])
+class DocumentMetadata{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +32,12 @@ class ServerSideFile{
     @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     var user: User? = null //todo test cascade deletion logic on user deletion case
+
+   @Column
+    var description: String? = null
+
+    @Column
+    var counterPartyId: Long? = null
 }
 
 enum class BusinessType{USER, PARTNER}
