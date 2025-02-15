@@ -7,9 +7,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentDataWithName
-import org.superapp.negotiatorbot.webclient.entity.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.entity.User
+import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.service.user.UserService
 import java.io.InputStream
 
@@ -18,17 +19,19 @@ private val log = KotlinLogging.logger {}
 /**
  * User logic umbrella functions for access Open API capabilities
  */
+
+@Transactional
 interface OpenAiUserService {
     @Throws(NoSuchElementException::class)
     fun startDialogWIthUserPrompt(userId: Long, prompt: String): String?
-    suspend fun uploadFiles(userId: Long, fileContent: InputStream, fileName: String)
-    suspend fun uploadFilesAndExtractCompanyData(
+    fun uploadFiles(userId: Long, fileContent: InputStream, fileName: String)
+    fun uploadFilesAndExtractCompanyData(
         userId: Long,
         documents: List<DocumentDataWithName>,
         prompt: String
     ): String
 
-    suspend fun deleteFile(userId: Long)
+    fun deleteFilesFromOpenAi(userId: Long)
 }
 
 @Service
@@ -46,27 +49,26 @@ class OpenAiUserServiceImpl(
 
     }
 
-    @OptIn(BetaOpenAI::class)
-    override suspend fun uploadFiles(userId: Long, fileContent: InputStream, fileName: String) {
-        val assistantId = getAssistant(userId).getAssistantId()
-        return openAiAssistantService.uploadFile(assistantId, fileContent, fileName)
+    override fun uploadFiles(userId: Long, fileContent: InputStream, fileName: String) {
+        val assistant = getAssistant(userId)
+        openAiAssistantService.uploadFile(assistant, fileContent, fileName)
+        log.info("Successfully uploaded file $fileName")
     }
 
-    @OptIn(BetaOpenAI::class)
-    override suspend fun uploadFilesAndExtractCompanyData(
+    override fun uploadFilesAndExtractCompanyData(
         userId: Long,
         documents: List<DocumentDataWithName>,
         prompt: String
     ): String {
-        val assistantId = getAssistant(userId).getAssistantId()
-        documents.forEach { openAiAssistantService.uploadFile(assistantId, it.fileContent, it.fileName) }
+        val assistant = getAssistant(userId)
+        documents.forEach { openAiAssistantService.uploadFile(assistant, it.fileContent, it.fileName) }
         return startDialogWIthUserPrompt(userId, prompt)
     }
 
-    override suspend fun deleteFile(userId: Long) {
+    override fun deleteFilesFromOpenAi(userId: Long) {
         val assistant = getAssistant(userId)
         openAiAssistantService.deleteVectorStoreFromAssistant(assistant)
-        openAiAssistantService.deleteFile(assistant.fileId)
+        log.info("Successfully deleted all filer for $userId")
     }
 
     @OptIn(BetaOpenAI::class)

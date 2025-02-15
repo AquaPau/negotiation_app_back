@@ -95,6 +95,7 @@ class CompanyServiceImpl(
             files.map { DocumentDataWithName(it.inputStream, it.originalFilename ?: "$companyId file") },
             prompt = "here will be a useful prompt to extract only company data for dadata"
         )
+        openAiUserService.deleteFilesFromOpenAi(user.id!!)
 
         val companyData = dadataPort.findCompanyByInn(
             DadataRequest(query = result), token = dadataToken

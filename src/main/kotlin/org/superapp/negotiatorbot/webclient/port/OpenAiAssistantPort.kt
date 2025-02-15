@@ -14,31 +14,34 @@ import com.aallam.openai.api.run.RunRequest
 import com.aallam.openai.api.thread.Thread
 import com.aallam.openai.api.thread.ThreadId
 import com.aallam.openai.api.thread.ThreadRequest
+import com.aallam.openai.api.vectorstore.FileBatchRequest
 import com.aallam.openai.api.vectorstore.VectorStore
 import com.aallam.openai.api.vectorstore.VectorStoreId
 import com.aallam.openai.api.vectorstore.VectorStoreRequest
 import com.aallam.openai.client.OpenAI
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.config.OpenAiAssistantConfig
-import org.superapp.negotiatorbot.webclient.entity.OpenAiAssistant
+import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.entity.User
 
 
 interface OpenAiAssistantPort {
 
-    suspend fun createAssistant(user: User): OpenAiAssistant
+    fun createAssistant(user: User): OpenAiAssistant
 
     @OptIn(BetaOpenAI::class)
-    suspend fun updateAssistant(assistantId: AssistantId, vectorId: VectorStoreId): Assistant
+    fun updateAssistant(assistantId: AssistantId, vectorId: VectorStoreId): Assistant
 
     @OptIn(BetaOpenAI::class)
-    suspend fun createVectorStore(assistantId: AssistantId, fileId: FileId): VectorStore
-    suspend fun deleteVectorStore(vectorStoreId: VectorStoreId)
+    fun createVectorStore(assistantId: AssistantId): VectorStore
+    fun deleteVectorStore(vectorStoreId: VectorStoreId)
+    fun updateVectorStore(vectorId: VectorStoreId, files: List<FileId>)
 
-    suspend fun uploadOpenAiFile(fileSource: FileSource): File
-    suspend fun removeOpenAiFile(fileId: FileId)
+    fun uploadOpenAiFile(fileSource: FileSource): File
+    fun deleteOpenAiFile(fileId: FileId)
 
     @OptIn(BetaOpenAI::class)
     suspend fun createMessage(threadId: ThreadId, prompt: String): Message
@@ -61,61 +64,82 @@ class OpenAiAssistantPortImpl(
     private val log = KotlinLogging.logger {}
 
     @OptIn(BetaOpenAI::class)
-    override suspend fun createAssistant(user: User): OpenAiAssistant {
-        val assistant = openAI.assistant(
-            request = AssistantRequest(
-                name = "For userid: ${user.id}",
-                instructions = openAiAssistantConfig.instructions,
-                model = ModelId(openAiAssistantConfig.model),
+    override fun createAssistant(user: User): OpenAiAssistant {
+
+        val assistant = runBlocking {
+            openAI.assistant(
+                request = AssistantRequest(
+                    name = "For userid: ${user.id}",
+                    instructions = openAiAssistantConfig.instructions,
+                    model = ModelId(openAiAssistantConfig.model),
+                )
             )
-        )
-        val thread = getThread(user)
+        }
+        val thread = runBlocking { getThread(user) }
         return createAssistant(assistant, thread, user)
     }
 
 
     @OptIn(BetaOpenAI::class)
-    override suspend fun updateAssistant(assistantId: AssistantId, vectorId: VectorStoreId): Assistant {
-        return openAI.assistant(
-            id = assistantId,
-            request = AssistantRequest(
-                tools = listOf(AssistantTool.FileSearch),
-                toolResources = ToolResources(
-                    fileSearch = FileSearchResources(
-                        vectorStoreIds = listOf(vectorId)
-                    ),
+    override fun updateAssistant(assistantId: AssistantId, vectorId: VectorStoreId): Assistant {
+        return runBlocking {
+            openAI.assistant(
+                id = assistantId,
+                request = AssistantRequest(
+                    tools = listOf(AssistantTool.FileSearch),
+                    toolResources = ToolResources(
+                        fileSearch = FileSearchResources(
+                            vectorStoreIds = listOf(vectorId)
+                        ),
+                    )
                 )
             )
-        )
+        }
     }
 
 
     @OptIn(BetaOpenAI::class)
-    override suspend fun createVectorStore(assistantId: AssistantId, fileId: FileId): VectorStore {
-        return openAI.createVectorStore(
-            request = VectorStoreRequest(
-                name = "Store for assistant id: $assistantId",
-                fileIds = listOf(fileId)
+    override fun createVectorStore(assistantId: AssistantId): VectorStore {
+        return runBlocking {
+            openAI.createVectorStore(
+                request = VectorStoreRequest(
+                    name = "Store for assistant id: $assistantId"
+                )
             )
-        )
+        }
+    }
+
+
+    @OptIn(BetaOpenAI::class)
+    override fun updateVectorStore(vectorId: VectorStoreId, files: List<FileId>) {
+        runBlocking {
+            openAI.createVectorStoreFilesBatch(
+                id = vectorId,
+                request = FileBatchRequest(
+                    fileIds = files
+                )
+            )
+        }
     }
 
     @OptIn(BetaOpenAI::class)
-    override suspend fun deleteVectorStore(vectorStoreId: VectorStoreId) {
-        openAI.delete(id = vectorStoreId)
+    override fun deleteVectorStore(vectorStoreId: VectorStoreId) {
+        runBlocking { openAI.delete(id = vectorStoreId) }
     }
 
-    override suspend fun uploadOpenAiFile(fileSource: FileSource): File {
-        return openAI.file(
-            request = FileUpload(
-                file = fileSource,
-                purpose = Purpose("assistants")
+    override fun uploadOpenAiFile(fileSource: FileSource): File {
+        return runBlocking {
+            openAI.file(
+                request = FileUpload(
+                    file = fileSource,
+                    purpose = Purpose("assistants")
+                )
             )
-        )
+        }
     }
 
-    override suspend fun removeOpenAiFile(fileId: FileId) {
-        openAI.delete(fileId)
+    override fun deleteOpenAiFile(fileId: FileId) {
+        runBlocking { openAI.delete(fileId) }
     }
 
     @OptIn(BetaOpenAI::class)
