@@ -1,5 +1,6 @@
 package org.superapp.negotiatorbot.webclient.service.serversidefile
 
+import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -12,6 +13,7 @@ import org.superapp.negotiatorbot.webclient.repository.DocumentMetadataRepositor
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
 import java.io.File
 
+@Transactional
 interface DocumentService {
     fun save(
         user: User,
@@ -21,7 +23,7 @@ interface DocumentService {
     ): DocumentMetadata
 
     fun batchSave(
-        userId: Long,
+        user: User,
         businessType: BusinessType,
         companyId: Long,
         fileData: List<RawDocumentAndMetatype>
@@ -37,7 +39,8 @@ interface DocumentService {
 @Service
 class DocumentServiceImpl(
     private val documentMetadataRepository: DocumentMetadataRepository,
-    private val s3Service: S3Service
+    private val s3Service: S3Service,
+    private val entityManager: EntityManager,
 ) : DocumentService {
 
     @Transactional
@@ -49,27 +52,31 @@ class DocumentServiceImpl(
     ): DocumentMetadata {
         val file = DocumentHelper.createFile(user, businessType, fileNameWithExtension)
         documentMetadataRepository.save(file)
-        s3Service.upload(file.path!!, multipartFile)
+        s3Service.upload(file.path!!, multipartFile.bytes)
         return file
     }
 
     override fun batchSave(
-        userId: Long,
+        user: User,
         businessType: BusinessType,
         companyId: Long,
         fileData: List<RawDocumentAndMetatype>
     ): List<DocumentMetadata> {
-        val files = DocumentHelper.createFiles(
-            userId = userId,
-            businessType = businessType,
-            companyId = companyId,
-            fileNameWithExtension = fileData.map {
-                it.rawFile.originalFilename!!
-            },
-            documentTypes = fileData.map { it.documentType })
+        val managedUser = entityManager.merge(user)
+        val files = DocumentHelper.createFiles(managedUser, businessType, companyId, fileData.map {
+            it.fileNameWithExtensions
+        }, fileData.map { it.documentType })
+            .filter {
+                !documentMetadataRepository.existsByUserAndName(
+                    managedUser,
+                    it.name!!
+                )
+            } //to prevent second download and saving to DB
+
         documentMetadataRepository.saveAll(files)
+
         files.forEachIndexed { index, file ->
-            s3Service.upload(file.path!!, fileData[index].rawFile)
+            s3Service.upload(file.path!!, fileData[index].fileContent)
         }
         return files
     }
@@ -85,7 +92,7 @@ class DocumentServiceImpl(
                 DocumentMetadataDto(
                     id = it.id!!,
                     name = it.name!!,
-                    userId = it.userId!!,
+                    userId = it.user!!.id!!,
                     counterPartyId = it.counterPartyId,
                     description = it.description
                 )

@@ -1,22 +1,19 @@
 package org.superapp.negotiatorbot.webclient.service.company
 
-import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.dto.company.CounterpartyDto
 import org.superapp.negotiatorbot.webclient.dto.company.NewCompanyProfile
 import org.superapp.negotiatorbot.webclient.dto.dadata.DadataRequest
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentDataWithName
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.entity.UserCompany
 import org.superapp.negotiatorbot.webclient.entity.UserCounterparty
 import org.superapp.negotiatorbot.webclient.entity.toDto
 import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import org.superapp.negotiatorbot.webclient.port.DadataPort
+import org.superapp.negotiatorbot.webclient.promt.COMPANY_INFO
 import org.superapp.negotiatorbot.webclient.repository.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.UserCounterpartyRepository
 import org.superapp.negotiatorbot.webclient.service.functiona.OpenAiUserService
@@ -29,9 +26,8 @@ interface CompanyService {
 
     fun getOwnCompany(): CompanyProfileDto
 
-    suspend fun uploadDocuments(
-        files: List<MultipartFile>,
-        documentTypes: List<DocumentType>,
+    fun uploadDocuments(
+        files: List<RawDocumentAndMetatype>,
         companyId: Long,
         type: BusinessType
     )
@@ -52,11 +48,11 @@ class CompanyServiceImpl(
     override fun createCompany(request: NewCompanyProfile): CompanyProfileDto {
         val user = userService.findById(request.userId) ?: throw NoSuchElementException("User is not found")
         if (request.isOwn) {
-            val userCompany = UserCompany()
-            userCompany.user = user
-            userCompany.customUserGeneratedName = request.customUserGeneratedName
-            userCompany.residence = CompanyRegion.RU
-
+            val userCompany = UserCompany(
+                user = user,
+                customUserGeneratedName = request.customUserGeneratedName,
+                residence = CompanyRegion.RU
+            )
             userCompanyRepository.save(userCompany)
             return userCompany.toDto()
         } else {
@@ -76,10 +72,8 @@ class CompanyServiceImpl(
             .toDto()
     }
 
-    @Transactional
-    override suspend fun uploadDocuments(
-        files: List<MultipartFile>,
-        documentTypes: List<DocumentType>,
+    override fun uploadDocuments(
+        files: List<RawDocumentAndMetatype>,
         companyId: Long,
         type: BusinessType
     ) {
@@ -90,23 +84,27 @@ class CompanyServiceImpl(
             BusinessType.PARTNER -> userCounterpartyRepository.findById(companyId)
                 .orElseThrow { NoSuchElementException("Counterparty is not found") }.user
         }
-        documentService.batchSave(
-            user!!.id!!,
+
+        val s3Files = documentService.batchSave(
+            user,
             type,
             companyId,
-            documentTypes.mapIndexed { index, documentType -> RawDocumentAndMetatype(documentType, files[index]) })
+            files
+        )
 
         // here we should load documents with the prompt of extract company data to chatgpt and then update info about
         // company in database
         val result = openAiUserService.uploadFilesAndExtractCompanyData(
             user.id!!,
-            files.map { DocumentDataWithName(it.inputStream, it.originalFilename ?: "$companyId file") },
-            prompt = "here will be a useful prompt to extract only company data for dadata"
+            files,
+            prompt = COMPANY_INFO
         )
         openAiUserService.deleteFilesFromOpenAi(user.id!!)
 
+        val preparedResult = result.replace("INN=", "")
+
         val companyData = dadataPort.findCompanyByInn(
-            DadataRequest(query = result), token = dadataToken
+            DadataRequest(query = preparedResult), token = dadataToken
         ).suggestions.firstOrNull()
             ?: throw NoSuchElementException("Data about company $companyId is not found in dadata")
 
@@ -141,7 +139,7 @@ class CompanyServiceImpl(
     override fun getCounterparties(companyId: Long): List<CounterpartyDto> {
         val user = userCompanyRepository.findById(companyId)
             .orElseThrow { NoSuchElementException("Company is not found") }.user
-        return userCounterpartyRepository.findAllByUser(user!!).map {
+        return userCounterpartyRepository.findAllByUser(user).map {
             CounterpartyDto(it.id!!, it.customUserGeneratedName)
         }
     }

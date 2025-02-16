@@ -9,7 +9,7 @@ import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 @RestController
 @RequestMapping("/file")
-class ServerSideFileController(
+class DocumentMetadataController(
     private val userService: UserService,
     private val documentService: DocumentService
 ) {

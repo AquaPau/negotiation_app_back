@@ -4,13 +4,12 @@ import io.awspring.cloud.s3.S3Resource
 import io.awspring.cloud.s3.S3Template
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.config.S3Config
 
 private val log = KotlinLogging.logger {}
 
 interface S3Service {
-    fun upload(fullS3Location: String, multipartFile: MultipartFile)
+    fun upload(fullS3Location: String, content: ByteArray)
     fun download(fullS3Location: String): S3Resource
 }
 
@@ -19,8 +18,8 @@ class S3ServiceImpl(private val s3Template: S3Template, s3Config: S3Config) : S3
 
     val bucketName = s3Config.bucketName
 
-    override fun upload(fullS3Location: String, multipartFile: MultipartFile) {
-        s3Template.upload(bucketName!!, fullS3Location, multipartFile.inputStream)
+    override fun upload(fullS3Location: String, content: ByteArray) {
+        s3Template.upload(bucketName!!, fullS3Location, content.inputStream())
         log.info("File uploaded successfully to $fullS3Location")
     }
 

@@ -13,7 +13,7 @@ class DocumentHelper {
     companion object {
         private const val ROOT_S3 = "users"
         private const val S3_DELIMITER = "/"
-        private const val EXTENSION_DELIMITER = '.'
+        const val EXTENSION_DELIMITER = '.'
 
         private val supportedExtensions = setOf("application/pdf", "csv", "json", "docx", "txt", "md", "pdf", "tex", "xml", "html")
 

@@ -6,48 +6,48 @@ import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
 
 @Entity
 @Table(name = "user_companies")
-class UserCompany {
+data class UserCompany(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    val id: Long? = null,
 
-    @ManyToOne(targetEntity = User::class)
-    var user: User? = null
-
-    @Column
-    var customUserGeneratedName: String = ""
+    @ManyToOne(targetEntity = User::class, fetch = FetchType.EAGER)
+    val user: User,
 
     @Column
-    var inn: String? = null
+    val customUserGeneratedName: String,
 
     @Column
-    var ogrn: String? = null
+    var inn: String? = null,
+
+    @Column
+    var ogrn: String? = null,
 
     @Enumerated(value = EnumType.STRING)
     @Column
-    var residence: CompanyRegion = CompanyRegion.RU
+    val residence: CompanyRegion = CompanyRegion.RU,
 
     @Column
-    var address: String? = null
+    var address: String? = null,
 
     @Column
-    var managerTitle: String? = null
+    var managerTitle: String? = null,
 
     @Column
-    var managerName: String? = null
+    var managerName: String? = null,
 
     @Column
     var fullName: String? = null
-}
+)
+
 
 fun UserCompany.toDto(): CompanyProfileDto = CompanyProfileDto(
     id = this.id!!,
     customUserGeneratedName = this.customUserGeneratedName,
-    userId = this.user!!.id!!,
+    userId = this.user.id!!,
     inn = this.inn.toString(),
     ogrn = this.ogrn.toString(),
     fullName = this.fullName,
     managerName = this.managerName,
-    managerTitle = this.managerTitle,
-    residence = this.residence
+    managerTitle = this.managerTitle
 )

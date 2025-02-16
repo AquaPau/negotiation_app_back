@@ -8,7 +8,7 @@ import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentDataWithName
+import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.service.user.UserService
@@ -27,7 +27,7 @@ interface OpenAiUserService {
     fun uploadFiles(userId: Long, fileContent: InputStream, fileName: String)
     fun uploadFilesAndExtractCompanyData(
         userId: Long,
-        documents: List<DocumentDataWithName>,
+        documents: List<RawDocumentAndMetatype>,
         prompt: String
     ): String
 
@@ -57,11 +57,17 @@ class OpenAiUserServiceImpl(
 
     override fun uploadFilesAndExtractCompanyData(
         userId: Long,
-        documents: List<DocumentDataWithName>,
+        documents: List<RawDocumentAndMetatype>,
         prompt: String
     ): String {
         val assistant = getAssistant(userId)
-        documents.forEach { openAiAssistantService.uploadFile(assistant, it.fileContent, it.fileName) }
+        documents.forEach {
+            openAiAssistantService.uploadFile(
+                assistant,
+                it.fileContent.inputStream(),
+                it.fileNameWithExtensions
+            )
+        }
         return startDialogWIthUserPrompt(userId, prompt)
     }
 
