@@ -31,7 +31,9 @@ interface UserService {
 
     fun logout()
 
-    fun getCurrentUser(): UserDto?
+    fun getCurrentUserDto(): UserDto?
+
+    fun getCurrentUser(): User?
 }
 
 @Service
@@ -93,13 +95,18 @@ class UserServiceImpl(
         SecurityContextHolder.clearContext()
     }
 
-    override fun getCurrentUser(): UserDto? {
+    override fun getCurrentUserDto(): UserDto? {
         val authentication = SecurityContextHolder.getContext().authentication
         return if (authentication == null || authentication.principal !is User) {
             null
         } else {
             authentication.principal as UserDto
         }
+    }
+
+    override fun getCurrentUser(): User? {
+        val userId = getCurrentUserDto()?.id
+        return userId?.let { userRepository.findById(userId) }?.orElseGet { null }
     }
 
     private fun mapToUserDto(user: User): UserRegistrationDto {

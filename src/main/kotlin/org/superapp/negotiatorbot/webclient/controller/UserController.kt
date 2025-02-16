@@ -12,7 +12,7 @@ class UserController(private val userService: UserService) {
 
     @GetMapping("/current-user")
     fun getUserData(): UserDto? {
-        return userService.getCurrentUser()
+        return userService.getCurrentUserDto()
     }
 
 

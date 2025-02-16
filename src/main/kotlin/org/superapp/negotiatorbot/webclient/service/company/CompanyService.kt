@@ -12,19 +12,21 @@ import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.entity.UserCompany
 import org.superapp.negotiatorbot.webclient.entity.UserCounterparty
-import org.superapp.negotiatorbot.webclient.entity.toThinDto
+import org.superapp.negotiatorbot.webclient.entity.toDto
 import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import org.superapp.negotiatorbot.webclient.port.DadataPort
 import org.superapp.negotiatorbot.webclient.repository.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.UserCounterpartyRepository
-import org.superapp.negotiatorbot.webclient.repository.UserRepository
 import org.superapp.negotiatorbot.webclient.service.functiona.OpenAiUserService
 import org.superapp.negotiatorbot.webclient.service.serversidefile.DocumentService
+import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 interface CompanyService {
 
     fun createCompany(request: NewCompanyProfile): CompanyProfileDto
+
+    fun getOwnCompany(): CompanyProfileDto
 
     suspend fun uploadDocuments(
         files: List<MultipartFile>,
@@ -38,7 +40,7 @@ interface CompanyService {
 
 @Service
 class CompanyServiceImpl(
-    private val userRepository: UserRepository,
+    private val userService: UserService,
     private val userCompanyRepository: UserCompanyRepository,
     private val userCounterpartyRepository: UserCounterpartyRepository,
     private val documentService: DocumentService,
@@ -47,9 +49,7 @@ class CompanyServiceImpl(
     @Value("\${dadata.token}") private val dadataToken: String
 ) : CompanyService {
     override fun createCompany(request: NewCompanyProfile): CompanyProfileDto {
-        val user = userRepository.findById(request.userId).orElseThrow {
-            NoSuchElementException("User is not found")
-        }
+        val user = userService.findById(request.userId) ?: throw NoSuchElementException("User is not found")
         if (request.isOwn) {
             val userCompany = UserCompany(
                 user = user,
@@ -57,7 +57,7 @@ class CompanyServiceImpl(
                 residence = CompanyRegion.RU
             )
             userCompanyRepository.save(userCompany)
-            return userCompany.toThinDto()
+            return userCompany.toDto()
         } else {
             val userCompany = UserCounterparty(
                 user = user,
@@ -65,8 +65,14 @@ class CompanyServiceImpl(
                 residence = CompanyRegion.RU
             )
             userCounterpartyRepository.save(userCompany)
-            return userCompany.toThinDto()
+            return userCompany.toDto()
         }
+    }
+
+    override fun getOwnCompany(): CompanyProfileDto {
+        val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
+        return userCompanyRepository.findByUser(user).orElseThrow { NoSuchElementException("Company not found") }
+            .toDto()
     }
 
     override suspend fun uploadDocuments(

@@ -41,12 +41,11 @@ data class UserCounterparty(
     var fullName: String? = null
 )
 
-fun UserCounterparty.toThinDto(): CompanyProfileDto = CompanyProfileDto(
+fun UserCounterparty.toDto(): CompanyProfileDto = CompanyProfileDto(
     id = this.id!!,
     customUserGeneratedName = this.customUserGeneratedName,
     userId = this.user.id!!,
     inn = this.inn.toString(),
     ogrn = this.ogrn.toString(),
-    fullName = this.fullName,
-    documents = emptyList()
+    fullName = this.fullName
 )

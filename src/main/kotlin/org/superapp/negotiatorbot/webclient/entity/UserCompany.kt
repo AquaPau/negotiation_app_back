@@ -41,7 +41,7 @@ data class UserCompany(
 )
 
 
-fun UserCompany.toThinDto(): CompanyProfileDto = CompanyProfileDto(
+fun UserCompany.toDto(): CompanyProfileDto = CompanyProfileDto(
     id = this.id!!,
     customUserGeneratedName = this.customUserGeneratedName,
     userId = this.user.id!!,
@@ -49,6 +49,5 @@ fun UserCompany.toThinDto(): CompanyProfileDto = CompanyProfileDto(
     ogrn = this.ogrn.toString(),
     fullName = this.fullName,
     managerName = this.managerName,
-    managerTitle = this.managerTitle,
-    documents = emptyList()
+    managerTitle = this.managerTitle
 )

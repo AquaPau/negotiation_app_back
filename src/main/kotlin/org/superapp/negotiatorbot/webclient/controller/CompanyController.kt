@@ -7,32 +7,28 @@ import org.superapp.negotiatorbot.webclient.config.AppCoroutineScope
 import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.dto.company.CounterpartyDto
 import org.superapp.negotiatorbot.webclient.dto.company.NewCompanyProfile
-import org.superapp.negotiatorbot.webclient.dto.company.UpdatedCompanyProfile
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import org.superapp.negotiatorbot.webclient.service.company.CompanyService
-import org.superapp.negotiatorbot.webclient.service.serversidefile.DocumentService
 
 @RestController
-@RequestMapping("api/company")
+@RequestMapping("/api/company/own")
 class CompanyController(
     private val companyService: CompanyService,
-    private val documentService: DocumentService,
     private val appCoroutineScope: AppCoroutineScope,
 ) {
 
-    @PostMapping
+    @GetMapping()
+    fun getCompanyProfile(): CompanyProfileDto {
+        return companyService.getOwnCompany()
+    }
+
+    @PostMapping()
     fun createNewCompanyProfile(@RequestBody profile: NewCompanyProfile): CompanyProfileDto {
         return companyService.createCompany(profile)
     }
 
-    @PutMapping
-    fun updateCompanyProfileById(@RequestBody updatedProfile: UpdatedCompanyProfile) {
-
-    }
-
-    @PutMapping("/own/{companyId}/document")
+    @PutMapping("/{companyId}/document")
     fun uploadOwnCompanyDocuments(
         @RequestParam("documents") files: List<MultipartFile>,
         @RequestParam("types") types: List<DocumentType>,
@@ -41,23 +37,9 @@ class CompanyController(
         appCoroutineScope.launch { companyService.uploadDocuments(files, types, companyId, BusinessType.USER) }
     }
 
-    @PutMapping("/counterparty/{counterpartyId}/document")
-    fun uploadCounterpartyDocuments(
-        @RequestParam("documents") files: List<MultipartFile>,
-        @RequestParam("types") types: List<DocumentType>,
-        @PathVariable("companyId") counterpartyId: Long
-    ) {
-        appCoroutineScope.launch { companyService.uploadDocuments(files, types, counterpartyId, BusinessType.PARTNER) }
-    }
-
     @GetMapping("/own/{companyId}/counterparties")
     fun getCounterPartiesByCompanyId(@PathVariable companyId: Long): List<CounterpartyDto> {
         return companyService.getCounterparties(companyId)
-    }
-
-    @GetMapping("/counterparty/{counterpartyId}/documents/info")
-    fun getDocumentsInfo(@PathVariable counterpartyId: Long): List<DocumentMetadataDto> {
-        return documentService.getMetadataByCounterPartyId(counterpartyId)
     }
 
     @GetMapping("/{companyId}/document/{documentId}/info")
@@ -69,4 +51,6 @@ class CompanyController(
     fun deleteFileById(@PathVariable documentId: Int, @PathVariable companyId: Int) {
 
     }
+
+
 }

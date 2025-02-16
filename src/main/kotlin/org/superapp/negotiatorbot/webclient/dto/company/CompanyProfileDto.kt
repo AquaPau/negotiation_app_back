@@ -8,6 +8,5 @@ data class CompanyProfileDto(
     val ogrn: String? = null,
     val fullName: String? = null,
     val managerName: String? = null,
-    val managerTitle: String? = null,
-    val documents: List<CompanyDocumentDescriptionDto>
+    val managerTitle: String? = null
 )

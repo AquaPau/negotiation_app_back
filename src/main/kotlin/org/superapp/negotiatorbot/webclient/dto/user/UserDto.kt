@@ -3,6 +3,7 @@ package org.superapp.negotiatorbot.webclient.dto.user
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import org.superapp.negotiatorbot.webclient.entity.User
 
 data class UserDto(
     var id: Long,
