@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.dto.user.UserDto
@@ -97,10 +98,13 @@ class UserServiceImpl(
 
     override fun getCurrentUserDto(): UserDto? {
         val authentication = SecurityContextHolder.getContext().authentication
-        return if (authentication == null || authentication.principal !is User) {
+        return if (authentication == null || authentication.principal !is org.springframework.security.core.userdetails.User) {
             null
         } else {
-            authentication.principal as UserDto
+            return UserDto.toUserDto(
+                userRepository.findByEmail(
+                    (authentication.principal as UserDetails).username
+                ).orElseThrow { NoSuchElementException("No user found") })
         }
     }
 

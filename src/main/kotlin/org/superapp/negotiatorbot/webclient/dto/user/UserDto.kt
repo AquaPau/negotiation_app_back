@@ -7,8 +7,7 @@ import org.superapp.negotiatorbot.webclient.entity.User
 
 data class UserDto(
     var id: Long,
-    var firstName: String,
-    var lastName: String,
+    var name: String,
     var email: String,
     private var password: String
 ) : UserDetails {
@@ -47,5 +46,17 @@ data class UserDto(
     @JsonIgnore
     override fun isAccountNonLocked(): Boolean {
         return true
+    }
+
+    companion object {
+
+        fun toUserDto(obj: User): UserDto {
+            return UserDto(
+                id = obj.id!!,
+                name = obj.name!!,
+                email = obj.email!!,
+                password = obj.password!!
+            )
+        }
     }
 }
