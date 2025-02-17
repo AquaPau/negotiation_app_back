@@ -38,16 +38,17 @@ class ContractorController(
     @PutMapping("/counterparty/{counterpartyId}/document")
     fun uploadCounterpartyDocuments(
         @RequestParam("documents") files: List<MultipartFile>,
-        @RequestParam("fileNamesWithExtensions") fileNamesWithExtensions: List<String>,
         @RequestParam("types") types: List<DocumentType>,
         @PathVariable("counterpartyId") counterpartyId: Long
     ) {
+        val fileNamesWithExtensions = files.map {
+            it.originalFilename!!
+        }
         val fileContents = files.mapIndexed { index, file ->
             RawDocumentAndMetatype(
                 types[index],
-                file.bytes,
                 fileNamesWithExtensions[index]
-            )
+            ).apply { fileContent = file.bytes }
         }
         multipartFileValidator.validate(files, fileNamesWithExtensions)
         appCoroutineScope.launch { companyService.uploadDocuments(fileContents, counterpartyId, BusinessType.PARTNER) }

@@ -4,6 +4,7 @@ import org.superapp.negotiatorbot.webclient.enum.DocumentType
 
 data class RawDocumentAndMetatype(
     val documentType: DocumentType,
-    val fileContent: ByteArray,
     val fileNameWithExtensions: String,
-)
+) {
+    var fileContent: ByteArray? = null
+}

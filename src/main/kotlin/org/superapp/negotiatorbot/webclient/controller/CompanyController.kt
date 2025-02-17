@@ -1,6 +1,7 @@
 package org.superapp.negotiatorbot.webclient.controller
 
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -35,22 +36,23 @@ class CompanyController(
     @PutMapping("/{companyId}/document")
     fun uploadOwnCompanyDocuments(
         @RequestParam("documents") files: List<MultipartFile>,
-        @RequestParam("fileNamesWithExtensions") fileNamesWithExtensions: List<String>,
         @RequestParam("types") types: List<DocumentType>,
         @PathVariable("companyId") companyId: Long
     ) {
+        val fileNamesWithExtensions = files.map {
+            it.originalFilename!!
+        }
         val fileContents = files.mapIndexed { index, file ->
             RawDocumentAndMetatype(
                 types[index],
-                file.bytes,
                 fileNamesWithExtensions[index]
-            )
+            ).apply { fileContent = file.bytes }
         }
         multipartFileValidator.validate(files, fileNamesWithExtensions)
-        appCoroutineScope.launch { companyService.uploadDocuments(fileContents, companyId, BusinessType.USER) }
+        runBlocking(Dispatchers.IO) { companyService.uploadDocuments(fileContents, companyId, BusinessType.USER) }
     }
 
-    @GetMapping("/own/{companyId}/counterparties")
+    @GetMapping("/{companyId}/counterparties")
     fun getCounterPartiesByCompanyId(@PathVariable companyId: Long): List<CounterpartyDto> {
         return companyService.getCounterparties(companyId)
     }

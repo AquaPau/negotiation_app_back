@@ -62,13 +62,12 @@ class DocumentServiceImpl(
         companyId: Long,
         fileData: List<RawDocumentAndMetatype>
     ): List<DocumentMetadata> {
-        val managedUser = entityManager.merge(user)
-        val files = DocumentHelper.createFiles(managedUser, businessType, companyId, fileData.map {
+        val files = DocumentHelper.createFiles(userId, businessType, companyId, fileData.map {
             it.fileNameWithExtensions
         }, fileData.map { it.documentType })
             .filter {
-                !documentMetadataRepository.existsByUserAndName(
-                    managedUser,
+                !documentMetadataRepository.existsByUserIdAndName(
+                    userId,
                     it.name!!
                 )
             } //to prevent second download and saving to DB
@@ -76,7 +75,7 @@ class DocumentServiceImpl(
         documentMetadataRepository.saveAll(files)
 
         files.forEachIndexed { index, file ->
-            s3Service.upload(file.path!!, fileData[index].fileContent)
+            s3Service.upload(file.path!!, fileData[index].fileContent!!)
         }
         return files
     }

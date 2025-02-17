@@ -64,7 +64,7 @@ class OpenAiUserServiceImpl(
         documents.forEach {
             openAiAssistantService.uploadFile(
                 assistant,
-                it.fileContent.inputStream(),
+                it.fileContent!!.inputStream(),
                 it.fileNameWithExtensions
             )
         }
