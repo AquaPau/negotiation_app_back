@@ -29,9 +29,8 @@ class DocumentMetadata{
     @Column(nullable = false)
     var path: String? = null
 
-    @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
-    var user: User? = null //todo test cascade deletion logic on user deletion case
+    @Column(nullable = false)
+    var userId: Long? = null
 
    @Column
     var description: String? = null

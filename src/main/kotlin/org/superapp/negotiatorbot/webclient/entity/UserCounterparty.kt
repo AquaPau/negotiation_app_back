@@ -47,5 +47,6 @@ fun UserCounterparty.toDto(): CompanyProfileDto = CompanyProfileDto(
     userId = this.user.id!!,
     inn = this.inn.toString(),
     ogrn = this.ogrn.toString(),
-    fullName = this.fullName
+    fullName = this.fullName,
+    residence = this.residence
 )

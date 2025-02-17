@@ -21,7 +21,7 @@ interface DocumentService {
     ): DocumentMetadata
 
     fun batchSave(
-        user: User,
+        userId: Long,
         businessType: BusinessType,
         companyId: Long,
         fileData: List<RawDocumentAndMetatype>
@@ -54,14 +54,19 @@ class DocumentServiceImpl(
     }
 
     override fun batchSave(
-        user: User,
+        userId: Long,
         businessType: BusinessType,
         companyId: Long,
         fileData: List<RawDocumentAndMetatype>
     ): List<DocumentMetadata> {
-        val files = DocumentHelper.createFiles(user, businessType, companyId, fileData.map {
-            "${it.rawFile.originalFilename}.${it.rawFile.contentType}"
-        }, fileData.map { it.documentType })
+        val files = DocumentHelper.createFiles(
+            userId = userId,
+            businessType = businessType,
+            companyId = companyId,
+            fileNameWithExtension = fileData.map {
+                it.rawFile.originalFilename!!
+            },
+            documentTypes = fileData.map { it.documentType })
         documentMetadataRepository.saveAll(files)
         files.forEachIndexed { index, file ->
             s3Service.upload(file.path!!, fileData[index].rawFile)
@@ -80,7 +85,7 @@ class DocumentServiceImpl(
                 DocumentMetadataDto(
                     id = it.id!!,
                     name = it.name!!,
-                    userId = it.user!!.id!!,
+                    userId = it.userId!!,
                     counterPartyId = it.counterPartyId,
                     description = it.description
                 )

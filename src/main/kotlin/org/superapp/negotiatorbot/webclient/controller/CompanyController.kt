@@ -1,6 +1,9 @@
 package org.superapp.negotiatorbot.webclient.controller
 
+import com.aallam.openai.api.run.runRequest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.config.AppCoroutineScope
@@ -34,7 +37,7 @@ class CompanyController(
         @RequestParam("types") types: List<DocumentType>,
         @PathVariable("companyId") companyId: Long
     ) {
-        appCoroutineScope.launch { companyService.uploadDocuments(files, types, companyId, BusinessType.USER) }
+        runBlocking(Dispatchers.IO) { companyService.uploadDocuments(files, types, companyId, BusinessType.USER) }
     }
 
     @GetMapping("/own/{companyId}/counterparties")

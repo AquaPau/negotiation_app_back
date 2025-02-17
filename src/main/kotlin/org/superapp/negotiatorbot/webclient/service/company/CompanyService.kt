@@ -1,5 +1,6 @@
 package org.superapp.negotiatorbot.webclient.service.company
 
+import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -51,11 +52,11 @@ class CompanyServiceImpl(
     override fun createCompany(request: NewCompanyProfile): CompanyProfileDto {
         val user = userService.findById(request.userId) ?: throw NoSuchElementException("User is not found")
         if (request.isOwn) {
-            val userCompany = UserCompany(
-                user = user,
-                customUserGeneratedName = request.customUserGeneratedName,
-                residence = CompanyRegion.RU
-            )
+            val userCompany = UserCompany()
+            userCompany.user = user
+            userCompany.customUserGeneratedName = request.customUserGeneratedName
+            userCompany.residence = CompanyRegion.RU
+
             userCompanyRepository.save(userCompany)
             return userCompany.toDto()
         } else {
@@ -75,6 +76,7 @@ class CompanyServiceImpl(
             .toDto()
     }
 
+    @Transactional
     override suspend fun uploadDocuments(
         files: List<MultipartFile>,
         documentTypes: List<DocumentType>,
@@ -89,7 +91,7 @@ class CompanyServiceImpl(
                 .orElseThrow { NoSuchElementException("Counterparty is not found") }.user
         }
         documentService.batchSave(
-            user,
+            user!!.id!!,
             type,
             companyId,
             documentTypes.mapIndexed { index, documentType -> RawDocumentAndMetatype(documentType, files[index]) })
@@ -139,7 +141,7 @@ class CompanyServiceImpl(
     override fun getCounterparties(companyId: Long): List<CounterpartyDto> {
         val user = userCompanyRepository.findById(companyId)
             .orElseThrow { NoSuchElementException("Company is not found") }.user
-        return userCounterpartyRepository.findAllByUser(user).map {
+        return userCounterpartyRepository.findAllByUser(user!!).map {
             CounterpartyDto(it.id!!, it.customUserGeneratedName)
         }
     }

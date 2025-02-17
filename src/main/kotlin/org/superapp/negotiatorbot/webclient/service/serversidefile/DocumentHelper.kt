@@ -15,7 +15,7 @@ class DocumentHelper {
         private const val S3_DELIMITER = "/"
         private const val EXTENSION_DELIMITER = '.'
 
-        private val supportedExtensions = setOf("csv", "json", "docx", "txt", "md", "pdf", "tex", "xml", "html")
+        private val supportedExtensions = setOf("application/pdf", "csv", "json", "docx", "txt", "md", "pdf", "tex", "xml", "html")
 
         @Throws(IllegalArgumentException::class)
         fun createFile(
@@ -24,16 +24,16 @@ class DocumentHelper {
             fileNameWithExtension: String,
         ): DocumentMetadata {
             val newFile = DocumentMetadata()
-            newFile.user = user
+            newFile.userId = user.id!!
             newFile.setNameAndExtension(fileNameWithExtension)
             newFile.businessType = businessType
-            newFile.setPath(user, fileNameWithExtension)
+            newFile.setPath(user.id!!, fileNameWithExtension)
             return newFile
         }
 
 
         fun createFiles(
-            user: User,
+            userId: Long,
             businessType: BusinessType,
             companyId: Long,
             fileNameWithExtension: List<String>,
@@ -41,11 +41,11 @@ class DocumentHelper {
         ): List<DocumentMetadata> {
             return fileNameWithExtension.mapIndexed { index, it ->
                 val newFile = DocumentMetadata()
-                newFile.user = user
+                newFile.userId = userId
                 newFile.setNameAndExtension(it)
                 newFile.businessType = businessType
                 newFile.documentType = documentTypes[index]
-                newFile.setPath(user, it)
+                newFile.setPath(userId, it)
                 if (businessType == BusinessType.PARTNER) newFile.counterPartyId = companyId
                 newFile
             }
@@ -81,9 +81,8 @@ class DocumentHelper {
         }
 
 
-        private fun DocumentMetadata.setPath(user: User, fileNameWithExtension: String) {
-            val s3Path =
-                StringJoiner(S3_DELIMITER).add(ROOT_S3).add(user.id.toString()).add(fileNameWithExtension).toString()
+        private fun DocumentMetadata.setPath(userId: Long, fileNameWithExtension: String) {
+            val s3Path = "${S3_DELIMITER}${ROOT_S3}/${userId}/${fileNameWithExtension}"
             this.path = s3Path
         }
 
