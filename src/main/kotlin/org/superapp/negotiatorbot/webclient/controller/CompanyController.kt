@@ -1,8 +1,8 @@
 package org.superapp.negotiatorbot.webclient.controller
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -10,11 +10,12 @@ import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.dto.company.CounterpartyDto
 import org.superapp.negotiatorbot.webclient.dto.company.NewCompanyProfile
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
-import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import org.superapp.negotiatorbot.webclient.service.company.CompanyService
+import org.superapp.negotiatorbot.webclient.service.util.FileTransformationHelper
 import org.superapp.negotiatorbot.webclient.service.util.MultipartFileValidator
+import org.superapp.negotiatorbot.webclient.service.util.MultipartFileValidator.Companion.validate
 
 @RestController
 @RequestMapping("/api/company/own")
@@ -22,18 +23,15 @@ class CompanyController(
     private val companyService: CompanyService,
     private val multipartFileValidator: MultipartFileValidator
 ) {
-    @Value("\${spring.cloud.aws.credentials.access-key}")
-    var accessKey: String? = null
 
     @GetMapping()
     fun getCompanyProfile(): CompanyProfileDto {
-        println("Access key $accessKey")
         return companyService.getOwnCompany()
     }
 
     @PostMapping()
     fun createNewCompanyProfile(@RequestBody profile: NewCompanyProfile): CompanyProfileDto {
-        return companyService.createCompany(profile)
+        return companyService.createCompany(profile, isOwn = true)
     }
 
     @PutMapping("/{companyId}/document")
@@ -42,17 +40,10 @@ class CompanyController(
         @RequestParam("types") types: List<DocumentType>,
         @PathVariable("companyId") companyId: Long
     ) {
-        val fileNamesWithExtensions = files.map {
-            it.originalFilename!!
-        }
-        val fileContents = files.mapIndexed { index, file ->
-            RawDocumentAndMetatype(
-                types[index],
-                fileNamesWithExtensions[index]
-            ).apply { fileContent = file.bytes }
-        }
-        multipartFileValidator.validate(files, fileNamesWithExtensions)
-        runBlocking {
+        val (fileNamesWithExtensions, fileContents) = FileTransformationHelper.extractLoadedData(files, types)
+
+        validate(files, fileNamesWithExtensions)
+        runBlocking(Dispatchers.IO) {
             launch {
                 companyService.uploadDocuments(
                     fileContents,

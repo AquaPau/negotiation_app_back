@@ -24,7 +24,7 @@ import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 interface CompanyService {
 
-    fun createCompany(request: NewCompanyProfile): CompanyProfileDto
+    fun createCompany(request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto
 
     fun getOwnCompany(): CompanyProfileDto
 
@@ -49,10 +49,10 @@ class CompanyServiceImpl(
     private val dadataPort: DadataPort,
     @Value("\${dadata.token}") private val dadataToken: String
 ) : CompanyService {
-    override fun createCompany(request: NewCompanyProfile): CompanyProfileDto {
+    override fun createCompany(request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto {
         val user = userService.findById(request.userId) ?: throw NoSuchElementException("User is not found")
 
-        if (request.isOwn) {
+        if (isOwn) {
             val userCompany = UserCompany()
             userCompany.user = user
             userCompany.customUserGeneratedName = request.customUserGeneratedName

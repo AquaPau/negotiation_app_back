@@ -60,6 +60,8 @@ class OpenAiAssistantServiceImpl(
     private fun connectFileToAssistant(assistant: OpenAiAssistant, fileId: FileId) {
         val vectorStore = openAiOpenAiAssistantFileStorageService.getOrCreate(assistant)
         openAiOpenAiAssistantFileStorageService.addFile(vectorStore, fileId)
+        assistant.openAiAssistantFileStorage = vectorStore
+        openAiAssistantRepository.save(assistant)
     }
 
     @OptIn(BetaOpenAI::class)
@@ -69,6 +71,13 @@ class OpenAiAssistantServiceImpl(
 
         val run = openAiAssistantPort.createRun(threadId, assistant.getAssistantId())
 
-        return openAiAssistantPort.processRequestRun(threadId, run.id)
+        val response = openAiAssistantPort.processRequestRun(threadId, run.id)
+
+        if (response.isEmpty()) {
+            val newThread = openAiAssistantPort.updateThread(assistant)
+            assistant.threadId = newThread.id.id
+            openAiAssistantRepository.save(assistant)
+        }
+        return response
     }
 }

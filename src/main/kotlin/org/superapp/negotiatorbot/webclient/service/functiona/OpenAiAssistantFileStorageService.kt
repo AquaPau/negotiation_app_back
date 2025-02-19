@@ -5,7 +5,6 @@ import com.aallam.openai.api.assistant.AssistantId
 import com.aallam.openai.api.file.FileId
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistantFileStorage
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiFile
@@ -13,7 +12,6 @@ import org.superapp.negotiatorbot.webclient.port.OpenAiAssistantPort
 import org.superapp.negotiatorbot.webclient.repository.assistant.OpenAiAssistantFileStorageRepository
 import org.superapp.negotiatorbot.webclient.repository.assistant.OpenAiFileRepository
 
-@Transactional
 interface OpenAiAssistantFileStorageService {
     fun getOrCreate(openAiAssistant: OpenAiAssistant): OpenAiAssistantFileStorage
     fun addFile(openAiAssistantFileStorage: OpenAiAssistantFileStorage, fileId: FileId)
@@ -49,7 +47,9 @@ class OpenAiAssistantFileStorageServiceImpl(
     }
 
     override fun deleteVectorStore(openAiAssistantFileStorage: OpenAiAssistantFileStorage) {
-        openAiAssistantFileStorage.openAiFiles.forEach { deleteFile(it) }
+        openAiAssistantFileStorage.openAiFiles.forEach { deleteFile(it, openAiAssistantFileStorage) }
+        openAiAssistantFileStorage.openAiFiles.clear()
+        openAiAssistantFileStorageRepository.save(openAiAssistantFileStorage)
         openAiAssistantPort.deleteVectorStore(openAiAssistantFileStorage.getVectorStoreId())
         openAiAssistantFileStorageRepository.delete(openAiAssistantFileStorage)
     }
@@ -69,7 +69,7 @@ class OpenAiAssistantFileStorageServiceImpl(
         return openAiAssistantPort.createVectorStore(assistantId).id.id
     }
 
-    private fun deleteFile(openAiFile: OpenAiFile) {
+    private fun deleteFile(openAiFile: OpenAiFile, fileStorage: OpenAiAssistantFileStorage) {
         openAiAssistantPort.deleteOpenAiFile(openAiFile.getFileId())
         openAiFileRepository.delete(openAiFile)
     }

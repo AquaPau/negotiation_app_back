@@ -24,8 +24,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.config.OpenAiAssistantConfig
-import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.entity.User
+import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 
 
 interface OpenAiAssistantPort {
@@ -42,6 +42,9 @@ interface OpenAiAssistantPort {
 
     fun uploadOpenAiFile(fileSource: FileSource): File
     fun deleteOpenAiFile(fileId: FileId)
+
+    @OptIn(BetaOpenAI::class)
+    suspend fun updateThread(assistant: OpenAiAssistant): Thread
 
     @OptIn(BetaOpenAI::class)
     suspend fun createMessage(threadId: ThreadId, prompt: String): Message
@@ -148,7 +151,7 @@ class OpenAiAssistantPortImpl(
             threadId = threadId,
             request = MessageRequest(
                 role = Role.User,
-                content = prompt,
+                content = prompt
             )
         )
     }
@@ -183,13 +186,35 @@ class OpenAiAssistantPortImpl(
     }
 
     @OptIn(BetaOpenAI::class)
+    override suspend fun updateThread(assistant: OpenAiAssistant): Thread {
+        val oldThreadId = assistant.threadId
+        openAI.delete(
+            id = ThreadId(oldThreadId!!),
+        )
+        return getThread(assistant.user!!)
+
+    }
+
+
+    @OptIn(BetaOpenAI::class)
     override suspend fun processRequestRun(threadId: ThreadId, runId: RunId): List<Message> {
-        log.debug("Started run for thread [${threadId}]")
+        log.info("Started run for thread [${threadId}]")
+        var count = 10
         do {
             val retrievedRun = openAI.getRun(threadId = threadId, runId = runId)
-            delay(1000)
-        } while (retrievedRun.status != Status.Completed)
-        log.debug("Finished run for thread [${threadId}]")
+            delay(10000)
+            count--
+            if (retrievedRun.status == Status.Failed) {
+                log.error("run for thread [${threadId}] failed to process request")
+                return emptyList()
+            }
+        } while (retrievedRun.status != Status.Completed && retrievedRun.status != Status.Failed && count >= 0)
+        if (count < 0) {
+            log.warn("Thread [${threadId}] finished due to counter, not by itself")
+            return listOf()
+        }
+
+        log.info("Finished run for thread [${threadId}]")
         return openAI.messages(threadId)
     }
 }

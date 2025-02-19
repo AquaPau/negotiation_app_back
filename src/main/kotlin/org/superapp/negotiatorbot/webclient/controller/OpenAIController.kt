@@ -32,7 +32,13 @@ class OpenAIController(val openAiUserService: OpenAiUserService) {
         @RequestParam(required = true) fileName: String,
         @RequestBody(required = true) file: MultipartFile
     ): ResponseEntity<String> {
-        coroutineScope.launch { openAiUserService.uploadFiles(userId, file.inputStream, fileName) }//todo no such element coroutine catch not working + if courutine fails in upload to open ai, it stops working for some reason
+        coroutineScope.launch {
+            openAiUserService.uploadFile(
+                userId,
+                file.inputStream,
+                fileName
+            )
+        }//todo no such element coroutine catch not working + if courutine fails in upload to open ai, it stops working for some reason
         return ResponseEntity.status(201).body("your file is: ${fileName}")
     }
 

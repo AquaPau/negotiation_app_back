@@ -7,6 +7,5 @@ data class NewCompanyProfile(
     val customUserGeneratedName: String,
     val region: CompanyRegion = RU,
     val userId: Long,
-    val isOwn: Boolean,
     val ogrn: Long
 )

@@ -19,7 +19,7 @@ class OpenAiAssistant {
     @Column(nullable = false, unique = true)
     var threadId: String? = null
 
-    @OneToOne(mappedBy ="openAiAssistant",cascade = [CascadeType.ALL], optional = true, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToOne(mappedBy = "openAiAssistant", cascade = [CascadeType.ALL], optional = true, orphanRemoval = true)
     var openAiAssistantFileStorage: OpenAiAssistantFileStorage? = null
 
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)

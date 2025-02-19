@@ -1,6 +1,5 @@
 package org.superapp.negotiatorbot.webclient.service.serversidefile
 
-import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -11,7 +10,6 @@ import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.repository.DocumentMetadataRepository
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
-import java.io.File
 
 @Transactional
 interface DocumentService {
@@ -22,6 +20,8 @@ interface DocumentService {
         multipartFile: MultipartFile
     ): DocumentMetadata
 
+    fun save(document: DocumentMetadata): DocumentMetadata
+
     fun batchSave(
         userId: Long,
         businessType: BusinessType,
@@ -30,7 +30,7 @@ interface DocumentService {
     ): List<DocumentMetadata>
 
     @Throws(NoSuchElementException::class)
-    fun get(serverSideFileId: Long): File
+    fun get(serverSideFileId: Long): DocumentMetadata
 
     fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto>
 
@@ -42,8 +42,10 @@ interface DocumentService {
 class DocumentServiceImpl(
     private val documentMetadataRepository: DocumentMetadataRepository,
     private val s3Service: S3Service,
-    private val entityManager: EntityManager,
 ) : DocumentService {
+
+    override fun save(document: DocumentMetadata) = documentMetadataRepository.save(document)
+
 
     @Transactional
     override fun save(
@@ -82,9 +84,9 @@ class DocumentServiceImpl(
         return files
     }
 
-    override fun get(serverSideFileId: Long): File {
+    override fun get(serverSideFileId: Long): DocumentMetadata {
         val file = documentMetadataRepository.findById(serverSideFileId).orElseThrow()
-        return s3Service.download(file.path!!).file
+        return file
     }
 
     override fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto> {

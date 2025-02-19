@@ -33,7 +33,7 @@ class DocumentMetadata {
     @JoinColumn(name = "user_id", nullable = false)
     var user: User? = null //todo test cascade deletion logic on user deletion case
 
-    @Column
+    @Column(length = 5000)
     var description: String? = null
 
     @Column
@@ -41,6 +41,8 @@ class DocumentMetadata {
 
     @Column
     var counterPartyId: Long? = null
+
+    fun getNameWithExtension() = "$name.$extension"
 }
 
 enum class BusinessType { USER, PARTNER }

@@ -7,7 +7,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
@@ -20,11 +19,10 @@ private val log = KotlinLogging.logger {}
  * User logic umbrella functions for access Open API capabilities
  */
 
-@Transactional
 interface OpenAiUserService {
     @Throws(NoSuchElementException::class)
     fun startDialogWIthUserPrompt(userId: Long, prompt: String): String?
-    fun uploadFiles(userId: Long, fileContent: InputStream, fileName: String)
+    fun uploadFile(userId: Long, fileContent: InputStream, fileName: String)
     fun uploadFilesAndExtractCompanyData(
         userId: Long,
         documents: List<RawDocumentAndMetatype>,
@@ -45,11 +43,17 @@ class OpenAiUserServiceImpl(
     override fun startDialogWIthUserPrompt(userId: Long, prompt: String): String {
         val openAiAssistant = getAssistant(userId)
         val response = runBlocking { openAiAssistantService.runRequest(prompt, openAiAssistant) }
-        return formResponse(response.first())
+
+
+        return if (response.isEmpty()) {
+            "try again please"
+        } else {
+            formResponse(response.first())
+        }
 
     }
 
-    override fun uploadFiles(userId: Long, fileContent: InputStream, fileName: String) {
+    override fun uploadFile(userId: Long, fileContent: InputStream, fileName: String) {
         val assistant = getAssistant(userId)
         openAiAssistantService.uploadFile(assistant, fileContent, fileName)
         log.info("Successfully uploaded file $fileName")

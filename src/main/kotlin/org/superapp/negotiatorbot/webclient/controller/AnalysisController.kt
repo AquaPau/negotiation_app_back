@@ -1,5 +1,8 @@
 package org.superapp.negotiatorbot.webclient.controller
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.service.functiona.AnalyseService
@@ -19,8 +22,17 @@ class AnalysisController(
 
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
+    @PutMapping("/document/{documentId}/description")
+    fun analyseDoc(@PathVariable documentId: Long) {
+        GlobalScope.launch {
+            analyseService.provideDescription(documentId)
+        }
+    }
+
     @PutMapping("/counterparty/{counterPartyId}/opportunities")
     fun analyseOpportunities(@PathVariable counterPartyId: Long) {
 
     }
+
 }
