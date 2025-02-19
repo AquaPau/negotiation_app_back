@@ -49,10 +49,12 @@ class OpenAiAssistantServiceImpl(
     }
 
     override fun deleteVectorStoreFromAssistant(assistant: OpenAiAssistant) {
-        val store = assistant.openAiAssistantFileStorage!!
-        assistant.openAiAssistantFileStorage = null
-        openAiOpenAiAssistantFileStorageService.deleteVectorStore(store)
-        openAiAssistantRepository.save(assistant)
+        assistant.openAiAssistantFileStorage?.let { store ->
+            assistant.openAiAssistantFileStorage = null
+            openAiOpenAiAssistantFileStorageService.deleteVectorStore(store)
+            openAiAssistantRepository.save(assistant)
+        }
+
     }
 
     private fun connectFileToAssistant(assistant: OpenAiAssistant, fileId: FileId) {

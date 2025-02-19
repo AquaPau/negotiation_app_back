@@ -42,6 +42,7 @@ class DocumentHelper {
             return fileNameWithExtension.mapIndexed { index, it ->
                 val newFile = DocumentMetadata()
                 newFile.userId = userId
+                newFile.companyId = companyId
                 newFile.setNameAndExtension(it)
                 newFile.businessType = businessType
                 newFile.documentType = documentTypes[index]

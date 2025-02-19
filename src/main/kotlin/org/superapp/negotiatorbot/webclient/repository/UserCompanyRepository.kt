@@ -5,7 +5,8 @@ import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.entity.UserCompany
 import java.util.*
 
-interface UserCompanyRepository: JpaRepository<UserCompany, Long> {
+interface UserCompanyRepository : JpaRepository<UserCompany, Long> {
 
+    fun findByOgrn(ogrn: String): Optional<UserCompany>
     fun findByUser(user: User): Optional<UserCompany>
 }

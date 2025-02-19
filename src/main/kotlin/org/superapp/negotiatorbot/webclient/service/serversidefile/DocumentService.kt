@@ -23,7 +23,7 @@ interface DocumentService {
     ): DocumentMetadata
 
     fun batchSave(
-        user: User,
+        userId: Long,
         businessType: BusinessType,
         companyId: Long,
         fileData: List<RawDocumentAndMetatype>
@@ -31,6 +31,8 @@ interface DocumentService {
 
     @Throws(NoSuchElementException::class)
     fun get(serverSideFileId: Long): File
+
+    fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto>
 
     fun getMetadataByCounterPartyId(counterPartyId: Long): List<DocumentMetadataDto>
 }
@@ -57,7 +59,7 @@ class DocumentServiceImpl(
     }
 
     override fun batchSave(
-        user: User,
+        userId: Long,
         businessType: BusinessType,
         companyId: Long,
         fileData: List<RawDocumentAndMetatype>
@@ -85,16 +87,29 @@ class DocumentServiceImpl(
         return s3Service.download(file.path!!).file
     }
 
+    override fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto> {
+        return documentMetadataRepository.findAllByBusinessTypeAndCompanyIdAndUserId(
+            businessType = BusinessType.USER,
+            companyId = companyId,
+            userId = userId
+        ).map(entityToDto())
+
+    }
+
     override fun getMetadataByCounterPartyId(counterPartyId: Long): List<DocumentMetadataDto> {
         return documentMetadataRepository.findAllByBusinessTypeAndCounterPartyId(BusinessType.PARTNER, counterPartyId)
-            .map {
-                DocumentMetadataDto(
-                    id = it.id!!,
-                    name = it.name!!,
-                    userId = it.user!!.id!!,
-                    counterPartyId = it.counterPartyId,
-                    description = it.description
-                )
-            }
+            .map(entityToDto())
     }
+
+    private fun entityToDto(): (DocumentMetadata) -> DocumentMetadataDto =
+        {
+            DocumentMetadataDto(
+                id = it.id!!,
+                name = it.name!!,
+                userId = it.userId!!,
+                counterPartyId = it.counterPartyId,
+                description = it.description,
+                companyId = null
+            )
+        }
 }

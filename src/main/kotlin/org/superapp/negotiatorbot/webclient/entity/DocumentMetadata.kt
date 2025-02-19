@@ -37,6 +37,9 @@ class DocumentMetadata {
     var description: String? = null
 
     @Column
+    var companyId: Long? = null
+
+    @Column
     var counterPartyId: Long? = null
 }
 

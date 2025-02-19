@@ -11,8 +11,8 @@ spring:
   cloud:
     aws:
       credentials:
-        access-key: somekey
-        secret-key: somekey
+        access-key: ${S3_ACCESS_KEY}
+        secret-key: ${S3_SECRET_KEY}
       s3:
         region: eu-central-1
         endpoint: http://127.0.0.1:9000/
@@ -28,14 +28,14 @@ telegram:
   token: 1234
 
 open-ai:
-  token: sometoken
+  token: ${OPEN_AI_TOKEN}
   assistant:
     model: gpt-3.5-turbo
     instructions: you are assistant for explaining files content
     
 dadata:
   url: http://suggestions.dadata.ru/suggestions/api/4_1/rs
-  token: "Token here should be a valid token"
+  token: ${DADATA_TOKEN}
 
 ---
 

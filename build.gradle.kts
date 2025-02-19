@@ -51,6 +51,11 @@ dependencies {
     implementation("com.aallam.openai:openai-client")
     runtimeOnly("io.ktor:ktor-client-okhttp")
 
+    // read PDF
+    implementation("org.apache.pdfbox:pdfbox:3.0.4")
+    implementation("com.itextpdf:itextpdf:5.5.13.4")
+
+
     // Для работы с Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

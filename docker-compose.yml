@@ -12,6 +12,18 @@ services:
       - postgres_data:/var/lib/postgresql/data  # Монтирование тома для хранения данных
     networks:
       - app-network  # Подключение к пользовательской сети
+  minio:
+    image: minio/minio
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin123
+    volumes:
+      - ./data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
 
 volumes:
   postgres_data:  # Объявление тома для данных PostgreSQL
