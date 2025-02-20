@@ -36,6 +36,7 @@ class DocumentHelper {
             userId: Long,
             businessType: BusinessType,
             companyId: Long,
+            contractorId: Long?,
             fileNameWithExtension: List<String>,
             documentTypes: List<DocumentType>
         ): List<DocumentMetadata> {
@@ -43,11 +44,11 @@ class DocumentHelper {
                 val newFile = DocumentMetadata()
                 newFile.userId = userId
                 newFile.companyId = companyId
+                newFile.counterPartyId = contractorId
                 newFile.setNameAndExtension(it)
                 newFile.businessType = businessType
                 newFile.documentType = documentTypes[index]
                 newFile.setPath(userId, it)
-                if (businessType == BusinessType.PARTNER) newFile.counterPartyId = companyId
                 newFile
             }
         }

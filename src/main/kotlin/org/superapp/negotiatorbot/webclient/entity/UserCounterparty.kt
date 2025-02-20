@@ -16,6 +16,9 @@ data class UserCounterparty(
     val user: User,
 
     @Column
+    val companyId: Long,
+
+    @Column
     val customUserGeneratedName: String,
 
     @Column

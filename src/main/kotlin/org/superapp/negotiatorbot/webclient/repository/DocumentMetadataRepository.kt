@@ -8,9 +8,17 @@ import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 @Repository
 interface DocumentMetadataRepository : JpaRepository<DocumentMetadata, Long> {
 
-    fun findAllByBusinessTypeAndCompanyIdAndUserId(businessType: BusinessType, companyId: Long, userId: Long): List<DocumentMetadata>
+    fun findAllByBusinessTypeAndCompanyIdAndUserId(
+        businessType: BusinessType,
+        companyId: Long,
+        userId: Long
+    ): List<DocumentMetadata>
 
-    fun findAllByBusinessTypeAndCounterPartyId(businessType: BusinessType, counterPartyId: Long): List<DocumentMetadata>
+    fun findAllByBusinessTypeAndCounterPartyIdAndCompanyId(
+        businessType: BusinessType,
+        counterPartyId: Long,
+        companyId: Long
+    ): List<DocumentMetadata>
 
     fun existsByUserIdAndName(userId: Long, name: String): Boolean
 }

@@ -24,13 +24,16 @@ import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 interface CompanyService {
 
-    fun createCompany(request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto
+    fun createCompany(companyId: Long? = null, request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto
 
     fun getOwnCompany(): CompanyProfileDto
+
+    fun getContractor(companyId: Long, contractorId: Long): CompanyProfileDto
 
     fun uploadDocuments(
         files: List<RawDocumentAndMetatype>,
         companyId: Long,
+        contractorId: Long? = null,
         type: BusinessType
     )
 
@@ -49,15 +52,16 @@ class CompanyServiceImpl(
     private val dadataPort: DadataPort,
     @Value("\${dadata.token}") private val dadataToken: String
 ) : CompanyService {
-    override fun createCompany(request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto {
-        val user = userService.findById(request.userId) ?: throw NoSuchElementException("User is not found")
+    override fun createCompany(companyId: Long?, request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto {
+        val user = userService.findById(request.userId)
+            ?: throw NoSuchElementException("User ${request.userId} is not found")
 
         if (isOwn) {
             val userCompany = UserCompany()
             userCompany.user = user
             userCompany.customUserGeneratedName = request.customUserGeneratedName
             userCompany.residence = CompanyRegion.RU
-            userCompany.ogrn
+            userCompany.ogrn = request.ogrn.toString()
             userCompanyRepository.findByOgrn(request.ogrn.toString())
                 .ifPresent { throw CompanyAlreadyExistsException(request.ogrn) }
 
@@ -79,9 +83,13 @@ class CompanyServiceImpl(
         } else {
             val userCompany = UserCounterparty(
                 user = user,
+                companyId = companyId!!,
                 customUserGeneratedName = request.customUserGeneratedName,
                 residence = CompanyRegion.RU
             )
+            userCompanyRepository.findByOgrn(request.ogrn.toString())
+                .ifPresent { throw CompanyAlreadyExistsException(request.ogrn) }
+
             val companyData = dadataPort.findCompanyByInn(
                 DadataRequest(query = request.ogrn.toString()), token = dadataToken
             ).suggestions.firstOrNull()
@@ -107,24 +115,32 @@ class CompanyServiceImpl(
             .toDto()
     }
 
+    override fun getContractor(companyId: Long, contractorId: Long): CompanyProfileDto {
+        val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
+        return userCounterpartyRepository.findByIdAndCompanyIdAndUser(contractorId, companyId, user)
+            .orElseThrow { NoSuchElementException("Contractor not found") }.toDto()
+    }
+
     @Transactional
     override fun uploadDocuments(
         files: List<RawDocumentAndMetatype>,
         companyId: Long,
+        contractorId: Long?,
         type: BusinessType
     ) {
         val user = when (type) {
             BusinessType.USER -> userCompanyRepository.findById(companyId)
                 .orElseThrow { NoSuchElementException("Own company is not found") }.user
 
-            BusinessType.PARTNER -> userCounterpartyRepository.findById(companyId)
+            BusinessType.PARTNER -> userCounterpartyRepository.findById(contractorId!!)
                 .orElseThrow { NoSuchElementException("Counterparty is not found") }.user
         }
 
         documentService.batchSave(
             user!!.id!!,
             type,
-            companyId,
+            companyId = companyId,
+            contractorId = contractorId,
             files
         )
 
@@ -133,7 +149,7 @@ class CompanyServiceImpl(
     override fun getCounterparties(companyId: Long): List<CounterpartyDto> {
         val user = userCompanyRepository.findById(companyId)
             .orElseThrow { NoSuchElementException("Company is not found") }.user
-        return userCounterpartyRepository.findAllByUser(user!!).map {
+        return userCounterpartyRepository.findAllByCompanyIdAndUser(companyId, user!!).map {
             CounterpartyDto(it.id!!, it.customUserGeneratedName)
         }
     }

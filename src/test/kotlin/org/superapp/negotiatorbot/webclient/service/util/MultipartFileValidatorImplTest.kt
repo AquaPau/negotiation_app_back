@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.web.multipart.MultipartFile
 
 @SpringBootTest(
-    classes = [MultipartFileValidatorImpl::class],
+    classes = [MultipartFileValidator::class],
 )
 class MultipartFileValidatorImplTest {
 
@@ -22,7 +22,7 @@ class MultipartFileValidatorImplTest {
         whenever(multipartFile.size).thenReturn(MAX_ALLOWED_SIZE_IN_MB)
         //then
         assertDoesNotThrow {
-            multipartFileValidator.validate(multipartFile, fileNameWithException)
+            MultipartFileValidator.validate(multipartFile, fileNameWithException)
         }
     }
 
@@ -34,7 +34,7 @@ class MultipartFileValidatorImplTest {
         whenever(multipartFile.size).thenReturn(MAX_ALLOWED_SIZE_IN_MB * 1024 * 1024 + 10)
         //then
         assertThrows<IllegalArgumentException> {
-            multipartFileValidator.validate(multipartFile, fileNameWithException)
+            MultipartFileValidator.validate(multipartFile, fileNameWithException)
         }
     }
 
@@ -47,7 +47,7 @@ class MultipartFileValidatorImplTest {
 
         //then
         assertThrows<IllegalArgumentException> {
-            multipartFileValidator.validate(multipartFile, fileNameWithException)
+            MultipartFileValidator.validate(multipartFile, fileNameWithException)
         }
     }
 
@@ -60,12 +60,8 @@ class MultipartFileValidatorImplTest {
 
         //then
         assertThrows<IllegalArgumentException> {
-            multipartFileValidator.validate(multipartFile, fileNameWithException)
+            MultipartFileValidator.validate(multipartFile, fileNameWithException)
         }
     }
-
-
-    @Autowired
-    private lateinit var multipartFileValidator: MultipartFileValidator
 
 }

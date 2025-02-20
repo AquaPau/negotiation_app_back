@@ -26,6 +26,7 @@ interface DocumentService {
         userId: Long,
         businessType: BusinessType,
         companyId: Long,
+        contractorId: Long? = null,
         fileData: List<RawDocumentAndMetatype>
     ): List<DocumentMetadata>
 
@@ -34,7 +35,7 @@ interface DocumentService {
 
     fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto>
 
-    fun getMetadataByCounterPartyId(counterPartyId: Long): List<DocumentMetadataDto>
+    fun getMetadataByCounterPartyId(companyId: Long, counterPartyId: Long): List<DocumentMetadataDto>
 }
 
 
@@ -64,9 +65,10 @@ class DocumentServiceImpl(
         userId: Long,
         businessType: BusinessType,
         companyId: Long,
+        contractorId: Long?,
         fileData: List<RawDocumentAndMetatype>
     ): List<DocumentMetadata> {
-        val files = DocumentHelper.createFiles(userId, businessType, companyId, fileData.map {
+        val files = DocumentHelper.createFiles(userId, businessType, companyId = companyId,  contractorId = contractorId, fileData.map {
             it.fileNameWithExtensions
         }, fileData.map { it.documentType })
             .filter {
@@ -85,8 +87,7 @@ class DocumentServiceImpl(
     }
 
     override fun get(serverSideFileId: Long): DocumentMetadata {
-        val file = documentMetadataRepository.findById(serverSideFileId).orElseThrow()
-        return file
+        return documentMetadataRepository.findById(serverSideFileId).orElseThrow()
     }
 
     override fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto> {
@@ -98,8 +99,12 @@ class DocumentServiceImpl(
 
     }
 
-    override fun getMetadataByCounterPartyId(counterPartyId: Long): List<DocumentMetadataDto> {
-        return documentMetadataRepository.findAllByBusinessTypeAndCounterPartyId(BusinessType.PARTNER, counterPartyId)
+    override fun getMetadataByCounterPartyId(companyId: Long, counterPartyId: Long): List<DocumentMetadataDto> {
+        return documentMetadataRepository.findAllByBusinessTypeAndCounterPartyIdAndCompanyId(
+            BusinessType.PARTNER,
+            counterPartyId,
+            companyId
+        )
             .map(entityToDto())
     }
 
