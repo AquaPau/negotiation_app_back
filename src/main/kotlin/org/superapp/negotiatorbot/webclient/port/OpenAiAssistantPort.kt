@@ -24,13 +24,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.config.OpenAiAssistantConfig
-import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 
 
 interface OpenAiAssistantPort {
 
-    fun createAssistant(user: User): OpenAiAssistant
+    fun createAssistant(userId: Long): OpenAiAssistant
 
     @OptIn(BetaOpenAI::class)
     fun updateAssistant(assistantId: AssistantId, vectorId: VectorStoreId): Assistant
@@ -67,19 +66,19 @@ class OpenAiAssistantPortImpl(
     private val log = KotlinLogging.logger {}
 
     @OptIn(BetaOpenAI::class)
-    override fun createAssistant(user: User): OpenAiAssistant {
+    override fun createAssistant(userId: Long): OpenAiAssistant {
 
         val assistant = runBlocking {
             openAI.assistant(
                 request = AssistantRequest(
-                    name = "For userid: ${user.id}",
+                    name = "For userid: ${userId}",
                     instructions = openAiAssistantConfig.instructions,
                     model = ModelId(openAiAssistantConfig.model),
                 )
             )
         }
-        val thread = runBlocking { getThread(user) }
-        return createAssistant(assistant, thread, user)
+        val thread = runBlocking { getThread(userId) }
+        return createAssistant(assistant, thread, userId)
     }
 
 
@@ -168,18 +167,18 @@ class OpenAiAssistantPortImpl(
 
 
     @OptIn(BetaOpenAI::class)
-    private suspend fun getThread(user: User) = openAI.thread(
+    private suspend fun getThread(userId: Long) = openAI.thread(
         request = ThreadRequest(
             metadata = mapOf(
-                "user" to "${user.id}"
+                "user" to "${userId}"
             )
         )
     )
 
     @OptIn(BetaOpenAI::class)
-    private fun createAssistant(assistant: Assistant, thread: Thread, user: User): OpenAiAssistant {
+    private fun createAssistant(assistant: Assistant, thread: Thread, userId: Long): OpenAiAssistant {
         val openAiAssistant = OpenAiAssistant()
-        openAiAssistant.user = user
+        openAiAssistant.userId = userId
         openAiAssistant.threadId = thread.id.id
         openAiAssistant.assistantId = assistant.id.id
         return openAiAssistant
@@ -191,7 +190,7 @@ class OpenAiAssistantPortImpl(
         openAI.delete(
             id = ThreadId(oldThreadId!!),
         )
-        return getThread(assistant.user!!)
+        return getThread(assistant.userId!!)
 
     }
 

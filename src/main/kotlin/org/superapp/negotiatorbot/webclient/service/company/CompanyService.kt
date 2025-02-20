@@ -18,7 +18,6 @@ import org.superapp.negotiatorbot.webclient.exception.CompanyAlreadyExistsExcept
 import org.superapp.negotiatorbot.webclient.port.DadataPort
 import org.superapp.negotiatorbot.webclient.repository.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.UserCounterpartyRepository
-import org.superapp.negotiatorbot.webclient.service.functiona.OpenAiUserService
 import org.superapp.negotiatorbot.webclient.service.serversidefile.DocumentService
 import org.superapp.negotiatorbot.webclient.service.user.UserService
 
@@ -48,7 +47,6 @@ class CompanyServiceImpl(
     private val userCompanyRepository: UserCompanyRepository,
     private val userCounterpartyRepository: UserCounterpartyRepository,
     private val documentService: DocumentService,
-    private val openAiUserService: OpenAiUserService,
     private val dadataPort: DadataPort,
     @Value("\${dadata.token}") private val dadataToken: String
 ) : CompanyService {

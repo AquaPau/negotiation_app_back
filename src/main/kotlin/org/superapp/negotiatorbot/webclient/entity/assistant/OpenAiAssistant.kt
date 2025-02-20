@@ -3,7 +3,6 @@ package org.superapp.negotiatorbot.webclient.entity.assistant
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.assistant.AssistantId
 import jakarta.persistence.*
-import org.superapp.negotiatorbot.webclient.entity.User
 
 @Entity
 @Table(name = "open_ai_assistants")
@@ -22,9 +21,8 @@ class OpenAiAssistant {
     @OneToOne(mappedBy = "openAiAssistant", cascade = [CascadeType.ALL], optional = true, orphanRemoval = true)
     var openAiAssistantFileStorage: OpenAiAssistantFileStorage? = null
 
-    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
-    var user: User? = null
+    @Column(nullable = false)
+    var userId: Long? = null
 
     @OptIn(BetaOpenAI::class)
     fun getAssistantId(): AssistantId {

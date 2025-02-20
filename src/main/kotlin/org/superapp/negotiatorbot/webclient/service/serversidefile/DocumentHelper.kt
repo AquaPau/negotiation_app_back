@@ -15,7 +15,7 @@ class DocumentHelper {
         private const val S3_DELIMITER = "/"
         const val EXTENSION_DELIMITER = '.'
 
-        private val supportedExtensions = setOf("application/pdf", "csv", "json", "docx", "txt", "md", "pdf", "tex", "xml", "html")
+        private val supportedExtensions = setOf("application/pdf", "csv", "json", "docx", "doc", "txt", "md", "pdf", "tex", "xml", "html")
 
         @Throws(IllegalArgumentException::class)
         fun createFile(

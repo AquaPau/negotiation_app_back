@@ -36,6 +36,9 @@ class DocumentMetadata {
     @Column(length = 5000)
     var description: String? = null
 
+    @Column(length = 5000)
+    var risks: String? = null
+
     @Column
     var companyId: Long? = null
 

@@ -15,8 +15,7 @@ class OpenAiAssistantFileStorage {
 
     @OneToMany(
         mappedBy = "openAiAssistantFileStorage",
-        cascade = [CascadeType.ALL],
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         orphanRemoval = true
     )
    var openAiFiles: MutableList<OpenAiFile> = ArrayList()

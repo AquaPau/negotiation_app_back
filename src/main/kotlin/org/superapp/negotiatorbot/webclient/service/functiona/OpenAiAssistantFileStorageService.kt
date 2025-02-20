@@ -47,8 +47,7 @@ class OpenAiAssistantFileStorageServiceImpl(
     }
 
     override fun deleteVectorStore(openAiAssistantFileStorage: OpenAiAssistantFileStorage) {
-        openAiAssistantFileStorage.openAiFiles.forEach { deleteFile(it, openAiAssistantFileStorage) }
-        openAiAssistantFileStorage.openAiFiles.clear()
+        openAiAssistantFileStorage.openAiFiles.forEach { deleteFile(it) }
         openAiAssistantFileStorageRepository.save(openAiAssistantFileStorage)
         openAiAssistantPort.deleteVectorStore(openAiAssistantFileStorage.getVectorStoreId())
         openAiAssistantFileStorageRepository.delete(openAiAssistantFileStorage)
@@ -69,8 +68,7 @@ class OpenAiAssistantFileStorageServiceImpl(
         return openAiAssistantPort.createVectorStore(assistantId).id.id
     }
 
-    private fun deleteFile(openAiFile: OpenAiFile, fileStorage: OpenAiAssistantFileStorage) {
+    private fun deleteFile(openAiFile: OpenAiFile) {
         openAiAssistantPort.deleteOpenAiFile(openAiFile.getFileId())
-        openAiFileRepository.delete(openAiFile)
     }
 }

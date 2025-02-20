@@ -19,6 +19,7 @@ import org.superapp.negotiatorbot.webclient.service.user.CustomUserDetailsServic
 
 
 @Configuration
+@Profile("!nosecurity")
 class SecurityConfig(private val userRepository: UserRepository) {
 
     @Bean

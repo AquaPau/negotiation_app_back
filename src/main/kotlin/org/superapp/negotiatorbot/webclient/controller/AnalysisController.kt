@@ -1,37 +1,28 @@
 package org.superapp.negotiatorbot.webclient.controller
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.superapp.negotiatorbot.webclient.service.functiona.AnalyseService
 
 @RestController
-@RequestMapping("/analyse")
+@RequestMapping("/api/analyse")
 class AnalysisController(
     private val analyseService: AnalyseService
 ) {
-
-    @PutMapping("/prompt")
-    fun analyseUsingPrompt(@RequestBody data: MultipartFile) {
-    }
-
-    @PutMapping("/document/{documentId}/risks")
+    @GetMapping("/document/{documentId}/risks")
     fun analyseRisks(@PathVariable documentId: Long) {
-
+        analyseService.detectRisks(documentId)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    @PutMapping("/document/{documentId}/description")
+    @GetMapping("/document/{documentId}/description")
     fun analyseDoc(@PathVariable documentId: Long) {
-        GlobalScope.launch {
-            analyseService.provideDescription(documentId)
-        }
+        analyseService.provideDescription(documentId)
     }
 
-    @PutMapping("/counterparty/{counterPartyId}/opportunities")
-    fun analyseOpportunities(@PathVariable counterPartyId: Long) {
+    @GetMapping("/company/{companyId}/contractor/{contractorId}/opportunities")
+    fun analyseOpportunities(@PathVariable contractorId: Long) {
 
     }
 

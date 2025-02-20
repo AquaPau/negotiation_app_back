@@ -12,7 +12,7 @@ const val MAX_ALLOWED_FILES = 5
 class MultipartFileValidator {
 
     companion object {
-        private val supportedExtensions = setOf("pdf", "docx", "txt")
+        private val supportedExtensions = setOf("pdf", "docx", "txt", "doc")
 
         @Throws(IllegalArgumentException::class)
         fun validate(files: List<MultipartFile>, fileNamesWithExtensions: List<String>) {

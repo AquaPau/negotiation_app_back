@@ -41,7 +41,10 @@ data class UserCounterparty(
     var managerName: String? = null,
 
     @Column
-    var fullName: String? = null
+    var fullName: String? = null,
+
+    @Column
+    var opportunities: String? = null
 )
 
 fun UserCounterparty.toDto(): CompanyProfileDto = CompanyProfileDto(
@@ -51,5 +54,6 @@ fun UserCounterparty.toDto(): CompanyProfileDto = CompanyProfileDto(
     inn = this.inn.toString(),
     ogrn = this.ogrn.toString(),
     fullName = this.fullName,
-    residence = this.residence
+    residence = this.residence,
+    opportunities = this.opportunities
 )

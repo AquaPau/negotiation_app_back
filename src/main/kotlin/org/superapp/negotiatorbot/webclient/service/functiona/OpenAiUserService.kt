@@ -8,9 +8,7 @@ import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
-import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
-import org.superapp.negotiatorbot.webclient.service.user.UserService
 import java.io.InputStream
 
 private val log = KotlinLogging.logger {}
@@ -21,7 +19,7 @@ private val log = KotlinLogging.logger {}
 
 interface OpenAiUserService {
     @Throws(NoSuchElementException::class)
-    fun startDialogWIthUserPrompt(userId: Long, prompt: String): String?
+    fun startDialogWIthUserPrompt(userId: Long, prompt: String): String
     fun uploadFile(userId: Long, fileContent: InputStream, fileName: String)
     fun uploadFilesAndExtractCompanyData(
         userId: Long,
@@ -35,7 +33,6 @@ interface OpenAiUserService {
 @Service
 class OpenAiUserServiceImpl(
     val openAiAssistantService: OpenAiAssistantService,
-    val userService: UserService
 ) : OpenAiUserService {
 
     @OptIn(BetaOpenAI::class)
@@ -50,7 +47,6 @@ class OpenAiUserServiceImpl(
         } else {
             formResponse(response.first())
         }
-
     }
 
     override fun uploadFile(userId: Long, fileContent: InputStream, fileName: String) {
@@ -89,9 +85,7 @@ class OpenAiUserServiceImpl(
 
     @Throws(NoSuchElementException::class)
     private fun getAssistant(userId: Long): OpenAiAssistant {
-        val user: User = userService.findById(userId)
-            ?: throw NoSuchElementException("User with ID $userId does not exists.")
-        return openAiAssistantService.getAssistant(user)
+        return openAiAssistantService.getAssistant(userId)
     }
 
 }

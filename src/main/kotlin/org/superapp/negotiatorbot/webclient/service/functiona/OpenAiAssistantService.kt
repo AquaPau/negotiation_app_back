@@ -8,7 +8,6 @@ import com.aallam.openai.api.thread.ThreadId
 import kotlinx.coroutines.runBlocking
 import okio.source
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.port.OpenAiAssistantPort
 import org.superapp.negotiatorbot.webclient.repository.assistant.OpenAiAssistantRepository
@@ -18,7 +17,7 @@ import java.io.InputStream
  * Wrapped basic functions to the OpenAI API without user logic
  */
 interface OpenAiAssistantService {
-    fun getAssistant(user: User): OpenAiAssistant
+    fun getAssistant(userId: Long): OpenAiAssistant
 
     fun deleteVectorStoreFromAssistant(assistant: OpenAiAssistant)
 
@@ -35,9 +34,10 @@ class OpenAiAssistantServiceImpl(
     val openAiOpenAiAssistantFileStorageService: OpenAiAssistantFileStorageService,
 ) : OpenAiAssistantService {
 
-    override fun getAssistant(user: User): OpenAiAssistant {
-        return openAiAssistantRepository.findByUser(user) ?: runBlocking {
-            val assistant = openAiAssistantPort.createAssistant(user)
+
+    override fun getAssistant(userId: Long): OpenAiAssistant {
+        return openAiAssistantRepository.findByUserId(userId) ?: runBlocking {
+            val assistant = openAiAssistantPort.createAssistant(userId)
             openAiAssistantRepository.save(assistant)
         }
     }

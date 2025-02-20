@@ -91,7 +91,7 @@ class DocumentServiceImpl(
     }
 
     override fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto> {
-        return documentMetadataRepository.findAllByBusinessTypeAndCompanyIdAndUserId(
+        return documentMetadataRepository.findAllByBusinessTypeAndCompanyIdAndUserIdOrderByIdAsc(
             businessType = BusinessType.USER,
             companyId = companyId,
             userId = userId
@@ -100,7 +100,7 @@ class DocumentServiceImpl(
     }
 
     override fun getMetadataByCounterPartyId(companyId: Long, counterPartyId: Long): List<DocumentMetadataDto> {
-        return documentMetadataRepository.findAllByBusinessTypeAndCounterPartyIdAndCompanyId(
+        return documentMetadataRepository.findAllByBusinessTypeAndCounterPartyIdAndCompanyIdOrderByIdAsc(
             BusinessType.PARTNER,
             counterPartyId,
             companyId
@@ -116,7 +116,9 @@ class DocumentServiceImpl(
                 userId = it.userId!!,
                 counterPartyId = it.counterPartyId,
                 description = it.description,
-                companyId = null
+                risks = it.risks,
+                companyId = it.companyId,
+                type = it.documentType!!
             )
         }
 }
