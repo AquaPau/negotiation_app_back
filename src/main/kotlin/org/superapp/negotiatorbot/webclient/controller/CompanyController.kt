@@ -14,12 +14,12 @@ class CompanyController(
 
     @GetMapping()
     fun getCompanies(): List<CompanyProfileDto> {
-        return listOf(companyService.getOwnCompany())
+        return companyService.getCompanies()
     }
 
     @GetMapping("/{companyId}")
     fun getCompany(@PathVariable companyId: Long): CompanyProfileDto {
-        return companyService.getOwnCompany()
+        return companyService.getCompanyById(companyId)
     }
 
     @PostMapping()

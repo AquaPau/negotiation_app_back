@@ -25,7 +25,9 @@ interface CompanyService {
 
     fun createCompany(companyId: Long? = null, request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto
 
-    fun getOwnCompany(): CompanyProfileDto
+
+    fun getCompanies(): List<CompanyProfileDto>
+    fun getCompanyById(companyId: Long): CompanyProfileDto
 
     fun getContractor(companyId: Long, contractorId: Long): CompanyProfileDto
 
@@ -107,9 +109,17 @@ class CompanyServiceImpl(
         }
     }
 
-    override fun getOwnCompany(): CompanyProfileDto {
+    override fun getCompanies(): List<CompanyProfileDto> {
         val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
-        return userCompanyRepository.findByUser(user).orElseThrow { NoSuchElementException("Company not found") }
+        return userCompanyRepository.findAllByUser(user).map {
+            it.toDto()
+        }
+    }
+
+    override fun getCompanyById(companyId: Long): CompanyProfileDto {
+        val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
+        return userCompanyRepository.findByUserAndId(user, companyId)
+            .orElseThrow { NoSuchElementException("Company not found") }
             .toDto()
     }
 

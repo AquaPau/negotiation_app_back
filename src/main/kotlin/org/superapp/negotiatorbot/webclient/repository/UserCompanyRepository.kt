@@ -8,5 +8,7 @@ import java.util.*
 interface UserCompanyRepository : JpaRepository<UserCompany, Long> {
 
     fun findByOgrn(ogrn: String): Optional<UserCompany>
-    fun findByUser(user: User): Optional<UserCompany>
+    fun findAllByUser(user: User): List<UserCompany>
+
+    fun findByUserAndId(user: User, id: Long): Optional<UserCompany>
 }
