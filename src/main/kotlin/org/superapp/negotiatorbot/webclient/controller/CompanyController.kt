@@ -27,6 +27,11 @@ class CompanyController(
         return companyService.createCompany(null, profile, isOwn = true)
     }
 
+    @DeleteMapping("/{companyId}")
+    fun deleteCompany(@PathVariable companyId: Long) {
+        companyService.deleteCompany(companyId)
+    }
+
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleException(e: IllegalArgumentException): ResponseEntity<String?> =
         ResponseEntity.badRequest().body(e.message)

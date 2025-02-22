@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.promt.documentDescriptionPrompt
 import org.superapp.negotiatorbot.webclient.promt.documentRisksPrompt
+import org.superapp.negotiatorbot.webclient.service.metadatafile.DocumentService
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
-import org.superapp.negotiatorbot.webclient.service.serversidefile.DocumentService
 
 
 interface AnalyseService {

@@ -11,6 +11,7 @@ private val log = KotlinLogging.logger {}
 interface S3Service {
     fun upload(fullS3Location: String, content: ByteArray)
     fun download(fullS3Location: String): S3Resource
+    fun delete(fullS3Location: String)
 }
 
 @Service
@@ -24,4 +25,9 @@ class S3ServiceImpl(private val s3Template: S3Template, s3Config: S3Config) : S3
     }
 
     override fun download(fullS3Location: String): S3Resource = s3Template.download(bucketName!!, fullS3Location)
+
+    override fun delete(fullS3Location: String) {
+        s3Template.deleteObject(bucketName!!, fullS3Location)
+        log.info("File deleted successfully or didnt present already in $fullS3Location")
+    }
 }

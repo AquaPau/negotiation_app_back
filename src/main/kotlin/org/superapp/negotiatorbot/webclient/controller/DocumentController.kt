@@ -9,7 +9,7 @@ import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import org.superapp.negotiatorbot.webclient.service.company.CompanyService
-import org.superapp.negotiatorbot.webclient.service.serversidefile.DocumentService
+import org.superapp.negotiatorbot.webclient.service.metadatafile.DocumentService
 import org.superapp.negotiatorbot.webclient.service.util.FileTransformationHelper
 import org.superapp.negotiatorbot.webclient.service.util.MultipartFileValidator
 
@@ -45,9 +45,14 @@ class DocumentController(
         return companyService.getDocuments(companyId, BusinessType.USER)
     }
 
-    @DeleteMapping("/{companyId}/document/{documentId}")
-    fun deleteFileById(@PathVariable documentId: Int, @PathVariable companyId: Int) {
+    @DeleteMapping("/{companyId}/document")
+    fun deleteDocuments(@PathVariable companyId: Long) {
+        documentService.deleteCompanyDocuments(companyId)
+    }
 
+    @DeleteMapping("/document/{documentId}")
+    fun deleteFileById(@PathVariable documentId: Long) {
+        documentService.deleteDocument(documentId)
     }
 
     @GetMapping("/{companyId}/contractor/{contractorId}/document")
@@ -74,6 +79,11 @@ class DocumentController(
                 )
             }
         }
+    }
+
+    @DeleteMapping("/{companyId}/contractor/{contractorId}/document")
+    fun deleteDocuments(@PathVariable companyId: Long, @PathVariable contractorId: Long) {
+        documentService.deleteContractorDocuments(contractorId)
     }
 
 }

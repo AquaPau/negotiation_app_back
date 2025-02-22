@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.webclient.service.serversidefile
+package org.superapp.negotiatorbot.webclient.service.metadatafile
 
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
@@ -84,7 +84,7 @@ class DocumentHelper {
 
 
         private fun DocumentMetadata.setPath(userId: Long, fileNameWithExtension: String) {
-            val s3Path = "${S3_DELIMITER}${ROOT_S3}/${userId}/${fileNameWithExtension}"
+            val s3Path = "${S3_DELIMITER}${ROOT_S3}/${userId}/${UUID.randomUUID()}/${fileNameWithExtension}"
             this.path = s3Path
         }
 

@@ -18,7 +18,7 @@ import org.superapp.negotiatorbot.webclient.exception.CompanyAlreadyExistsExcept
 import org.superapp.negotiatorbot.webclient.port.DadataPort
 import org.superapp.negotiatorbot.webclient.repository.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.UserCounterpartyRepository
-import org.superapp.negotiatorbot.webclient.service.serversidefile.DocumentService
+import org.superapp.negotiatorbot.webclient.service.metadatafile.DocumentService
 import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 interface CompanyService {
@@ -29,7 +29,11 @@ interface CompanyService {
     fun getCompanies(): List<CompanyProfileDto>
     fun getCompanyById(companyId: Long): CompanyProfileDto
 
+    fun deleteCompany(companyId: Long)
+
     fun getContractor(companyId: Long, contractorId: Long): CompanyProfileDto
+
+    fun deleteContractor(contractorId: Long)
 
     fun uploadDocuments(
         files: List<RawDocumentAndMetatype>,
@@ -81,9 +85,10 @@ class CompanyServiceImpl(
             userCompanyRepository.save(userCompany)
             return userCompany.toDto()
         } else {
+            userCompanyRepository.findById(companyId!!).orElseThrow { NoSuchElementException("Company doesn't exist") }
             val userCompany = UserCounterparty(
                 user = user,
-                companyId = companyId!!,
+                companyId = companyId,
                 customUserGeneratedName = request.customUserGeneratedName,
                 residence = CompanyRegion.RU
             )
@@ -129,6 +134,17 @@ class CompanyServiceImpl(
             .orElseThrow { NoSuchElementException("Contractor not found") }.toDto()
     }
 
+    override fun deleteCompany(companyId: Long) {
+        val company = userCompanyRepository.findById(companyId).orElseThrow { NoSuchElementException("User company is not found")}
+        val contractors = userCounterpartyRepository.findAllByCompanyId(companyId)
+
+        documentService.deleteCompanyDocuments(company.id!!)
+        contractors.forEach { documentService.deleteContractorDocuments(it.id!!) }
+
+        userCounterpartyRepository.deleteAll(contractors)
+        userCompanyRepository.delete(company)
+    }
+
     @Transactional
     override fun uploadDocuments(
         files: List<RawDocumentAndMetatype>,
@@ -152,6 +168,12 @@ class CompanyServiceImpl(
             files
         )
 
+    }
+
+    override fun deleteContractor(contractorId: Long) {
+        val contractor = userCounterpartyRepository.findById(contractorId).orElseThrow()
+        documentService.deleteContractorDocuments(contractorId)
+        userCounterpartyRepository.delete(contractor)
     }
 
     override fun getCounterparties(companyId: Long): List<CounterpartyDto> {

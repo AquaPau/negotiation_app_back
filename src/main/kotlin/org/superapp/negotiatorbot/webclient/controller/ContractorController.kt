@@ -30,5 +30,9 @@ class ContractorController(
         return companyService.getContractor(companyId, contractorId)
     }
 
+    @DeleteMapping("/{contractorId}/contractor")
+    fun deleteContractor(@PathVariable contractorId: Long) {
+        companyService.deleteContractor(contractorId)
+    }
 
 }

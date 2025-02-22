@@ -2,7 +2,7 @@ package org.superapp.negotiatorbot.webclient.service.util
 
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import org.superapp.negotiatorbot.webclient.service.serversidefile.DocumentHelper.Companion.EXTENSION_DELIMITER
+import org.superapp.negotiatorbot.webclient.service.metadatafile.DocumentHelper.Companion.EXTENSION_DELIMITER
 
 const val MAX_ALLOWED_SIZE_IN_MB = 10L
 const val MAX_ALLOWED_FILES = 5

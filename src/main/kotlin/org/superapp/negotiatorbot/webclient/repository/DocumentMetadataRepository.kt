@@ -20,5 +20,9 @@ interface DocumentMetadataRepository : JpaRepository<DocumentMetadata, Long> {
         companyId: Long
     ): List<DocumentMetadata>
 
+    fun findAllByCounterPartyId(companyId: Long): List<DocumentMetadata>
+
+    fun findAllByCompanyIdAndCounterPartyIdIsNull(companyId: Long): List<DocumentMetadata>
+
     fun existsByUserIdAndName(userId: Long, name: String): Boolean
 }
