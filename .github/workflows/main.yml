@@ -33,7 +33,6 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
