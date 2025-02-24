@@ -42,7 +42,7 @@ class MultipartFileValidatorImplTest {
     fun `wrong extension file should fail`() {
         //given
         val multipartFile = mock(MultipartFile::class.java)
-        val fileNameWithException = "test.txt"
+        val fileNameWithException = "test.txtdd"
         whenever(multipartFile.size).thenReturn(MAX_ALLOWED_SIZE_IN_MB)
 
         //then
