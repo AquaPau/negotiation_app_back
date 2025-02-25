@@ -1,0 +1,7 @@
+build:
+  skip: yes
+
+run:
+  image: aquapau/negotiation-app-back:latest
+  persistenceMount: /config
+  containerPort: 8080
