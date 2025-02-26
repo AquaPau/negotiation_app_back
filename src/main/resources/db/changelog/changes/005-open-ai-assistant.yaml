@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: aquapau
+      changes:
+        - createTable:
+            tableName: open_ai_assistants
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: assistant_id
+                  type: VARCHAR(200)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: thread_id
+                  type: VARCHAR(200)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false

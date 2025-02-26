@@ -11,8 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.dto.user.UserDto
 import org.superapp.negotiatorbot.webclient.dto.user.UserRegistrationDto
-import org.superapp.negotiatorbot.webclient.entity.Role
 import org.superapp.negotiatorbot.webclient.entity.User
+import org.superapp.negotiatorbot.webclient.enum.Roles
 import org.superapp.negotiatorbot.webclient.repository.RoleRepository
 import org.superapp.negotiatorbot.webclient.repository.UserRepository
 
@@ -48,14 +48,11 @@ class UserServiceImpl(
 
     override fun saveUser(userRegistrationDto: UserRegistrationDto) {
         val user = User()
-        user.name = userRegistrationDto.firstName + " " + userRegistrationDto.lastName
+        user.username = userRegistrationDto.firstName + " " + userRegistrationDto.lastName
         user.email = userRegistrationDto.email
         user.password = passwordEncoder.encode(userRegistrationDto.password)
 
-        var role = roleRepository.findByName("ROLE_ADMIN");
-        if (role == null) {
-            role = checkRoleExist();
-        }
+        val role = roleRepository.findByName(Roles.ROLE_USER).orElseThrow()
         user.roles = listOf(role)
         userRepository.save(user);
     }
@@ -113,18 +110,15 @@ class UserServiceImpl(
         return userId?.let { userRepository.findById(userId) }?.orElseGet { null }
     }
 
-    private fun mapToUserDto(user: User): UserRegistrationDto {
-        val userRegistrationDto = UserRegistrationDto()
-        val name = user.name?.split(" ") ?: emptyList()
-        userRegistrationDto.firstName = name[0]
-        userRegistrationDto.lastName = name[1]
-        userRegistrationDto.email = user.email
-        return userRegistrationDto;
-    }
+    companion object {
+        private fun mapToUserDto(user: User): UserRegistrationDto {
 
-    private fun checkRoleExist(): Role {
-        val role = Role();
-        role.name = "ROLE_ADMIN";
-        return roleRepository.save(role);
+            val userRegistrationDto = UserRegistrationDto()
+            val name = user.username?.split(" ") ?: emptyList()
+            userRegistrationDto.firstName = name[0]
+            userRegistrationDto.lastName = name[1]
+            userRegistrationDto.email = user.email
+            return userRegistrationDto;
+        }
     }
 }

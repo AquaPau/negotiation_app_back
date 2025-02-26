@@ -6,8 +6,8 @@ import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
 
 
 @Entity
-@Table(name = "counterparties")
-data class UserCounterparty(
+@Table(name = "contractors")
+data class UserContractor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -47,7 +47,7 @@ data class UserCounterparty(
     var opportunities: String? = null
 )
 
-fun UserCounterparty.toDto(): CompanyProfileDto = CompanyProfileDto(
+fun UserContractor.toDto(): CompanyProfileDto = CompanyProfileDto(
     id = this.id!!,
     customUserGeneratedName = this.customUserGeneratedName,
     userId = this.user.id!!,

@@ -11,7 +11,7 @@ class User {
     var id: Long? = null
 
     @Column(nullable = false)
-    var name: String? = null
+    var username: String? = null
 
     @Column(nullable = false, unique = true)
     var email: String? = null

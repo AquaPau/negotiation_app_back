@@ -53,7 +53,7 @@ data class UserDto(
         fun toUserDto(obj: User): UserDto {
             return UserDto(
                 id = obj.id!!,
-                name = obj.name!!,
+                name = obj.username!!,
                 email = obj.email!!,
                 password = obj.password!!
             )

@@ -1,12 +1,21 @@
 spring:
   application:
-    name: NegotiatorBot
+    name: Negotiation-App
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
   profiles:
     active: dev
+  jpa:
+    open-in-view: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+    drop-first: false
 
 logging:
   level:
@@ -40,13 +49,6 @@ spring:
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-    show-sql: true
   cloud:
     aws:
       credentials:
@@ -68,13 +70,6 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
   cloud:
     aws:
       credentials:
