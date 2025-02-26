@@ -2,8 +2,10 @@ package org.superapp.negotiatorbot.webclient.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.superapp.negotiatorbot.webclient.entity.Role
+import org.superapp.negotiatorbot.webclient.enum.Roles
+import java.util.Optional
 
 
 interface RoleRepository : JpaRepository<Role, Long?> {
-    fun findByName(name: String?): Role?
+    fun findByName(name: Roles): Optional<Role>
 }

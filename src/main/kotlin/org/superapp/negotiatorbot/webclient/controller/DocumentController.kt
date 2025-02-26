@@ -57,7 +57,7 @@ class DocumentController(
 
     @GetMapping("/{companyId}/contractor/{contractorId}/document")
     fun getDocumentsInfo(@PathVariable companyId: Long, @PathVariable contractorId: Long): List<DocumentMetadataDto> {
-        return documentService.getMetadataByCounterPartyId(companyId, contractorId)
+        return documentService.getMetadataByContractorId(companyId, contractorId)
     }
 
     @PutMapping("/{companyId}/contractor/{contractorId}/document")

@@ -33,7 +33,7 @@ interface DocumentService {
 
     fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto>
 
-    fun getMetadataByCounterPartyId(companyId: Long, counterPartyId: Long): List<DocumentMetadataDto>
+    fun getMetadataByContractorId(companyId: Long, contractorId: Long): List<DocumentMetadataDto>
 
     fun deleteDocument(documentId: Long)
 
@@ -109,10 +109,10 @@ class DocumentServiceImpl(
 
     }
 
-    override fun getMetadataByCounterPartyId(companyId: Long, counterPartyId: Long): List<DocumentMetadataDto> {
-        return documentMetadataRepository.findAllByBusinessTypeAndCounterPartyIdAndCompanyIdOrderByIdAsc(
+    override fun getMetadataByContractorId(companyId: Long, contractorId: Long): List<DocumentMetadataDto> {
+        return documentMetadataRepository.findAllByBusinessTypeAndContractorIdAndCompanyIdOrderByIdAsc(
             BusinessType.PARTNER,
-            counterPartyId,
+            contractorId,
             companyId
         )
             .map(entityToDto())
@@ -125,13 +125,13 @@ class DocumentServiceImpl(
     }
 
     override fun deleteContractorDocuments(contractorId: Long) {
-        val docs = documentMetadataRepository.findAllByCounterPartyId(contractorId)
+        val docs = documentMetadataRepository.findAllByContractorId(contractorId)
         docs.forEach { s3Service.delete(it.path!!) }
         documentMetadataRepository.deleteAll(docs)
     }
 
     override fun deleteCompanyDocuments(companyId: Long) {
-        val docs = documentMetadataRepository.findAllByCompanyIdAndCounterPartyIdIsNull(companyId)
+        val docs = documentMetadataRepository.findAllByCompanyIdAndContractorIdIsNull(companyId)
         docs.forEach { s3Service.delete(it.path!!) }
         documentMetadataRepository.deleteAll(docs)
     }
@@ -142,7 +142,7 @@ class DocumentServiceImpl(
                 id = it.id!!,
                 name = "${it.name!!}.${it.extension}",
                 userId = it.userId!!,
-                counterPartyId = it.counterPartyId,
+                counterPartyId = it.contractorId,
                 description = it.description,
                 risks = it.risks,
                 companyId = it.companyId,

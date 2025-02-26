@@ -14,15 +14,15 @@ interface DocumentMetadataRepository : JpaRepository<DocumentMetadata, Long> {
         userId: Long
     ): List<DocumentMetadata>
 
-    fun findAllByBusinessTypeAndCounterPartyIdAndCompanyIdOrderByIdAsc(
+    fun findAllByBusinessTypeAndContractorIdAndCompanyIdOrderByIdAsc(
         businessType: BusinessType,
         counterPartyId: Long,
         companyId: Long
     ): List<DocumentMetadata>
 
-    fun findAllByCounterPartyId(companyId: Long): List<DocumentMetadata>
+    fun findAllByContractorId(companyId: Long): List<DocumentMetadata>
 
-    fun findAllByCompanyIdAndCounterPartyIdIsNull(companyId: Long): List<DocumentMetadata>
+    fun findAllByCompanyIdAndContractorIdIsNull(companyId: Long): List<DocumentMetadata>
 
     fun existsByUserIdAndName(userId: Long, name: String): Boolean
 }

@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 7
+      author: aquapau
+      changes:
+        - createTable:
+            tableName: open_ai_files
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: file_id
+                  type: VARCHAR(200)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: assistant_file_storages_id
+                  type: BIGINT
+                  constraints:
+                    unique: true
+                    nullable: false

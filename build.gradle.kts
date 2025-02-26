@@ -34,6 +34,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
     implementation("com.h2database:h2")
+    implementation("org.liquibase:liquibase-core:4.25.1")
+    implementation("org.yaml:snakeyaml:2.2")
 
     //Feign client
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0")
