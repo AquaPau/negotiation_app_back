@@ -12,6 +12,9 @@ spring:
     generate-ddl: false
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: app
   liquibase:
     default-schema: app
     change-log: classpath:db/changelog/db.changelog-master.yaml
