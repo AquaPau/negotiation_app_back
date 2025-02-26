@@ -1,17 +1,17 @@
 services:
   postgres:
-    image: postgres:17  # Используем официальный образ PostgreSQL версии 14
-    container_name: postgres_db  # Имя контейнера
+    image: postgres:17
+    container_name: postgres_db
     environment:
-      - POSTGRES_USER=postgres_user  # Имя пользователя PostgreSQL
-      - POSTGRES_PASSWORD=postgres_password  # Пароль для пользователя PostgreSQL
-      - POSTGRES_DB=mydb  # Имя базы данных, которая будет создана при запуске
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_DB=postgres
     ports:
-      - "5432:5432"  # Проброс порта 5432 для подключения к базе данных
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Монтирование тома для хранения данных
+      - postgres_data:/var/lib/postgresql/data
     networks:
-      - app-network  # Подключение к пользовательской сети
+      - app-network
   minio:
     image: minio/minio
     container_name: minio

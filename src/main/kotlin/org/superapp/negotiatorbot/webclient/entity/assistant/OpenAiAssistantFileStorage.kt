@@ -4,7 +4,7 @@ import com.aallam.openai.api.vectorstore.VectorStoreId
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "assistant_file_storages")
+@Table(name = "open_ai_assistant_file_storages")
 class OpenAiAssistantFileStorage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

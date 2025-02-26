@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: NegotiatorBot
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  profiles:
+    active: test-run
+
+  cloud:
+    aws:
+      credentials:
+        access-key: test
+        secret-key: test
+      s3:
+        region: eu-central-1
+        endpoint: http://127.0.0.1:9000/
+        bucket-name: bucket1
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+telegram:
+  token: 1234
+
+open-ai:
+  token: test
+  assistant:
+    model: gpt-3.5-turbo
+    instructions: Привет. Отвечай мне от лица опытного юриста, работающего в Российской Федерации и эксперта в налоговом, гражданском, процессуальном законодательстве, который разговаривает со своим коллегой-который может и не являться юристом, помогая ему подготовиться к переговорам. Ничего не придумывай, максимально используй актуальное законодательство РФ, разъяснения законодательства, чтобы ответить на вопросы. Ответ должен быть максимально точным и не приукрашенным, потому что от него зависит успешность переговоров твоего коллеги-юриста. Чтобы подсвечивать пункты, в которых ты видишь риски, пиши их с тегом [РИСКИ], если увидишь в данных ошибочное суждение, пиши ответ на них с тегом [НЕОБХОДИМО ПЕРЕПРОВЕРИТЬ].
+
+dadata:
+  url: http://suggestions.dadata.ru/suggestions/api/4_1/rs
+  token: test

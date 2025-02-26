@@ -25,7 +25,8 @@ class DocumentMetadataFactoryTest {
 
         assertEquals("csv", file.extension)
         assertEquals("test", file.name)
-        assertTrue(file.path!!.contains("123/test.csv"))
+        assertTrue(file.path!!.contains( "users/${user.id}/"))
+        assertTrue(file.path!!.contains("/test.csv"))
     }
 
 

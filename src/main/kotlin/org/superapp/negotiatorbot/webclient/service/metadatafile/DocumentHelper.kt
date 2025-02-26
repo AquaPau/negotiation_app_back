@@ -44,7 +44,7 @@ class DocumentHelper {
                 val newFile = DocumentMetadata()
                 newFile.userId = userId
                 newFile.companyId = companyId
-                newFile.counterPartyId = contractorId
+                newFile.contractorId = contractorId
                 newFile.setNameAndExtension(it)
                 newFile.businessType = businessType
                 newFile.documentType = documentTypes[index]

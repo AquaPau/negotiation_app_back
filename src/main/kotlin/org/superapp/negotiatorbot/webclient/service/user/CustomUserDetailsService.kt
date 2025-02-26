@@ -19,7 +19,7 @@ class CustomUserDetailsService(private val userRepository: UserRepository) : Use
             .orElseThrow { UsernameNotFoundException(usernameOrEmail) }
         return User(user.email, user.password,
             user.roles.stream()
-                .map { role -> SimpleGrantedAuthority(role.name) }
+                .map { role -> SimpleGrantedAuthority(role.name?.name) }
                 .collect(Collectors.toList()))
     }
 

@@ -42,7 +42,7 @@ class DocumentMetadata {
     var companyId: Long? = null
 
     @Column
-    var counterPartyId: Long? = null
+    var contractorId: Long? = null
 
     fun getNameWithExtension() = "$name.$extension"
 }
