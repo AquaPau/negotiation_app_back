@@ -36,7 +36,7 @@ class OpenAiAssistantServiceImpl(
 
 
     override fun getAssistant(userId: Long): OpenAiAssistant {
-        return openAiAssistantRepository.findByUserId(userId) ?: runBlocking {
+        return openAiAssistantRepository.findFirstByUserId(userId) ?: runBlocking {
             val assistant = openAiAssistantPort.createAssistant(userId)
             openAiAssistantRepository.save(assistant)
         }
