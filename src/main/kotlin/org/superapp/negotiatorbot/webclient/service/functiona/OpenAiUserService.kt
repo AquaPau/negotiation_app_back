@@ -28,6 +28,8 @@ interface OpenAiUserService {
     ): String
 
     fun deleteFilesFromOpenAi(userId: Long)
+
+    fun updateThread(userId: Long)
 }
 
 @Service
@@ -75,6 +77,11 @@ class OpenAiUserServiceImpl(
         val assistant = getAssistant(userId)
         openAiAssistantService.deleteVectorStoreFromAssistant(assistant)
         log.info("Successfully deleted all filer for $userId")
+    }
+
+    override fun updateThread(userId: Long) {
+        val assistant = getAssistant(userId)
+        openAiAssistantService.updateThread(assistant)
     }
 
     @OptIn(BetaOpenAI::class)
