@@ -12,7 +12,7 @@ data class DadataCompany(
 data class CompanyParams(
     val inn: String,
     val ogrn: String,
-    val management: CompanyManagement,
+    val management: CompanyManagement?,
     val address: CompanyAddress
 )
 

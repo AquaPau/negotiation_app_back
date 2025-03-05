@@ -64,7 +64,7 @@ class SecurityConfig(private val userRepository: UserRepository) {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:5173/")
+        configuration.allowedOrigins = listOf("http://localhost:5173/", "https://negotiation-web-aquapau.amvera.io/")
         configuration.setAllowedMethods(listOf("GET", "OPTIONS", "POST", "PUT", "DELETE"))
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true

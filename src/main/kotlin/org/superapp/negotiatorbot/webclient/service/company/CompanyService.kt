@@ -79,8 +79,8 @@ class CompanyServiceImpl(
             userCompany.inn = companyData.data.inn
             userCompany.fullName = companyData.value
             userCompany.address = companyData.data.address.value
-            userCompany.managerName = companyData.data.management.name
-            userCompany.managerTitle = companyData.data.management.post
+            userCompany.managerName = companyData.data.management?.name
+            userCompany.managerTitle = companyData.data.management?.post
 
             userCompanyRepository.save(userCompany)
             return userCompany.toDto()
@@ -107,8 +107,8 @@ class CompanyServiceImpl(
             userCompany.ogrn = companyData.data.ogrn
             userCompany.fullName = companyData.value
             userCompany.address = companyData.data.address.value
-            userCompany.managerName = companyData.data.management.name
-            userCompany.managerTitle = companyData.data.management.post
+            userCompany.managerName = companyData.data.management?.name
+            userCompany.managerTitle = companyData.data.management?.post
             userContractorRepository.save(userCompany)
             return userCompany.toDto()
         }
