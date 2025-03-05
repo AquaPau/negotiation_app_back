@@ -25,6 +25,8 @@ interface OpenAiAssistantService {
     suspend fun runRequest(prompt: String, assistant: OpenAiAssistant): List<Message>
 
     fun uploadFile(assistant: OpenAiAssistant, fileContent: InputStream, fileName: String)
+
+    fun updateThread(assistant: OpenAiAssistant)
 }
 
 @Service
@@ -74,10 +76,17 @@ class OpenAiAssistantServiceImpl(
         val response = openAiAssistantPort.processRequestRun(threadId, run.id)
 
         if (response.isEmpty()) {
+            updateThread(assistant)
+        }
+        return response
+    }
+
+    @OptIn(BetaOpenAI::class)
+    override fun updateThread(assistant: OpenAiAssistant) {
+        runBlocking {
             val newThread = openAiAssistantPort.updateThread(assistant)
             assistant.threadId = newThread.id.id
             openAiAssistantRepository.save(assistant)
         }
-        return response
     }
 }

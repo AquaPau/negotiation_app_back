@@ -17,14 +17,17 @@ interface AnalyseService {
     suspend fun detectOpportunities(documentId: Long): String
 
     fun provideDescription(documentId: Long)
+
+    fun updateThreadAndRun(documentId: Long, consumer: (Long) -> Unit)
 }
 
 @Service
 class AnalyseServiceImpl(
     private val documentService: DocumentService,
-    private val userOpenAiUserService: OpenAiUserService,
+    private val openAiUserService: OpenAiUserService,
     private val s3Service: S3Service
 ) : AnalyseService {
+
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun detectRisks(documentId: Long) {
@@ -53,14 +56,20 @@ class AnalyseServiceImpl(
 
     }
 
+    override fun updateThreadAndRun(documentId: Long, consumer: (Long) -> Unit) {
+        val doc = documentService.get(documentId)
+        openAiUserService.updateThread(doc.userId!!)
+        consumer.invoke(documentId)
+    }
+
     private suspend fun provideResponseFromOpenAi(doc: DocumentMetadata, prompt: String): String {
         val fileContent = s3Service.download(doc.path!!)
         val userId = doc.userId!!
         val fullDocName = doc.getNameWithExtension()
 
-        userOpenAiUserService.uploadFile(userId, fileContent.inputStream, fullDocName)
-        val result = userOpenAiUserService.startDialogWIthUserPrompt(userId, prompt)
-        userOpenAiUserService.deleteFilesFromOpenAi(userId)
+        openAiUserService.uploadFile(userId, fileContent.inputStream, fullDocName)
+        val result = openAiUserService.startDialogWIthUserPrompt(userId, prompt)
+        openAiUserService.deleteFilesFromOpenAi(userId)
         return result.replace(
             regex = Regex("""【.*】"""),
             ""

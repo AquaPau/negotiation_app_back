@@ -16,9 +16,19 @@ class AnalysisController(
         analyseService.detectRisks(documentId)
     }
 
+    @GetMapping("/document/{documentId}/risks/retry")
+    fun analyseRisksRetry(@PathVariable documentId: Long) {
+        analyseService.updateThreadAndRun(documentId) { analyseService.detectRisks(it) }
+    }
+
     @GetMapping("/document/{documentId}/description")
     fun analyseDoc(@PathVariable documentId: Long) {
         analyseService.provideDescription(documentId)
+    }
+
+    @GetMapping("/document/{documentId}/description/retry")
+    fun analyseDocRetry(@PathVariable documentId: Long) {
+        analyseService.updateThreadAndRun(documentId) { analyseService.provideDescription(it) }
     }
 
     @GetMapping("/company/{companyId}/contractor/{contractorId}/opportunities")
