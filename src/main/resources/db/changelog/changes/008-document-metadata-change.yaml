@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 8
+      author: aquapau
+      changes:
+        - addColumn:
+            tableName: document_metadata
+            columns:
+              - column:
+                  name: related_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            endDelimiter: ""
+            sql: |
+              UPDATE document_metadata 
+              SET related_id = COALESCE(contractor_id, company_id);
+        - dropColumn:
+            tableName: document_metadata
+            columnName: company_id
+        - dropColumn:
+            tableName: document_metadata
+            columnName: contractor_id

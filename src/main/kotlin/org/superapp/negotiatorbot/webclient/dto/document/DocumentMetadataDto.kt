@@ -5,8 +5,8 @@ import org.superapp.negotiatorbot.webclient.enum.DocumentType
 data class DocumentMetadataDto(
     val id: Long,
     val userId: Long,
-    val companyId: Long?,
-    val counterPartyId: Long?,
+    var companyId: Long? = null,
+    var counterPartyId: Long? = null,
     val name: String,
     val type: DocumentType,
     val description: String?,

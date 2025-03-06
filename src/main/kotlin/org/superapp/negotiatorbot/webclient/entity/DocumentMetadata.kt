@@ -5,7 +5,7 @@ import org.superapp.negotiatorbot.webclient.enum.DocumentType
 
 
 @Entity
-@Table(name = "document_metadata", uniqueConstraints = [UniqueConstraint(columnNames = ["name", "user_id"])])
+@Table(name = "document_metadata")
 class DocumentMetadata {
 
     @Id
@@ -38,13 +38,10 @@ class DocumentMetadata {
     @Column(length = 5000)
     var risks: String? = null
 
-    @Column
-    var companyId: Long? = null
-
-    @Column
-    var contractorId: Long? = null
+    @Column(nullable = false)
+    var relatedId: Long? = null
 
     fun getNameWithExtension() = "$name.$extension"
 }
 
-enum class BusinessType { USER, PARTNER }
+enum class BusinessType { USER, PARTNER, PROJECT }
