@@ -10,7 +10,7 @@ databaseChangeLog:
                   name: related_id
                   type: BIGINT
                   constraints:
-                    nullable: true
+                    nullable: false
         - sql:
             dbms: postgresql
             splitStatements: false

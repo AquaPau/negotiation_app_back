@@ -44,7 +44,10 @@ data class UserContractor(
     var fullName: String? = null,
 
     @Column
-    var opportunities: String? = null
+    var opportunities: String? = null,
+
+    @Column(nullable = true, unique = true)
+    var assistantDbId: Long? = null
 )
 
 fun UserContractor.toDto(): CompanyProfileDto = CompanyProfileDto(

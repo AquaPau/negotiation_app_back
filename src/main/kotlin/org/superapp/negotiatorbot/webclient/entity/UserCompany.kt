@@ -38,6 +38,9 @@ class UserCompany {
 
     @Column
     var fullName: String? = null
+
+    @Column(nullable = true, unique = true)
+    var assistantDbId: Long? = null
 }
 
 fun UserCompany.toDto(): CompanyProfileDto = CompanyProfileDto(

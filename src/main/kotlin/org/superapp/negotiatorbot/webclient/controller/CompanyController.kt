@@ -19,7 +19,7 @@ class CompanyController(
 
     @GetMapping("/{companyId}")
     fun getCompany(@PathVariable companyId: Long): CompanyProfileDto {
-        return companyService.getCompanyById(companyId)
+        return companyService.getCompanyDtoById(companyId)
     }
 
     @PostMapping()

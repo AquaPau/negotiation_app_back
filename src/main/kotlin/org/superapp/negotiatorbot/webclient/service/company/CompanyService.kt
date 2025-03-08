@@ -10,12 +10,14 @@ import org.superapp.negotiatorbot.webclient.dto.dadata.DadataRequest
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.*
+import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
 import org.superapp.negotiatorbot.webclient.exception.CompanyAlreadyExistsException
 import org.superapp.negotiatorbot.webclient.port.DadataPort
 import org.superapp.negotiatorbot.webclient.repository.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.UserContractorRepository
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
+import org.superapp.negotiatorbot.webclient.service.functiona.OpenAiAssistantService
 import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 interface CompanyService {
@@ -23,11 +25,11 @@ interface CompanyService {
     fun createCompany(companyId: Long? = null, request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto
 
     fun getCompanies(): List<CompanyProfileDto>
-    fun getCompanyById(companyId: Long): CompanyProfileDto
+    fun getCompanyDtoById(companyId: Long): CompanyProfileDto
 
     fun deleteCompany(companyId: Long)
 
-    fun getContractor(companyId: Long, contractorId: Long): CompanyProfileDto
+    fun getContractorAssistant(companyId: Long, contractorId: Long): CompanyProfileDto
 
     fun deleteContractor(contractorId: Long)
 
@@ -40,6 +42,9 @@ interface CompanyService {
     fun getCounterparties(companyId: Long): List<CounterpartyDto>
 
     fun getDocuments(companyId: Long, type: BusinessType): List<DocumentMetadataDto>
+
+    fun getCompanyAssistant(companyId: Long): OpenAiAssistant
+    fun getContractorAssistant(contractorId: Long): OpenAiAssistant
 }
 
 @Service
@@ -47,10 +52,36 @@ class CompanyServiceImpl(
     private val userService: UserService,
     private val userCompanyRepository: UserCompanyRepository,
     private val userContractorRepository: UserContractorRepository,
+    private val openAiAssistantService: OpenAiAssistantService,
     private val documentService: DocumentService,
     private val dadataPort: DadataPort,
     @Value("\${dadata.token}") private val dadataToken: String
 ) : CompanyService {
+
+    @Transactional
+    override fun getCompanyAssistant(companyId: Long): OpenAiAssistant {
+        val userCompany = userCompanyRepository.findById(companyId).orElseThrow()
+       return  if(userCompany.assistantDbId != null) {
+            openAiAssistantService.getAssistant(userCompany.assistantDbId!!)
+        } else{
+            val assistant = openAiAssistantService.createAssistant()
+           userCompany.assistantDbId = assistant.id
+           userCompanyRepository.save(userCompany)
+           return assistant
+        }
+    }
+
+    override fun getContractorAssistant(contractorId: Long): OpenAiAssistant {
+        val userContractor = userContractorRepository.findById(contractorId).orElseThrow()
+        return  if(userContractor.assistantDbId != null) {
+            openAiAssistantService.getAssistant(userContractor.assistantDbId!!)
+        } else{
+            val assistant = openAiAssistantService.createAssistant()
+            userContractor.assistantDbId = assistant.id
+            userContractorRepository.save(userContractor)
+            return assistant
+        }
+    }
 
     @Transactional
     override fun createCompany(companyId: Long?, request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto {
@@ -71,14 +102,14 @@ class CompanyServiceImpl(
         }
     }
 
-    override fun getCompanyById(companyId: Long): CompanyProfileDto {
+    override fun getCompanyDtoById(companyId: Long): CompanyProfileDto {
         val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
         return userCompanyRepository.findByUserAndId(user, companyId)
             .orElseThrow { NoSuchElementException("Company not found") }
             .toDto()
     }
 
-    override fun getContractor(companyId: Long, contractorId: Long): CompanyProfileDto {
+    override fun getContractorAssistant(companyId: Long, contractorId: Long): CompanyProfileDto {
         val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
         return userContractorRepository.findByIdAndCompanyIdAndUser(contractorId, companyId, user)
             .orElseThrow { NoSuchElementException("Contractor not found") }.toDto()

@@ -4,9 +4,12 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.springframework.stereotype.Service
+import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
+import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.promt.documentDescriptionPrompt
 import org.superapp.negotiatorbot.webclient.promt.documentRisksPrompt
+import org.superapp.negotiatorbot.webclient.service.company.CompanyService
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
 
@@ -24,10 +27,10 @@ interface AnalyseService {
 @Service
 class AnalyseServiceImpl(
     private val documentService: DocumentService,
+    private val companyService: CompanyService,
     private val openAiUserService: OpenAiUserService,
     private val s3Service: S3Service
 ) : AnalyseService {
-
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun detectRisks(documentId: Long) {
@@ -57,22 +60,31 @@ class AnalyseServiceImpl(
     }
 
     override fun updateThreadAndRun(documentId: Long, consumer: (Long) -> Unit) {
-        val doc = documentService.get(documentId)
-        openAiUserService.updateThread(doc.userId!!)
+        val assistant = documentService.get(documentId).getAssistant()
+        openAiUserService.updateThread(assistant)
         consumer.invoke(documentId)
     }
 
     private suspend fun provideResponseFromOpenAi(doc: DocumentMetadata, prompt: String): String {
         val fileContent = s3Service.download(doc.path!!)
-        val userId = doc.userId!!
+        val openAiAssistant = doc.getAssistant()
         val fullDocName = doc.getNameWithExtension()
 
-        openAiUserService.uploadFile(userId, fileContent.inputStream, fullDocName)
-        val result = openAiUserService.startDialogWIthUserPrompt(userId, prompt)
-        openAiUserService.deleteFilesFromOpenAi(userId)
+        openAiUserService.uploadFile(openAiAssistant, fileContent.inputStream, fullDocName)
+        val result = openAiUserService.startDialogWIthUserPrompt(openAiAssistant, prompt)
+        openAiUserService.deleteFilesFromOpenAi(openAiAssistant)
         return result.replace(
             regex = Regex("""【.*】"""),
             ""
         )
+    }
+
+    private fun DocumentMetadata.getAssistant() : OpenAiAssistant {
+        val relatedId = this.relatedId!!
+        return when (this.businessType) {
+            BusinessType.USER -> companyService.getCompanyAssistant(relatedId)
+            BusinessType.PARTNER -> companyService.getContractorAssistant(relatedId)
+            else -> TODO("Not supported document business type")
+        }
     }
 }

@@ -35,7 +35,7 @@ class OpenAiAssistantFileStorageServiceImpl(
             vectorStore.openAiVectorStoreId = vectorId
             vectorStore.openAiAssistant = openAiAssistant
             runBlocking {
-                openAiAssistantPort.updateAssistant(
+                openAiAssistantPort.addVectorStore(
                     openAiAssistant.getAssistantId(),
                     vectorStore.getVectorStoreId()
                 )

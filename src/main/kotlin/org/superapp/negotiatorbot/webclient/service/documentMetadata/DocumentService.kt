@@ -14,10 +14,7 @@ interface DocumentService {
     fun save(document: DocumentMetadata): DocumentMetadata
 
     fun batchSave(
-        userId: Long,
-        businessType: BusinessType,
-        relatedId: Long,
-        fileData: List<RawDocumentAndMetatype>
+        userId: Long, businessType: BusinessType, relatedId: Long, fileData: List<RawDocumentAndMetatype>
     ): List<DocumentMetadata>
 
     @Throws(NoSuchElementException::class)
@@ -45,23 +42,13 @@ class DocumentServiceImpl(
 
 
     override fun batchSave(
-        userId: Long,
-        businessType: BusinessType,
-        relatedId: Long,
-        fileData: List<RawDocumentAndMetatype>
+        userId: Long, businessType: BusinessType, relatedId: Long, fileData: List<RawDocumentAndMetatype>
     ): List<DocumentMetadata> {
-        val files = DocumentFactory.createFiles(
-            userId,
-            businessType,
-            relatedId,
-            fileData.map {
-                it.fileNameWithExtensions
-            },
-            fileData.map { it.documentType })
-            .filter {
+        val files = DocumentFactory.createFiles(userId, businessType, relatedId, fileData.map {
+            it.fileNameWithExtensions
+        }, fileData.map { it.documentType }).filter {
                 !documentMetadataRepository.existsByUserIdAndName(
-                    userId,
-                    it.name!!
+                    userId, it.name!!
                 )
             }
 
@@ -79,20 +66,15 @@ class DocumentServiceImpl(
 
     override fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto> {
         return documentMetadataRepository.findAllByBusinessTypeAndRelatedIdAndUserIdOrderByIdAsc(
-            businessType = BusinessType.USER,
-            companyId = companyId,
-            userId = userId
+            businessType = BusinessType.USER, companyId = companyId, userId = userId
         ).map { it.entityToDto() }
 
     }
 
     override fun getMetadataByContractorId(companyId: Long, contractorId: Long): List<DocumentMetadataDto> {
         return documentMetadataRepository.findAllByBusinessTypeAndRelatedIdAndUserIdOrderByIdAsc(
-            BusinessType.PARTNER,
-            contractorId,
-            companyId
-        )
-            .map { it.entityToDto() }
+            BusinessType.PARTNER, contractorId, companyId
+        ).map { it.entityToDto() }
     }
 
     override fun deleteDocument(documentId: Long) {
