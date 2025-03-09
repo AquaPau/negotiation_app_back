@@ -21,9 +21,6 @@ class OpenAiAssistant {
     @OneToOne(mappedBy = "openAiAssistant", cascade = [CascadeType.ALL], optional = true, orphanRemoval = true)
     var openAiAssistantFileStorage: OpenAiAssistantFileStorage? = null
 
-    @Column(nullable = false)
-    var userId: Long? = null
-
     @OptIn(BetaOpenAI::class)
     fun getAssistantId(): AssistantId {
         return AssistantId(assistantId!!)

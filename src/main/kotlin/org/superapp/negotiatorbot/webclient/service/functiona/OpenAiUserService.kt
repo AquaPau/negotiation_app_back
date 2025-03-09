@@ -19,17 +19,17 @@ private val log = KotlinLogging.logger {}
 
 interface OpenAiUserService {
     @Throws(NoSuchElementException::class)
-    fun startDialogWIthUserPrompt(userId: Long, prompt: String): String
-    fun uploadFile(userId: Long, fileContent: InputStream, fileName: String)
+    fun startDialogWIthUserPrompt(openAiAssistant: OpenAiAssistant, prompt: String): String
+    fun uploadFile(openAiAssistant: OpenAiAssistant, fileContent: InputStream, fileName: String)
     fun uploadFilesAndExtractCompanyData(
-        userId: Long,
+        openAiAssistant: OpenAiAssistant,
         documents: List<RawDocumentAndMetatype>,
         prompt: String
     ): String
 
-    fun deleteFilesFromOpenAi(userId: Long)
+    fun deleteFilesFromOpenAi(openAiAssistant: OpenAiAssistant)
 
-    fun updateThread(userId: Long)
+    fun updateThread(openAiAssistant: OpenAiAssistant)
 }
 
 @Service
@@ -39,10 +39,8 @@ class OpenAiUserServiceImpl(
 
     @OptIn(BetaOpenAI::class)
     @Throws(NoSuchElementException::class)
-    override fun startDialogWIthUserPrompt(userId: Long, prompt: String): String {
-        val openAiAssistant = getAssistant(userId)
+    override fun startDialogWIthUserPrompt(openAiAssistant: OpenAiAssistant, prompt: String): String {
         val response = runBlocking { openAiAssistantService.runRequest(prompt, openAiAssistant) }
-
 
         return if (response.isEmpty()) {
             "try again please"
@@ -51,48 +49,39 @@ class OpenAiUserServiceImpl(
         }
     }
 
-    override fun uploadFile(userId: Long, fileContent: InputStream, fileName: String) {
-        val assistant = getAssistant(userId)
-        openAiAssistantService.uploadFile(assistant, fileContent, fileName)
+    override fun uploadFile(openAiAssistant: OpenAiAssistant, fileContent: InputStream, fileName: String) {
+        openAiAssistantService.uploadFile(openAiAssistant, fileContent, fileName)
         log.info("Successfully uploaded file $fileName")
     }
 
     override fun uploadFilesAndExtractCompanyData(
-        userId: Long,
+        openAiAssistant: OpenAiAssistant,
         documents: List<RawDocumentAndMetatype>,
         prompt: String
     ): String {
-        val assistant = getAssistant(userId)
         documents.forEach {
             openAiAssistantService.uploadFile(
-                assistant,
+                openAiAssistant,
                 it.fileContent!!.inputStream(),
                 it.fileNameWithExtensions
             )
         }
-        return startDialogWIthUserPrompt(userId, prompt)
+        return startDialogWIthUserPrompt(openAiAssistant, prompt)
     }
 
-    override fun deleteFilesFromOpenAi(userId: Long) {
-        val assistant = getAssistant(userId)
-        openAiAssistantService.deleteVectorStoreFromAssistant(assistant)
-        log.info("Successfully deleted all filer for $userId")
+    override fun deleteFilesFromOpenAi(openAiAssistant: OpenAiAssistant) {
+        openAiAssistantService.deleteVectorStoreFromAssistant(openAiAssistant)
+        log.info("Successfully deleted all filer for $openAiAssistant")
     }
 
-    override fun updateThread(userId: Long) {
-        val assistant = getAssistant(userId)
-        openAiAssistantService.updateThread(assistant)
+    override fun updateThread(openAiAssistant: OpenAiAssistant) {
+        openAiAssistantService.updateThread(openAiAssistant)
     }
 
     @OptIn(BetaOpenAI::class)
     private fun formResponse(message: Message): String {
         val textContent = message.content.first() as? MessageContent.Text ?: error("Expected MessageContent.Text")
         return textContent.text.value
-    }
-
-    @Throws(NoSuchElementException::class)
-    private fun getAssistant(userId: Long): OpenAiAssistant {
-        return openAiAssistantService.getAssistant(userId)
     }
 
 }

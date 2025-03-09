@@ -27,7 +27,7 @@ class ContractorController(
 
     @GetMapping("/{companyId}/contractor/{contractorId}")
     fun getContractor(@PathVariable companyId: Long, @PathVariable contractorId: Long): CompanyProfileDto {
-        return companyService.getContractor(companyId, contractorId)
+        return companyService.getContractorAssistant(companyId, contractorId)
     }
 
     @DeleteMapping("/{contractorId}/contractor")

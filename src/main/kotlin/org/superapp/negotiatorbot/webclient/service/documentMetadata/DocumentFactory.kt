@@ -1,13 +1,12 @@
-package org.superapp.negotiatorbot.webclient.service.metadatafile
+package org.superapp.negotiatorbot.webclient.service.documentMetadata
 
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
-import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import java.util.*
 
 
-class DocumentHelper {
+class DocumentFactory {
 
 
     companion object {
@@ -15,19 +14,23 @@ class DocumentHelper {
         private const val S3_DELIMITER = "/"
         const val EXTENSION_DELIMITER = '.'
 
-        private val supportedExtensions = setOf("application/pdf", "csv", "json", "docx", "doc", "txt", "md", "pdf", "tex", "xml", "html")
+        private val supportedExtensions =
+            setOf("application/pdf", "csv", "json", "docx", "doc", "txt", "md", "pdf", "tex", "xml", "html")
 
-        @Throws(IllegalArgumentException::class)
         fun createFile(
-            user: User,
+            userId: Long,
             businessType: BusinessType,
+            relatedId: Long,
+            documentType: DocumentType,
             fileNameWithExtension: String,
         ): DocumentMetadata {
             val newFile = DocumentMetadata()
-            newFile.userId = user.id!!
-            newFile.setNameAndExtension(fileNameWithExtension)
+            newFile.userId = userId
             newFile.businessType = businessType
-            newFile.setPath(user.id!!, fileNameWithExtension)
+            newFile.relatedId = relatedId
+            newFile.documentType = documentType
+            newFile.setNameAndExtension(fileNameWithExtension)
+            newFile.defineAndSetS3Path()
             return newFile
         }
 
@@ -35,21 +38,18 @@ class DocumentHelper {
         fun createFiles(
             userId: Long,
             businessType: BusinessType,
-            companyId: Long,
-            contractorId: Long?,
+            relatedId: Long,
             fileNameWithExtension: List<String>,
             documentTypes: List<DocumentType>
         ): List<DocumentMetadata> {
             return fileNameWithExtension.mapIndexed { index, it ->
-                val newFile = DocumentMetadata()
-                newFile.userId = userId
-                newFile.companyId = companyId
-                newFile.contractorId = contractorId
-                newFile.setNameAndExtension(it)
-                newFile.businessType = businessType
-                newFile.documentType = documentTypes[index]
-                newFile.setPath(userId, it)
-                newFile
+                createFile(
+                    userId = userId,
+                    businessType = businessType,
+                    documentType = documentTypes[index],
+                    relatedId = relatedId,
+                    fileNameWithExtension = fileNameWithExtension[index],
+                )
             }
         }
 
@@ -83,8 +83,9 @@ class DocumentHelper {
         }
 
 
-        private fun DocumentMetadata.setPath(userId: Long, fileNameWithExtension: String) {
-            val s3Path = "${S3_DELIMITER}${ROOT_S3}/${userId}/${UUID.randomUUID()}/${fileNameWithExtension}"
+        private fun DocumentMetadata.defineAndSetS3Path() {
+            val s3Path =
+                "${S3_DELIMITER}${ROOT_S3}/${userId!!}/${businessType!!}/${relatedId!!}/${UUID.randomUUID()}/${name!!}.${extension!!}"
             this.path = s3Path
         }
 

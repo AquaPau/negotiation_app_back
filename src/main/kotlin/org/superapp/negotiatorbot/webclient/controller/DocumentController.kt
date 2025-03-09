@@ -9,7 +9,7 @@ import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import org.superapp.negotiatorbot.webclient.service.company.CompanyService
-import org.superapp.negotiatorbot.webclient.service.metadatafile.DocumentService
+import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
 import org.superapp.negotiatorbot.webclient.service.util.FileTransformationHelper
 import org.superapp.negotiatorbot.webclient.service.util.MultipartFileValidator
 
@@ -32,8 +32,7 @@ class DocumentController(
             launch {
                 companyService.uploadDocuments(
                     files = fileContents,
-                    companyId = companyId,
-                    contractorId = null,
+                    relatedId = companyId,
                     type = BusinessType.USER
                 )
             }
@@ -73,8 +72,7 @@ class DocumentController(
             launch {
                 companyService.uploadDocuments(
                     files = fileContents,
-                    companyId = companyId,
-                    contractorId = contractorId,
+                    relatedId = contractorId,
                     type = BusinessType.PARTNER
                 )
             }
