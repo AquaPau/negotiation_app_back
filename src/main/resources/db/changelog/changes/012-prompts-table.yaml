@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12
+      author: aquapau
+      changes:
+        - createTable:
+            tableName: prompt_data
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: auditory
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: prompt_text
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
