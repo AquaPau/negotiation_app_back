@@ -4,12 +4,12 @@ import org.springframework.web.bind.annotation.*
 import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.dto.company.CounterpartyDto
 import org.superapp.negotiatorbot.webclient.dto.company.NewCompanyProfile
-import org.superapp.negotiatorbot.webclient.service.company.CompanyService
+import org.superapp.negotiatorbot.webclient.service.contractor.ContractorCrudService
 
 @RestController
 @RequestMapping("/api/company")
 class CompanyContractorController(
-    private val companyService: CompanyService
+    private val contractorCrudService: ContractorCrudService
 ) {
 
     @PostMapping("/{companyId}/contractor")
@@ -17,22 +17,22 @@ class CompanyContractorController(
         @PathVariable companyId: Long,
         @RequestBody profile: NewCompanyProfile
     ): CompanyProfileDto {
-        return companyService.createCompany(companyId, profile, isOwn = false)
+        return contractorCrudService.create(companyId, profile)
     }
 
     @GetMapping("/{companyId}/contractor")
     fun getCounterPartiesByCompanyId(@PathVariable companyId: Long): List<CounterpartyDto> {
-        return companyService.getCounterparties(companyId)
+        return contractorCrudService.getContractorsByCompanyId(companyId)
     }
 
     @GetMapping("/{companyId}/contractor/{contractorId}")
     fun getContractor(@PathVariable companyId: Long, @PathVariable contractorId: Long): CompanyProfileDto {
-        return companyService.getContractor(companyId, contractorId)
+        return contractorCrudService.get(companyId, contractorId)
     }
 
     @DeleteMapping("/{contractorId}/contractor")
     fun deleteContractor(@PathVariable contractorId: Long) {
-        companyService.deleteContractor(contractorId)
+        contractorCrudService.delete(contractorId)
     }
 
 }

@@ -2,5 +2,5 @@ package org.superapp.negotiatorbot.webclient.enum
 
 enum class PromptType {
 
-    DESCRIPTION, RISKS
+    DESCRIPTION, RISKS, DEFAULT, PROJECT
 }

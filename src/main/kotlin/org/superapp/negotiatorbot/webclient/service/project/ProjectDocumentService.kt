@@ -3,13 +3,15 @@ package org.superapp.negotiatorbot.webclient.service.project
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
+import org.superapp.negotiatorbot.webclient.entity.Project
 import org.superapp.negotiatorbot.webclient.enum.BusinessType
 import org.superapp.negotiatorbot.webclient.repository.project.ProjectRepository
+import org.superapp.negotiatorbot.webclient.service.EnterpriseDocumentService
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
 
-interface ProjectDocumentService {
+interface ProjectDocumentService : EnterpriseDocumentService<Project> {
     fun uploadDocuments(files: List<RawDocumentAndMetatype>, relatedId: Long, type: BusinessType)
-    fun getDocuments(projectId: Long, project: BusinessType): List<DocumentMetadataDto>
+    fun getDocuments(projectId: Long, businessType: BusinessType): List<DocumentMetadataDto>
     fun deleteDocuments(projectId: Long)
     fun deleteDocumentById(documentId: Long, projectId: Long)
 }
@@ -20,10 +22,7 @@ class ProjectDocumentServiceImpl(
     private val projectRepository: ProjectRepository
 ) : ProjectDocumentService {
     override fun uploadDocuments(files: List<RawDocumentAndMetatype>, relatedId: Long, type: BusinessType) {
-        val user = when (type) {
-            BusinessType.PROJECT -> projectRepository.findById(relatedId).orElseThrow { NoSuchElementException() }.user
-            else -> throw UnsupportedOperationException()
-        }
+        val user = projectRepository.findById(relatedId).orElseThrow { NoSuchElementException() }.user
 
         documentService.batchSave(
             user!!.id!!,
@@ -33,10 +32,14 @@ class ProjectDocumentServiceImpl(
         )
     }
 
-    override fun getDocuments(projectId: Long, project: BusinessType): List<DocumentMetadataDto> {
+    override fun getDocuments(projectId: Long, businessType: BusinessType): List<DocumentMetadataDto> {
         val user = projectRepository.findById(projectId)
             .orElseThrow { NoSuchElementException() }.user
-        return documentService.getDocumentList(user!!.id!!, projectId)
+        return documentService.getDocumentList(
+            userId = user!!.id!!,
+            relatedId = projectId,
+            businessType = BusinessType.PROJECT
+        )
     }
 
     override fun deleteDocuments(projectId: Long) {

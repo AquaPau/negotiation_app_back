@@ -18,6 +18,9 @@ class Project {
 
     @Column
     var userGeneratedPrompt: String = ""
+
+    @Column(nullable = true, unique = true)
+    var assistantDbId: Long? = null
 }
 
 fun Project.toDto() =
