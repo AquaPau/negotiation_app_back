@@ -7,7 +7,10 @@ import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.dto.company.CounterpartyDto
 import org.superapp.negotiatorbot.webclient.dto.company.NewCompanyProfile
 import org.superapp.negotiatorbot.webclient.dto.dadata.DadataRequest
-import org.superapp.negotiatorbot.webclient.entity.*
+import org.superapp.negotiatorbot.webclient.entity.User
+import org.superapp.negotiatorbot.webclient.entity.UserCompany
+import org.superapp.negotiatorbot.webclient.entity.UserContractor
+import org.superapp.negotiatorbot.webclient.entity.toDto
 import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
 import org.superapp.negotiatorbot.webclient.exception.CompanyAlreadyExistsException
 import org.superapp.negotiatorbot.webclient.port.DadataPort
@@ -20,6 +23,7 @@ interface CompanyService {
     fun createCompany(companyId: Long? = null, request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto
 
     fun getCompanies(): List<CompanyProfileDto>
+
     fun getCompanyDtoById(companyId: Long): CompanyProfileDto
 
     fun getContractor(companyId: Long, contractorId: Long): CompanyProfileDto
@@ -75,6 +79,7 @@ class CompanyServiceImpl(
             .toDto()
     }
 
+    @Transactional
     override fun deleteCompany(companyId: Long) {
         val company = userCompanyRepository.findById(companyId)
             .orElseThrow { NoSuchElementException("User company is not found") }
@@ -86,8 +91,9 @@ class CompanyServiceImpl(
         userCompanyRepository.delete(company)
     }
 
+    @Transactional
     override fun deleteContractor(contractorId: Long) {
-        val contractor = userContractorRepository.findById(contractorId).orElseThrow()
+        val contractor = userContractorRepository.findById(contractorId).orElseThrow { NoSuchElementException() }
         companyDocumentService.deleteContractorDocuments(contractorId)
         userContractorRepository.delete(contractor)
     }

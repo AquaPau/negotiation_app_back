@@ -1,6 +1,7 @@
 package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
+import org.superapp.negotiatorbot.webclient.dto.project.ProjectDto
 
 @Entity
 @Table(name = "projects")
@@ -18,3 +19,10 @@ class Project {
     @Column
     var userGeneratedPrompt: String = ""
 }
+
+fun Project.toDto() =
+    ProjectDto(
+        customUserGeneratedName = this.customUserGeneratedName,
+        userId = user!!.id!!,
+        userGeneratedPrompt = userGeneratedPrompt
+    )
