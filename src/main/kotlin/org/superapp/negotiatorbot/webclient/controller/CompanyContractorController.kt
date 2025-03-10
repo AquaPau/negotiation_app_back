@@ -8,7 +8,7 @@ import org.superapp.negotiatorbot.webclient.service.company.CompanyService
 
 @RestController
 @RequestMapping("/api/company")
-class ContractorController(
+class CompanyContractorController(
     private val companyService: CompanyService
 ) {
 
@@ -27,7 +27,7 @@ class ContractorController(
 
     @GetMapping("/{companyId}/contractor/{contractorId}")
     fun getContractor(@PathVariable companyId: Long, @PathVariable contractorId: Long): CompanyProfileDto {
-        return companyService.getContractorAssistant(companyId, contractorId)
+        return companyService.getContractor(companyId, contractorId)
     }
 
     @DeleteMapping("/{contractorId}/contractor")

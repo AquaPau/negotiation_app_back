@@ -1,6 +1,8 @@
 package org.superapp.negotiatorbot.webclient.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 import org.superapp.negotiatorbot.webclient.entity.PromptText
 
-interface PromptTextRepository: JpaRepository<PromptText, Long>
+@Repository
+interface PromptTextRepository : JpaRepository<PromptText, Long>

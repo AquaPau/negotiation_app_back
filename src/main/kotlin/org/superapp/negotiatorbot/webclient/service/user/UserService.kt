@@ -13,8 +13,8 @@ import org.superapp.negotiatorbot.webclient.dto.user.UserDto
 import org.superapp.negotiatorbot.webclient.dto.user.UserRegistrationDto
 import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.enum.Roles
-import org.superapp.negotiatorbot.webclient.repository.RoleRepository
-import org.superapp.negotiatorbot.webclient.repository.UserRepository
+import org.superapp.negotiatorbot.webclient.repository.user.RoleRepository
+import org.superapp.negotiatorbot.webclient.repository.user.UserRepository
 
 
 interface UserService {
@@ -54,7 +54,7 @@ class UserServiceImpl(
 
         val role = roleRepository.findByName(Roles.ROLE_USER).orElseThrow()
         user.roles = listOf(role)
-        userRepository.save(user);
+        userRepository.save(user)
     }
 
     override fun findUserByEmail(email: String): User? {
@@ -66,7 +66,7 @@ class UserServiceImpl(
     }
 
     override fun findAllUsers(): List<UserRegistrationDto> {
-        val users = userRepository.findAll();
+        val users = userRepository.findAll()
         return users.map { mapToUserDto(it) }
     }
 
@@ -118,7 +118,7 @@ class UserServiceImpl(
             userRegistrationDto.firstName = name[0]
             userRegistrationDto.lastName = name[1]
             userRegistrationDto.email = user.email
-            return userRegistrationDto;
+            return userRegistrationDto
         }
     }
 }
