@@ -9,7 +9,6 @@ import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.enum.BusinessType
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import org.superapp.negotiatorbot.webclient.service.project.ProjectDocumentService
-import org.superapp.negotiatorbot.webclient.service.project.ProjectService
 import org.superapp.negotiatorbot.webclient.service.util.FileTransformationHelper
 import org.superapp.negotiatorbot.webclient.service.util.MultipartFileValidator
 
@@ -30,9 +29,7 @@ class ProjectDocumentController(
         runBlocking(Dispatchers.IO) {
             launch {
                 projectDocumentService.uploadDocuments(
-                    files = fileContents,
-                    relatedId = projectId,
-                    type = BusinessType.PROJECT
+                    files = fileContents, relatedId = projectId, type = BusinessType.PROJECT
                 )
             }
         }

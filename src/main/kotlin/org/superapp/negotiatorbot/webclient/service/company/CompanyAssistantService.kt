@@ -2,13 +2,10 @@ package org.superapp.negotiatorbot.webclient.service.company
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
-import org.superapp.negotiatorbot.webclient.entity.toDto
 import org.superapp.negotiatorbot.webclient.repository.company.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.company.UserContractorRepository
 import org.superapp.negotiatorbot.webclient.service.functiona.OpenAiAssistantService
-import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 interface CompanyAssistantService {
     fun getCompanyAssistant(companyId: Long): OpenAiAssistant

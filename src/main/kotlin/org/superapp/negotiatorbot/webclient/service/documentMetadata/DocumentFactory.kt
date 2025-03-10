@@ -1,6 +1,7 @@
 package org.superapp.negotiatorbot.webclient.service.documentMetadata
 
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
+import org.superapp.negotiatorbot.webclient.enum.BusinessType
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import java.util.*
 

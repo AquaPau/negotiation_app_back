@@ -6,8 +6,10 @@ import kotlinx.coroutines.launch
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
+import org.superapp.negotiatorbot.webclient.enum.BusinessType
 import org.superapp.negotiatorbot.webclient.promt.documentDescriptionPrompt
 import org.superapp.negotiatorbot.webclient.promt.documentRisksPrompt
+import org.superapp.negotiatorbot.webclient.service.company.CompanyAssistantService
 import org.superapp.negotiatorbot.webclient.service.company.CompanyService
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
@@ -26,7 +28,7 @@ interface AnalyseService {
 @Service
 class AnalyseServiceImpl(
     private val documentService: DocumentService,
-    private val companyService: CompanyService,
+    private val companyAssistantService: CompanyAssistantService,
     private val openAiUserService: OpenAiUserService,
     private val s3Service: S3Service
 ) : AnalyseService {
@@ -78,11 +80,11 @@ class AnalyseServiceImpl(
         )
     }
 
-    private fun DocumentMetadata.getAssistant() : OpenAiAssistant {
+    private fun DocumentMetadata.getAssistant(): OpenAiAssistant {
         val relatedId = this.relatedId!!
         return when (this.businessType) {
-            BusinessType.USER -> companyService.getCompanyAssistant(relatedId)
-            BusinessType.PARTNER -> companyService.getContractor(relatedId)
+            BusinessType.USER -> companyAssistantService.getCompanyAssistant(relatedId)
+            BusinessType.PARTNER -> companyAssistantService.getContractorAssistant(relatedId)
             else -> TODO("Not supported document business type")
         }
     }

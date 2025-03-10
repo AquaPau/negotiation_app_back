@@ -54,7 +54,7 @@ class UserServiceImpl(
 
         val role = roleRepository.findByName(Roles.ROLE_USER).orElseThrow()
         user.roles = listOf(role)
-        userRepository.save(user);
+        userRepository.save(user)
     }
 
     override fun findUserByEmail(email: String): User? {
@@ -66,7 +66,7 @@ class UserServiceImpl(
     }
 
     override fun findAllUsers(): List<UserRegistrationDto> {
-        val users = userRepository.findAll();
+        val users = userRepository.findAll()
         return users.map { mapToUserDto(it) }
     }
 
@@ -118,7 +118,7 @@ class UserServiceImpl(
             userRegistrationDto.firstName = name[0]
             userRegistrationDto.lastName = name[1]
             userRegistrationDto.email = user.email
-            return userRegistrationDto;
+            return userRegistrationDto
         }
     }
 }
