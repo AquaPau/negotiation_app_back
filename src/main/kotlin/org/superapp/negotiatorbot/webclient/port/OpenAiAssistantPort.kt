@@ -25,14 +25,17 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.config.OpenAiAssistantConfig
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
+import java.time.LocalDateTime
 
 
 interface OpenAiAssistantPort {
 
-    fun createAssistant(userId: Long): OpenAiAssistant
+    @OptIn(BetaOpenAI::class)
+    fun createAssistant(): Pair<Assistant, Thread>
+    suspend fun existsInOpenAi(openAiAssistant: OpenAiAssistant): Boolean
 
     @OptIn(BetaOpenAI::class)
-    fun updateAssistant(assistantId: AssistantId, vectorId: VectorStoreId): Assistant
+    fun addVectorStore(assistantId: AssistantId, vectorId: VectorStoreId): Assistant
 
     @OptIn(BetaOpenAI::class)
     fun createVectorStore(assistantId: AssistantId): VectorStore
@@ -43,7 +46,8 @@ interface OpenAiAssistantPort {
     fun deleteOpenAiFile(fileId: FileId)
 
     @OptIn(BetaOpenAI::class)
-    suspend fun updateThread(assistant: OpenAiAssistant): Thread
+    suspend fun refreshThread(assistant: OpenAiAssistant): Thread
+    suspend fun deleteThread(oldThreadId: String?)
 
     @OptIn(BetaOpenAI::class)
     suspend fun createMessage(threadId: ThreadId, prompt: String): Message
@@ -66,24 +70,24 @@ class OpenAiAssistantPortImpl(
     private val log = KotlinLogging.logger {}
 
     @OptIn(BetaOpenAI::class)
-    override fun createAssistant(userId: Long): OpenAiAssistant {
+    override fun createAssistant(): Pair<Assistant, Thread> {
 
         val assistant = runBlocking {
             openAI.assistant(
                 request = AssistantRequest(
-                    name = "For userid: ${userId}",
+                    name = "Assistant created at: ${LocalDateTime.now()}",
                     instructions = openAiAssistantConfig.instructions,
                     model = ModelId(openAiAssistantConfig.model),
                 )
             )
         }
-        val thread = runBlocking { getThread(userId) }
-        return createAssistant(assistant, thread, userId)
+        val thread = runBlocking { getThread(assistant.id) }
+        return assistant to thread
     }
 
 
     @OptIn(BetaOpenAI::class)
-    override fun updateAssistant(assistantId: AssistantId, vectorId: VectorStoreId): Assistant {
+    override fun addVectorStore(assistantId: AssistantId, vectorId: VectorStoreId): Assistant {
         return runBlocking {
             openAI.assistant(
                 id = assistantId,
@@ -167,33 +171,35 @@ class OpenAiAssistantPortImpl(
 
 
     @OptIn(BetaOpenAI::class)
-    private suspend fun getThread(userId: Long) = openAI.thread(
+    private suspend fun getThread(assistantId: AssistantId) = openAI.thread(
         request = ThreadRequest(
             metadata = mapOf(
-                "user" to "${userId}"
+                "user" to "thread for assistant id ${assistantId.id}"
             )
         )
     )
 
+
     @OptIn(BetaOpenAI::class)
-    private fun createAssistant(assistant: Assistant, thread: Thread, userId: Long): OpenAiAssistant {
-        val openAiAssistant = OpenAiAssistant()
-        openAiAssistant.userId = userId
-        openAiAssistant.threadId = thread.id.id
-        openAiAssistant.assistantId = assistant.id.id
-        return openAiAssistant
+    override suspend fun refreshThread(assistant: OpenAiAssistant): Thread {
+        deleteThread(assistant.threadId!!)
+        return getThread(assistant.getAssistantId())
     }
 
     @OptIn(BetaOpenAI::class)
-    override suspend fun updateThread(assistant: OpenAiAssistant): Thread {
-        val oldThreadId = assistant.threadId
-        openAI.delete(
-            id = ThreadId(oldThreadId!!),
-        )
-        return getThread(assistant.userId!!)
-
+    override suspend fun deleteThread(threadId: String?) {
+        threadId?.let {
+            val oldThreadId = ThreadId(threadId)
+            openAI.thread(id = oldThreadId)?.let {
+                openAI.delete(id = oldThreadId)
+            }
+        }
     }
 
+    @OptIn(BetaOpenAI::class)
+    override suspend fun existsInOpenAi(openAiAssistant: OpenAiAssistant): Boolean {
+        return openAI.assistant(openAiAssistant.getAssistantId()) != null
+    }
 
     @OptIn(BetaOpenAI::class)
     override suspend fun processRequestRun(threadId: ThreadId, runId: RunId): List<Message> {

@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.repository.UserRepository
+import org.superapp.negotiatorbot.webclient.repository.user.UserRepository
 import java.util.*
 import java.util.stream.Collectors
 
