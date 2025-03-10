@@ -56,7 +56,7 @@ class DocumentServiceImpl(
         }
 
         files.forEachIndexed { index, file ->
-            s3Service.upload(file.path!!, fileData[index].fileContent!!)
+            s3Service.uploadToS3(file, fileData[index])
         }
 
         documentMetadataRepository.saveAll(files)
@@ -77,13 +77,13 @@ class DocumentServiceImpl(
 
     override fun deleteDocument(documentId: Long) {
         val documentMetadata = documentMetadataRepository.findById(documentId).orElseThrow()
-        s3Service.delete(documentMetadata.path!!)
+        s3Service.delete(documentMetadata)
         documentMetadataRepository.delete(documentMetadata)
     }
 
     override fun deleteDocument(businessType: BusinessType, id: Long) {
         val docs = documentMetadataRepository.findAllByBusinessTypeAndRelatedId(businessType, id)
-        docs.forEach { s3Service.delete(it.path!!) }
+        docs.forEach { s3Service.delete(it) }
         documentMetadataRepository.deleteAll(docs)
     }
 

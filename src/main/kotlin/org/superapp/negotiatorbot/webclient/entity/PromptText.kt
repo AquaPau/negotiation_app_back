@@ -1,6 +1,7 @@
 package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
+import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import org.superapp.negotiatorbot.webclient.enum.LegalType
 import org.superapp.negotiatorbot.webclient.enum.PromptType
 
@@ -17,7 +18,7 @@ class PromptText {
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    var type: LegalType? = null
+    var type: DocumentType? = null
 
     @Column
     var promptText: String? = null

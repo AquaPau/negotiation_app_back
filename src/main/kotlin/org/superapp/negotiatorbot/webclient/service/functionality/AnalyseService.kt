@@ -15,6 +15,7 @@ import org.superapp.negotiatorbot.webclient.enum.LegalType
 import org.superapp.negotiatorbot.webclient.enum.PromptType
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
 import org.superapp.negotiatorbot.webclient.service.functionality.openai.OpenAiUserService
+import org.superapp.negotiatorbot.webclient.service.functionality.task.TaskService
 import org.superapp.negotiatorbot.webclient.service.project.ProjectService
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
 import org.superapp.negotiatorbot.webclient.service.user.UserService
@@ -33,6 +34,7 @@ interface AnalyseService {
 @Service
 class AnalyseServiceImpl(
     private val documentService: DocumentService,
+    private val taskService: TaskService,
     private val projectService: ProjectService,
     private val userService: UserService,
     private val companyAssistantService: AssistantService<UserCompany>,
@@ -89,12 +91,13 @@ class AnalyseServiceImpl(
     }
 
     private suspend fun provideResponseFromOpenAi(doc: DocumentMetadata, prompt: String): String {
-        val fileContent = s3Service.download(doc.path!!)
+        val task = taskService.getTask(doc)
+        val fileContent = s3Service.download(doc, task)
         val openAiAssistant = doc.getAssistant()
         val fullDocName = doc.getNameWithExtension()
 
-        openAiUserService.uploadFile(openAiAssistant, fileContent.inputStream, fullDocName)
-        val result = openAiUserService.startDialogWIthUserPrompt(openAiAssistant, prompt)
+        openAiUserService.uploadFile(openAiAssistant, fileContent.inputStream, fullDocName, task)
+        val result = openAiUserService.startDialogWIthUserPrompt(openAiAssistant, prompt, task)
         openAiUserService.deleteFilesFromOpenAi(openAiAssistant)
         return result.replace(
             regex = Regex("""【.*】"""),
