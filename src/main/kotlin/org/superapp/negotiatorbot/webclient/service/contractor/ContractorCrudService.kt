@@ -2,6 +2,7 @@ package org.superapp.negotiatorbot.webclient.service.contractor
 
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.dto.company.CounterpartyDto
 import org.superapp.negotiatorbot.webclient.dto.company.NewCompanyProfile
@@ -23,6 +24,7 @@ interface ContractorCrudService : EnterpriseCrudService<UserContractor> {
 
 }
 
+@Service
 class ContractorCrudServiceImpl(
     private val userService: UserService,
     private val userContractorRepository: UserContractorRepository,

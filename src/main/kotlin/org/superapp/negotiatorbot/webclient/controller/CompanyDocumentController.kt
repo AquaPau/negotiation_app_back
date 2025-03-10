@@ -30,8 +30,7 @@ class CompanyDocumentController(
             launch {
                 companyDocumentService.uploadDocuments(
                     files = fileContents,
-                    relatedId = companyId,
-                    type = BusinessType.USER
+                    relatedId = companyId
                 )
             }
         }
@@ -50,45 +49,6 @@ class CompanyDocumentController(
     @DeleteMapping("{companyId}/document/{documentId}")
     fun deleteCompanyDocumentById(@PathVariable companyId: Long, @PathVariable documentId: Long) {
         companyDocumentService.deleteDocumentById(documentId, companyId)
-    }
-
-    @DeleteMapping("{companyId}/contractor/{contractorId}/document/{documentId}")
-    fun deleteContractorDocumentById(
-        @PathVariable companyId: Long,
-        @PathVariable contractorId: Long,
-        @PathVariable documentId: Long
-    ) {
-        companyDocumentService.deleteDocumentById(documentId, companyId, contractorId)
-    }
-
-    @GetMapping("/{companyId}/contractor/{contractorId}/document")
-    fun getDocumentsInfo(@PathVariable companyId: Long, @PathVariable contractorId: Long): List<DocumentMetadataDto> {
-        return companyDocumentService.getMetadataByContractorId(companyId, contractorId)
-    }
-
-    @PutMapping("/{companyId}/contractor/{contractorId}/document")
-    fun uploadCounterpartyDocuments(
-        @RequestParam("documents") files: List<MultipartFile>,
-        @RequestParam("types") types: List<DocumentType>,
-        @PathVariable("companyId") companyId: Long,
-        @PathVariable("contractorId") contractorId: Long
-    ) {
-        val (fileNamesWithExtensions, fileContents) = FileTransformationHelper.extractLoadedData(files, types)
-        MultipartFileValidator.validate(files, fileNamesWithExtensions)
-        runBlocking(Dispatchers.IO) {
-            launch {
-                companyDocumentService.uploadDocuments(
-                    files = fileContents,
-                    relatedId = contractorId,
-                    type = BusinessType.PARTNER
-                )
-            }
-        }
-    }
-
-    @DeleteMapping("/{companyId}/contractor/{contractorId}/document")
-    fun deleteDocuments(@PathVariable companyId: Long, @PathVariable contractorId: Long) {
-        companyDocumentService.deleteContractorDocuments(contractorId)
     }
 
 }
