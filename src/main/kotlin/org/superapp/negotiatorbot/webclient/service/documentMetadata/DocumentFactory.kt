@@ -53,6 +53,25 @@ class DocumentFactory {
             }
         }
 
+        fun createFiles(
+            userId: Long,
+            businessType: BusinessType,
+            companyId: Long,
+            contractorId: Long,
+            fileNameWithExtension: List<String>,
+            documentTypes: List<DocumentType>
+        ): List<DocumentMetadata> {
+            return fileNameWithExtension.mapIndexed { index, it ->
+                createFile(
+                    userId = userId,
+                    businessType = businessType,
+                    documentType = documentTypes[index],
+                    relatedId = contractorId,
+                    fileNameWithExtension = fileNameWithExtension[index],
+                )
+            }
+        }
+
 
         @Throws(IllegalArgumentException::class)
         private fun DocumentMetadata.setNameAndExtension(fileNameWithExtension: String) {

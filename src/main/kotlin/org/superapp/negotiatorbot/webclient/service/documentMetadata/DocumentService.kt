@@ -21,9 +21,7 @@ interface DocumentService {
     @Throws(NoSuchElementException::class)
     fun get(serverSideFileId: Long): DocumentMetadata
 
-    fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto>
-
-    fun getMetadataByContractorId(companyId: Long, contractorId: Long): List<DocumentMetadataDto>
+    fun getDocumentList(relatedId: Long, userId: Long, businessType: BusinessType): List<DocumentMetadataDto>
 
     fun deleteDocument(documentId: Long)
 
@@ -69,16 +67,11 @@ class DocumentServiceImpl(
         return documentMetadataRepository.findById(serverSideFileId).orElseThrow()
     }
 
-    override fun getDocumentList(userId: Long, relatedId: Long): List<DocumentMetadataDto> {
+    override fun getDocumentList(relatedId: Long, userId: Long, businessType: BusinessType): List<DocumentMetadataDto> {
         return documentMetadataRepository.findAllByBusinessTypeAndRelatedIdAndUserIdOrderByIdAsc(
-            businessType = BusinessType.USER, companyId = relatedId, userId = userId
-        ).map { it.entityToDto() }
-
-    }
-
-    override fun getMetadataByContractorId(companyId: Long, contractorId: Long): List<DocumentMetadataDto> {
-        return documentMetadataRepository.findAllByBusinessTypeAndRelatedIdAndUserIdOrderByIdAsc(
-            BusinessType.PARTNER, contractorId, companyId
+            businessType = businessType,
+            relatedId = relatedId,
+            userId = userId
         ).map { it.entityToDto() }
     }
 

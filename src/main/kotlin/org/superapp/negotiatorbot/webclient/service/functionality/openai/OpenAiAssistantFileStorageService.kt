@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.webclient.service.functiona
+package org.superapp.negotiatorbot.webclient.service.functionality.openai
 
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.assistant.AssistantId
