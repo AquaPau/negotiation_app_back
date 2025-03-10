@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.webclient.repository
+package org.superapp.negotiatorbot.webclient.repository.company
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.superapp.negotiatorbot.webclient.entity.User

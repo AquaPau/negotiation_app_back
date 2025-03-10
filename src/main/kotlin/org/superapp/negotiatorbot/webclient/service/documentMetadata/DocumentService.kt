@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.*
+import org.superapp.negotiatorbot.webclient.enum.BusinessType
 import org.superapp.negotiatorbot.webclient.repository.DocumentMetadataRepository
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
 
@@ -26,9 +27,13 @@ interface DocumentService {
 
     fun deleteDocument(documentId: Long)
 
-    fun deleteContractorDocuments(contractorId: Long)
+    fun deleteDocument(businessType: BusinessType, id: Long)
 
-    fun deleteCompanyDocuments(companyId: Long)
+    fun getDocumentByRelatedIdAndDocumentId(
+        documentId: Long,
+        relatedId: Long,
+        businessType: BusinessType
+    ): DocumentMetadata
 }
 
 
@@ -47,10 +52,10 @@ class DocumentServiceImpl(
         val files = DocumentFactory.createFiles(userId, businessType, relatedId, fileData.map {
             it.fileNameWithExtensions
         }, fileData.map { it.documentType }).filter {
-                !documentMetadataRepository.existsByUserIdAndName(
-                    userId, it.name!!
-                )
-            }
+            !documentMetadataRepository.existsByUserIdAndName(
+                userId, it.name!!
+            )
+        }
 
         files.forEachIndexed { index, file ->
             s3Service.upload(file.path!!, fileData[index].fileContent!!)
@@ -64,9 +69,9 @@ class DocumentServiceImpl(
         return documentMetadataRepository.findById(serverSideFileId).orElseThrow()
     }
 
-    override fun getDocumentList(userId: Long, companyId: Long): List<DocumentMetadataDto> {
+    override fun getDocumentList(userId: Long, relatedId: Long): List<DocumentMetadataDto> {
         return documentMetadataRepository.findAllByBusinessTypeAndRelatedIdAndUserIdOrderByIdAsc(
-            businessType = BusinessType.USER, companyId = companyId, userId = userId
+            businessType = BusinessType.USER, companyId = relatedId, userId = userId
         ).map { it.entityToDto() }
 
     }
@@ -83,16 +88,21 @@ class DocumentServiceImpl(
         documentMetadataRepository.delete(documentMetadata)
     }
 
-    override fun deleteContractorDocuments(contractorId: Long) {
-        val docs = documentMetadataRepository.findAllByBusinessTypeAndRelatedId(BusinessType.PARTNER, contractorId)
+    override fun deleteDocument(businessType: BusinessType, id: Long) {
+        val docs = documentMetadataRepository.findAllByBusinessTypeAndRelatedId(businessType, id)
         docs.forEach { s3Service.delete(it.path!!) }
         documentMetadataRepository.deleteAll(docs)
     }
 
-    override fun deleteCompanyDocuments(companyId: Long) {
-        val docs = documentMetadataRepository.findAllByBusinessTypeAndRelatedId(BusinessType.USER, companyId)
-        docs.forEach { s3Service.delete(it.path!!) }
-        documentMetadataRepository.deleteAll(docs)
+    override fun getDocumentByRelatedIdAndDocumentId(
+        documentId: Long,
+        relatedId: Long,
+        businessType: BusinessType
+    ): DocumentMetadata {
+        return documentMetadataRepository.findByIdAndBusinessTypeAndRelatedId(documentId, businessType, relatedId)
+            .orElseThrow {
+                NoSuchElementException()
+            }
     }
 
     private fun DocumentMetadata.entityToDto(): DocumentMetadataDto {

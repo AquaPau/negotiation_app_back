@@ -1,6 +1,7 @@
 package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
+import org.superapp.negotiatorbot.webclient.enum.BusinessType
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 
 
@@ -43,5 +44,3 @@ class DocumentMetadata {
 
     fun getNameWithExtension() = "$name.$extension"
 }
-
-enum class BusinessType { USER, PARTNER, PROJECT }

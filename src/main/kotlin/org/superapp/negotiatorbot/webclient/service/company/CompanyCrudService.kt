@@ -7,17 +7,12 @@ import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.dto.company.CounterpartyDto
 import org.superapp.negotiatorbot.webclient.dto.company.NewCompanyProfile
 import org.superapp.negotiatorbot.webclient.dto.dadata.DadataRequest
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
-import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.*
-import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
 import org.superapp.negotiatorbot.webclient.exception.CompanyAlreadyExistsException
 import org.superapp.negotiatorbot.webclient.port.DadataPort
-import org.superapp.negotiatorbot.webclient.repository.UserCompanyRepository
-import org.superapp.negotiatorbot.webclient.repository.UserContractorRepository
-import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
-import org.superapp.negotiatorbot.webclient.service.functiona.OpenAiAssistantService
+import org.superapp.negotiatorbot.webclient.repository.company.UserCompanyRepository
+import org.superapp.negotiatorbot.webclient.repository.company.UserContractorRepository
 import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 interface CompanyService {
@@ -27,24 +22,15 @@ interface CompanyService {
     fun getCompanies(): List<CompanyProfileDto>
     fun getCompanyDtoById(companyId: Long): CompanyProfileDto
 
-    fun deleteCompany(companyId: Long)
+    fun getContractor(companyId: Long, contractorId: Long): CompanyProfileDto
 
-    fun getContractorAssistant(companyId: Long, contractorId: Long): CompanyProfileDto
+    fun deleteCompany(companyId: Long)
 
     fun deleteContractor(contractorId: Long)
 
-    fun uploadDocuments(
-        files: List<RawDocumentAndMetatype>,
-        relatedId: Long,
-        type: BusinessType
-    )
-
     fun getCounterparties(companyId: Long): List<CounterpartyDto>
 
-    fun getDocuments(companyId: Long, type: BusinessType): List<DocumentMetadataDto>
 
-    fun getCompanyAssistant(companyId: Long): OpenAiAssistant
-    fun getContractorAssistant(contractorId: Long): OpenAiAssistant
 }
 
 @Service
@@ -52,47 +38,27 @@ class CompanyServiceImpl(
     private val userService: UserService,
     private val userCompanyRepository: UserCompanyRepository,
     private val userContractorRepository: UserContractorRepository,
-    private val openAiAssistantService: OpenAiAssistantService,
-    private val documentService: DocumentService,
+    private val companyDocumentService: CompanyDocumentService,
     private val dadataPort: DadataPort,
     @Value("\${dadata.token}") private val dadataToken: String
 ) : CompanyService {
 
     @Transactional
-    override fun getCompanyAssistant(companyId: Long): OpenAiAssistant {
-        val userCompany = userCompanyRepository.findById(companyId).orElseThrow()
-       return  if(userCompany.assistantDbId != null) {
-            openAiAssistantService.getAssistant(userCompany.assistantDbId!!)
-        } else{
-            val assistant = openAiAssistantService.createAssistant()
-           userCompany.assistantDbId = assistant.id
-           userCompanyRepository.save(userCompany)
-           return assistant
-        }
-    }
-
-    override fun getContractorAssistant(contractorId: Long): OpenAiAssistant {
-        val userContractor = userContractorRepository.findById(contractorId).orElseThrow()
-        return  if(userContractor.assistantDbId != null) {
-            openAiAssistantService.getAssistant(userContractor.assistantDbId!!)
-        } else{
-            val assistant = openAiAssistantService.createAssistant()
-            userContractor.assistantDbId = assistant.id
-            userContractorRepository.save(userContractor)
-            return assistant
-        }
-    }
-
-    @Transactional
     override fun createCompany(companyId: Long?, request: NewCompanyProfile, isOwn: Boolean): CompanyProfileDto {
         val user = userService.findById(request.userId)
             ?: throw NoSuchElementException("User ${request.userId} is not found")
-        if (isOwn) {
-            return createOwnCompany(user, request)
+        return if (isOwn) {
+            createOwnCompany(user, request)
         } else {
             userCompanyRepository.findById(companyId!!).orElseThrow { NoSuchElementException("Company doesn't exist") }
-            return createContractor(user, companyId, request)
+            createContractor(user, companyId, request)
         }
+    }
+
+    override fun getContractor(companyId: Long, contractorId: Long): CompanyProfileDto {
+        val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
+        return userContractorRepository.findByIdAndCompanyIdAndUser(contractorId, companyId, user)
+            .orElseThrow { NoSuchElementException("Contractor not found") }.toDto()
     }
 
     override fun getCompanies(): List<CompanyProfileDto> {
@@ -109,51 +75,20 @@ class CompanyServiceImpl(
             .toDto()
     }
 
-    override fun getContractorAssistant(companyId: Long, contractorId: Long): CompanyProfileDto {
-        val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
-        return userContractorRepository.findByIdAndCompanyIdAndUser(contractorId, companyId, user)
-            .orElseThrow { NoSuchElementException("Contractor not found") }.toDto()
-    }
-
     override fun deleteCompany(companyId: Long) {
         val company = userCompanyRepository.findById(companyId)
             .orElseThrow { NoSuchElementException("User company is not found") }
         val contractors = userContractorRepository.findAllByCompanyId(companyId)
 
-        documentService.deleteCompanyDocuments(company.id!!)
-        contractors.forEach { documentService.deleteContractorDocuments(it.id!!) }
+        companyDocumentService.deleteCompanyDocuments(companyId)
 
         userContractorRepository.deleteAll(contractors)
         userCompanyRepository.delete(company)
     }
 
-    override fun uploadDocuments(
-        files: List<RawDocumentAndMetatype>,
-        relatedId: Long,
-        type: BusinessType
-    ) {
-        val user = when (type) {
-            BusinessType.USER -> userCompanyRepository.findById(relatedId)
-                .orElseThrow { NoSuchElementException("Own company is not found") }.user
-
-            BusinessType.PARTNER -> userContractorRepository.findById(relatedId)
-                .orElseThrow { NoSuchElementException("Counterparty is not found") }.user
-
-            BusinessType.PROJECT -> TODO()
-        }
-
-        documentService.batchSave(
-            user!!.id!!,
-            type,
-            relatedId,
-            files
-        )
-
-    }
-
     override fun deleteContractor(contractorId: Long) {
         val contractor = userContractorRepository.findById(contractorId).orElseThrow()
-        documentService.deleteContractorDocuments(contractorId)
+        companyDocumentService.deleteContractorDocuments(contractorId)
         userContractorRepository.delete(contractor)
     }
 
@@ -163,12 +98,6 @@ class CompanyServiceImpl(
         return userContractorRepository.findAllByCompanyIdAndUser(companyId, user!!).map {
             CounterpartyDto(it.id!!, it.customUserGeneratedName)
         }
-    }
-
-    override fun getDocuments(companyId: Long, type: BusinessType): List<DocumentMetadataDto> {
-        val user = userCompanyRepository.findById(companyId)
-            .orElseThrow { NoSuchElementException("Company is not found") }.user
-        return documentService.getDocumentList(user!!.id!!, companyId)
     }
 
     private fun createOwnCompany(

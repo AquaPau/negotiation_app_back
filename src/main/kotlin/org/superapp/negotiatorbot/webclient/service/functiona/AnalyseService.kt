@@ -4,7 +4,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.entity.BusinessType
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.promt.documentDescriptionPrompt
@@ -83,7 +82,7 @@ class AnalyseServiceImpl(
         val relatedId = this.relatedId!!
         return when (this.businessType) {
             BusinessType.USER -> companyService.getCompanyAssistant(relatedId)
-            BusinessType.PARTNER -> companyService.getContractorAssistant(relatedId)
+            BusinessType.PARTNER -> companyService.getContractor(relatedId)
             else -> TODO("Not supported document business type")
         }
     }
