@@ -10,6 +10,8 @@ import org.superapp.negotiatorbot.webclient.enum.BusinessType
 import org.superapp.negotiatorbot.webclient.repository.TaskRepository
 
 interface TaskService {
+    fun getById(id: Long): Task
+    fun getByTypeAndReference(type: TaskType, referenceId: Long): Task
     fun getTask(document: DocumentMetadata): Task
     fun getTask(project: Project): Task
     fun changeStatus(task: Task, status: TaskStatus): Task
@@ -20,11 +22,19 @@ interface TaskService {
 class TaskServiceImpl(
     private val taskRepository: TaskRepository,
 ) : TaskService {
+    override fun getById(id: Long): Task {
+        return taskRepository.findById(id).orElseThrow()
+    }
 
     override fun getTask(document: DocumentMetadata): Task {
         val type = document.statusMapping()
         val relatedId = document.id!!
         return findOrCreate(type, relatedId)
+    }
+
+    override fun getByTypeAndReference(type: TaskType, referenceId: Long): Task {
+        return taskRepository.findByTaskTypeAndRelatedId(type, referenceId)
+            ?: throw NoSuchElementException("No such task with type: [$type] related id: [$referenceId]")
     }
 
     override fun getTask(project: Project): Task {
