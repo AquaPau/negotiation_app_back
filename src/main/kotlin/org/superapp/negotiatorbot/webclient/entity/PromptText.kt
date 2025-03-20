@@ -1,9 +1,9 @@
 package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
-import org.superapp.negotiatorbot.webclient.enum.LegalType
-import org.superapp.negotiatorbot.webclient.enum.PromptType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.LegalType
+import org.superapp.negotiatorbot.webclient.enums.PromptType
 
 @Table(name = "prompt_data")
 @Entity

@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.webclient.entity.task
+package org.superapp.negotiatorbot.webclient.enums
 
 enum class TaskStatus {
     CREATED,
@@ -7,5 +7,7 @@ enum class TaskStatus {
     SENT_TO_ASSISTANT,
     ERROR_UPLOADING_TO_ASSISTANT,
     ERROR_ASSISTANT_REPLY,
-    SUCCESS_ASSISTANT_REPLY,
+    FINISHED,
+    UNEXPECTED_ERROR,
+    ERROR_PARSE_PARAMS
 }

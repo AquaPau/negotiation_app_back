@@ -1,10 +1,12 @@
 package org.superapp.negotiatorbot.webclient.entity.task
 
 import jakarta.persistence.*
+import org.superapp.negotiatorbot.webclient.enums.TaskStatus
+import org.superapp.negotiatorbot.webclient.enums.TaskType
 
 @Entity
 @Table(name = "tasks", uniqueConstraints = [UniqueConstraint(columnNames = ["task_type", "related_id"])])
-class Task(
+class TaskRecord(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

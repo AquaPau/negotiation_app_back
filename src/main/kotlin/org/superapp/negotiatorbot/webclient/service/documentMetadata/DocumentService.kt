@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.*
-import org.superapp.negotiatorbot.webclient.enum.BusinessType
+import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.repository.DocumentMetadataRepository
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
 

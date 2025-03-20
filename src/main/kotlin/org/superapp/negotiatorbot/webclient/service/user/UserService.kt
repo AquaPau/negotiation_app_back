@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.dto.user.UserDto
 import org.superapp.negotiatorbot.webclient.dto.user.UserRegistrationDto
 import org.superapp.negotiatorbot.webclient.entity.User
-import org.superapp.negotiatorbot.webclient.enum.Roles
+import org.superapp.negotiatorbot.webclient.enums.Roles
 import org.superapp.negotiatorbot.webclient.repository.user.RoleRepository
 import org.superapp.negotiatorbot.webclient.repository.user.UserRepository
 

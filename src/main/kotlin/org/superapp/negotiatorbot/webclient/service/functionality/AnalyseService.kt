@@ -1,24 +1,13 @@
 package org.superapp.negotiatorbot.webclient.service.functionality
 
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
-import org.superapp.negotiatorbot.webclient.entity.Project
-import org.superapp.negotiatorbot.webclient.entity.UserCompany
-import org.superapp.negotiatorbot.webclient.entity.UserContractor
-import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
-import org.superapp.negotiatorbot.webclient.enum.BusinessType
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
-import org.superapp.negotiatorbot.webclient.enum.LegalType
-import org.superapp.negotiatorbot.webclient.enum.PromptType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.LegalType
+import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
 import org.superapp.negotiatorbot.webclient.service.functionality.openai.OpenAiUserService
-import org.superapp.negotiatorbot.webclient.service.functionality.task.TaskService
-import org.superapp.negotiatorbot.webclient.service.project.ProjectService
-import org.superapp.negotiatorbot.webclient.service.s3.S3Service
-import org.superapp.negotiatorbot.webclient.service.user.UserService
+import org.superapp.negotiatorbot.webclient.service.task.OpenAiTaskService
 
 
 interface AnalyseService {
@@ -34,15 +23,9 @@ interface AnalyseService {
 @Service
 class AnalyseServiceImpl(
     private val documentService: DocumentService,
-    private val taskService: TaskService,
-    private val projectService: ProjectService,
-    private val userService: UserService,
-    private val companyAssistantService: AssistantService<UserCompany>,
-    private val contractorAssistantService: AssistantService<UserContractor>,
-    private val projectAssistantService: AssistantService<Project>,
     private val openAiUserService: OpenAiUserService,
     private val promptTextService: PromptTextService,
-    private val s3Service: S3Service
+    private val openAiTaskService: OpenAiTaskService
 ) : AnalyseService {
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -56,10 +39,7 @@ class AnalyseServiceImpl(
         }
         doc.risks = "Риски документа загружаются"
         documentService.save(doc)
-        GlobalScope.launch {
-            doc.risks = provideResponseFromOpenAi(doc, "$introPrompt. $prompt")
-            documentService.save(doc)
-        }
+        openAiTaskService.execute(doc, "$introPrompt prompt", PromptType.RISKS)
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -73,10 +53,7 @@ class AnalyseServiceImpl(
         }
         doc.description = "Содержимое документа загружается"
         documentService.save(doc)
-        GlobalScope.launch {
-            doc.description = provideResponseFromOpenAi(doc, "$introPrompt. $prompt")
-            documentService.save(doc)
-        }
+        openAiTaskService.execute(doc, "$introPrompt $prompt", PromptType.DESCRIPTION)
 
     }
 
@@ -85,33 +62,8 @@ class AnalyseServiceImpl(
     }
 
     override fun updateThreadAndRun(documentId: Long, consumer: (Long) -> Unit) {
-        val assistant = documentService.get(documentId).getAssistant()
-        openAiUserService.updateThread(assistant)
+        val document = documentService.get(documentId)
+        openAiUserService.updateThread(document)
         consumer.invoke(documentId)
-    }
-
-    private suspend fun provideResponseFromOpenAi(doc: DocumentMetadata, prompt: String): String {
-        val task = taskService.getTask(doc)
-        val fileContent = s3Service.download(doc, task)
-        val openAiAssistant = doc.getAssistant()
-        val fullDocName = doc.getNameWithExtension()
-
-        openAiUserService.uploadFile(openAiAssistant, fileContent.inputStream, fullDocName, task)
-        val result = openAiUserService.startDialogWIthUserPrompt(openAiAssistant, prompt, task)
-        openAiUserService.deleteFilesFromOpenAi(openAiAssistant)
-        return result.replace(
-            regex = Regex("""【.*】"""),
-            ""
-        )
-    }
-
-    private fun DocumentMetadata.getAssistant(): OpenAiAssistant {
-        val relatedId = this.relatedId!!
-        return when (this.businessType) {
-            BusinessType.USER -> companyAssistantService.getAssistant(relatedId)
-            BusinessType.PARTNER -> contractorAssistantService.getAssistant(relatedId)
-            BusinessType.PROJECT -> projectAssistantService.getAssistant(relatedId)
-            else -> throw UnsupportedOperationException()
-        }
     }
 }

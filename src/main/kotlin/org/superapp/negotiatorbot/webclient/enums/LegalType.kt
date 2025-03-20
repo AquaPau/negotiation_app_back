@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.webclient.enum
+package org.superapp.negotiatorbot.webclient.enums
 
 enum class LegalType {
 

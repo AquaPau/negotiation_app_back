@@ -6,8 +6,8 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
-import org.superapp.negotiatorbot.webclient.enum.BusinessType
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.BusinessType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.service.project.ProjectDocumentService
 import org.superapp.negotiatorbot.webclient.service.util.FileTransformationHelper
 import org.superapp.negotiatorbot.webclient.service.util.MultipartFileValidator
