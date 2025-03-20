@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.UserContractor
-import org.superapp.negotiatorbot.webclient.enum.BusinessType
+import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.repository.company.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.company.UserContractorRepository
 import org.superapp.negotiatorbot.webclient.service.EnterpriseDocumentService

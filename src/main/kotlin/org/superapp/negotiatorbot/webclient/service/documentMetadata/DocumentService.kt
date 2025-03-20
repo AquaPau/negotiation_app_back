@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.*
-import org.superapp.negotiatorbot.webclient.enum.BusinessType
+import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.repository.DocumentMetadataRepository
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
 
@@ -56,7 +56,7 @@ class DocumentServiceImpl(
         }
 
         files.forEachIndexed { index, file ->
-            s3Service.upload(file.path!!, fileData[index].fileContent!!)
+            s3Service.uploadToS3(file, fileData[index])
         }
 
         documentMetadataRepository.saveAll(files)
@@ -77,13 +77,13 @@ class DocumentServiceImpl(
 
     override fun deleteDocument(documentId: Long) {
         val documentMetadata = documentMetadataRepository.findById(documentId).orElseThrow()
-        s3Service.delete(documentMetadata.path!!)
+        s3Service.delete(documentMetadata)
         documentMetadataRepository.delete(documentMetadata)
     }
 
     override fun deleteDocument(businessType: BusinessType, id: Long) {
         val docs = documentMetadataRepository.findAllByBusinessTypeAndRelatedId(businessType, id)
-        docs.forEach { s3Service.delete(it.path!!) }
+        docs.forEach { s3Service.delete(it) }
         documentMetadataRepository.deleteAll(docs)
     }
 

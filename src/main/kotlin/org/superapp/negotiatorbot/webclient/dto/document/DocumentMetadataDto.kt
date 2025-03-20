@@ -1,6 +1,6 @@
 package org.superapp.negotiatorbot.webclient.dto.document
 
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
 
 data class DocumentMetadataDto(
     val id: Long,

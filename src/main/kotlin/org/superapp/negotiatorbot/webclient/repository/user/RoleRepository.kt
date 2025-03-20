@@ -2,7 +2,7 @@ package org.superapp.negotiatorbot.webclient.repository.user
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.superapp.negotiatorbot.webclient.entity.Role
-import org.superapp.negotiatorbot.webclient.enum.Roles
+import org.superapp.negotiatorbot.webclient.enums.Roles
 import java.util.Optional
 
 

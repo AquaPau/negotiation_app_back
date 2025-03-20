@@ -5,7 +5,7 @@ import org.superapp.negotiatorbot.webclient.dto.project.ProjectDto
 
 @Entity
 @Table(name = "projects")
-class Project {
+class Project: TaskEnabled {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

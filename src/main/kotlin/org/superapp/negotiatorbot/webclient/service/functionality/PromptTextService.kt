@@ -1,9 +1,9 @@
 package org.superapp.negotiatorbot.webclient.service.functionality
 
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
-import org.superapp.negotiatorbot.webclient.enum.LegalType
-import org.superapp.negotiatorbot.webclient.enum.PromptType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.LegalType
+import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.superapp.negotiatorbot.webclient.repository.PromptTextRepository
 
 interface PromptTextService {

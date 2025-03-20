@@ -1,13 +1,13 @@
 package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
-import org.superapp.negotiatorbot.webclient.enum.BusinessType
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.BusinessType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
 
 
 @Entity
 @Table(name = "document_metadata")
-class DocumentMetadata {
+class DocumentMetadata : TaskEnabled {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
