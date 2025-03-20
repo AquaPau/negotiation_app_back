@@ -1,6 +1,5 @@
-package org.superapp.negotiatorbot.botclient.command
+package org.superapp.negotiatorbot.botclient.handler.commandhandler
 
-import org.springframework.context.annotation.Profile
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.message.Message

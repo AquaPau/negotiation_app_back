@@ -1,8 +1,7 @@
-package org.superapp.negotiatorbot.botclient.command
+package org.superapp.negotiatorbot.botclient.handler.commandhandler
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands
 import org.telegram.telegrambots.meta.api.objects.message.Message
