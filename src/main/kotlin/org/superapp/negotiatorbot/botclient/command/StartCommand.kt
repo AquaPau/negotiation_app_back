@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.message.Message
 
 @Component
-@Profile("telegram")
 class StartCommand(val senderService: SenderService) : AbstractCommand("start", "bot entry point") {
     val responseMessage = "This bot can help you to prepare for negotiations";
     override fun execute(message: Message) {

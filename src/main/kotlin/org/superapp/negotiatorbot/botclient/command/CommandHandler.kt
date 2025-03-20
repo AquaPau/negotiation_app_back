@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.generics.TelegramClient
 private val logger = KotlinLogging.logger {}
 
 @Service
-@Profile("telegram")
 class CommandHandler(private final val commands: List<AbstractCommand>, private val client: TelegramClient) {
     private val commandsMap = commands.associateBy { it.name }
 

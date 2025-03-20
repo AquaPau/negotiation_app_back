@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.generics.TelegramClient
 private val log = KotlinLogging.logger {}
 
 @Service
-@Profile("telegram")
 class SenderService(val telegramClient: TelegramClient) {
 
     fun send(message: String, chatId: Long): Message {

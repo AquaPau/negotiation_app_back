@@ -15,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.Update
 private val logger = KotlinLogging.logger {}
 
 @Component
-@Profile("telegram")
 class NegotiatorBot(val botConfig: BotConfig, val messageDispatcher: MessageDispatcher) : SpringLongPollingBot,
     LongPollingSingleThreadUpdateConsumer {
 

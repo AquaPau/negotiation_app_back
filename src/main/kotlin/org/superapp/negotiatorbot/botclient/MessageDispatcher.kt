@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.message.Message
 private val logger = KotlinLogging.logger {}
 
 @Service
-@Profile("telegram")
 class MessageDispatcher(val commandHandler: CommandHandler) {
     val commandStart = "/"
     fun dispatch(message: Message) {
