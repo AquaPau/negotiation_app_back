@@ -20,7 +20,7 @@ class UpdateDispatcher(
 ) {
 
     private val handlers: Map<String, TGCallbackHandler> =
-        inlineOptions.associate { it.callBackData() to it.TGCallbackHandler }
+        inlineOptions.associate { it.callBackData() to it.tgCallbackHandler }
 
     private val commandStart = "/"
 
