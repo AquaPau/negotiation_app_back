@@ -18,20 +18,20 @@ fun createMessageWithKeyboard(
         .chatId(chatId)
         .text(messageText)
         .replyMarkup(keyboard)
-        .build();
+        .build()
     return sendMessage
 }
 
 fun createMessageWithKeyboard(
     @NonNull chatId: Long,
     messageText: String,
-    @NonNull vararg options: InlineKeyboardOption
+    @NonNull options: List<InlineKeyboardOption>
 ): BotApiMethod<Message> {
     val sendMessage: SendMessage = SendMessage.builder()
         .chatId(chatId)
         .text(messageText)
         .replyMarkup(createReplyKeyboard(options))
-        .build();
+        .build()
     return sendMessage
 }
 
@@ -41,7 +41,7 @@ fun createMessageWithKeyboard(
  * @param options options to list
  * @return vertical keyboard
  */
-fun createReplyKeyboard(@NonNull options: Array<out InlineKeyboardOption>): InlineKeyboardMarkup {
+fun createReplyKeyboard(@NonNull options: List<InlineKeyboardOption>): InlineKeyboardMarkup {
     val buttons = options.map { InlineKeyboardRow(createButton(it)) }
     return InlineKeyboardMarkup(buttons)
 }

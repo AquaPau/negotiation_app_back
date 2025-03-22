@@ -6,8 +6,8 @@ import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.File
 import org.telegram.telegrambots.meta.api.objects.message.Message
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard
 import org.telegram.telegrambots.meta.generics.TelegramClient
+import java.io.Serializable
 
 private val log = KotlinLogging.logger {}
 
@@ -18,18 +18,9 @@ class SenderService(val telegramClient: TelegramClient) {
         return doSendTextMessage(message, chatId, false)
     }
 
-    fun execute(method: BotApiMethod<Message>) = telegramClient.execute(method)
+    fun <T: Serializable> execute(method: BotApiMethod<T>) = telegramClient.execute(method)
+
     fun downLoadTgFile(fileMethod : BotApiMethod<File>) = telegramClient.execute(fileMethod)
-
-    fun forceReply(message: String, id: Long): Message? {
-        val msg = SendMessage(id.toString(), message)
-        val forceReplyKeyboard = ForceReplyKeyboard()
-        forceReplyKeyboard.forceReply = true
-        forceReplyKeyboard.selective = true
-        msg.replyMarkup = forceReplyKeyboard
-        return telegramClient.execute(msg)
-    }
-
 
     private fun doSendTextMessage(txt: String, groupId: Long, format: Boolean): Message {
         val sendMessage = SendMessage(groupId.toString(), txt)

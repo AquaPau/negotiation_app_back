@@ -1,7 +1,6 @@
 package org.superapp.negotiatorbot.botclient
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.context.annotation.Profile
 import org.superapp.negotiatorbot.botclient.config.BotConfig
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.longpolling.BotSession
@@ -15,13 +14,12 @@ import org.telegram.telegrambots.meta.api.objects.Update
 private val logger = KotlinLogging.logger {}
 
 @Component
-class NegotiatorBot(val botConfig: BotConfig, val messageDispatcher: MessageDispatcher) : SpringLongPollingBot,
+class NegotiatorBot(val botConfig: BotConfig, val updateDispatcher: UpdateDispatcher) : SpringLongPollingBot,
     LongPollingSingleThreadUpdateConsumer {
 
     override fun consume(update: Update) {
         logger.info("Got ${update}")
-        val message = update.message
-        messageDispatcher.dispatch(message)
+        updateDispatcher.dispatch(update)
     }
 
     @AfterBotRegistration
