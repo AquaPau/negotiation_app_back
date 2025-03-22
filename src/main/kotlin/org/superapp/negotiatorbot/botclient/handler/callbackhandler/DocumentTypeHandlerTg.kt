@@ -5,18 +5,26 @@ import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.keyboard.inlineKeyboadImp.DOC_TYPE_CALLBACK
 import org.superapp.negotiatorbot.botclient.reply.PromptTypeReply
 import org.superapp.negotiatorbot.botclient.service.SenderService
+import org.superapp.negotiatorbot.botclient.service.TgUserService
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 
 private val log = KotlinLogging.logger {}
 
 @Component
-class DocumentTypeHandlerTG(senderService: SenderService, private val promptTypeReply: PromptTypeReply) :
-    AbstractTGCallbackHandler(senderService) {
+class DocumentTypeHandlerTg(
+    senderService: SenderService,
+    private val tgUserService: TgUserService,
+    private val promptTypeReply: PromptTypeReply
+) :
+    AbstractTgCallbackHandler(senderService) {
 
     override fun handleQuery(query: CallbackQuery) {
         val docType = query.data.toDocumentType()
         log.info("Got document type $docType from user TG id:  ${query.from.id}")
+        tgUserService.findByTgId(query.from.id)?.let {
+            tgUserService.updateDocumentType(it, docType)
+        }
         val message = promptTypeReply.message(query.message.chatId);
         senderService.execute(message)
     }

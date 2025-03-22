@@ -2,7 +2,7 @@ package org.superapp.negotiatorbot.botclient
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.botclient.handler.callbackhandler.TGCallbackHandler
+import org.superapp.negotiatorbot.botclient.handler.callbackhandler.TgCallbackHandler
 import org.superapp.negotiatorbot.botclient.handler.commandhandler.CommandHandler
 import org.superapp.negotiatorbot.botclient.handler.documentHandler.DocumentHandler
 import org.superapp.negotiatorbot.botclient.keyboard.KeyBoardWithHandler
@@ -19,7 +19,7 @@ class UpdateDispatcher(
     inlineOptions: List<KeyBoardWithHandler>
 ) {
 
-    private val handlers: Map<String, TGCallbackHandler> =
+    private val handlers: Map<String, TgCallbackHandler> =
         inlineOptions.associate { it.callBackData() to it.tgCallbackHandler }
 
     private val commandStart = "/"

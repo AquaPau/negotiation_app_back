@@ -9,9 +9,9 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery
  * This is used to make sure, that callback queries are closed, and keyboard is deleted in chat, after answer.
  * SHOULD ONLY BE USED WHEN UPDATE HAS CALLBACK IN IT and keyboard!
  */
-abstract class AbstractTGCallbackHandler(
+abstract class AbstractTgCallbackHandler(
     protected val senderService: SenderService
-) : TGCallbackHandler {
+) : TgCallbackHandler {
 
     override fun handleResponse(callbackQuery: CallbackQuery) {
         try {

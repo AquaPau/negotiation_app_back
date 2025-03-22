@@ -1,7 +1,7 @@
 package org.superapp.negotiatorbot.botclient.keyboard
 
-import org.superapp.negotiatorbot.botclient.handler.callbackhandler.TGCallbackHandler
+import org.superapp.negotiatorbot.botclient.handler.callbackhandler.TgCallbackHandler
 
 
-abstract class KeyBoardWithHandler(val tgCallbackHandler: TGCallbackHandler) : InlineKeyboardOption {
+abstract class KeyBoardWithHandler(val tgCallbackHandler: TgCallbackHandler) : InlineKeyboardOption {
 }

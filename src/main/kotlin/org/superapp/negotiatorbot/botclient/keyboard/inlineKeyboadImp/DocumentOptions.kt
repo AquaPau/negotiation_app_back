@@ -1,7 +1,7 @@
 package org.superapp.negotiatorbot.botclient.keyboard.inlineKeyboadImp
 
 import org.springframework.stereotype.Component
-import org.superapp.negotiatorbot.botclient.handler.callbackhandler.DocumentTypeHandlerTG
+import org.superapp.negotiatorbot.botclient.handler.callbackhandler.DocumentTypeHandlerTg
 import org.superapp.negotiatorbot.botclient.keyboard.KeyBoardWithHandler
 import org.superapp.negotiatorbot.webclient.enum.DocumentType
 
@@ -10,7 +10,7 @@ const val DOC_TYPE_CALLBACK = "documentTypeCallback,chose:"
 abstract class DocumentOption(
     private val userView: String,
     private val docType: DocumentType,
-    handler: DocumentTypeHandlerTG
+    handler: DocumentTypeHandlerTg
 ) : KeyBoardWithHandler(handler) {
 
     override fun userView(): String = userView
@@ -19,13 +19,13 @@ abstract class DocumentOption(
 }
 
 @Component
-class LaborContractOption(handler: DocumentTypeHandlerTG) : DocumentOption(
+class LaborContractOption(handler: DocumentTypeHandlerTg) : DocumentOption(
     "Трудовой договор",
     DocumentType.LABOR_CONTRACT, handler
 )
 
 @Component
-class RealEstateContractOption(handler: DocumentTypeHandlerTG) : DocumentOption(
+class RealEstateContractOption(handler: DocumentTypeHandlerTg) : DocumentOption(
     "Договор аренды",
     DocumentType.REAL_ESTATE_LEASE_CONTRACT, handler
 )
