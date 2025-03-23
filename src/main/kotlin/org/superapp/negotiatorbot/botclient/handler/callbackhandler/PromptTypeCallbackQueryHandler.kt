@@ -11,10 +11,12 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 private val log = KotlinLogging.logger {}
 
 @Component
-class PromptTypeCallbackHandler(
+class PromptTypeCallbackQueryHandler(
     senderService: SenderService,
     private val tgUserService: TgUserService,
-) : AbstractTgCallbackHandler(senderService) {
+) : AbstractCallbackQueryHandler(senderService) {
+
+    private val text = "Пожалуйста загрузите документ. Если хотите начать заново отправьте /start"
 
     override fun handleQuery(query: CallbackQuery) {
         val promptType = query.data.toPromptType()
@@ -22,6 +24,7 @@ class PromptTypeCallbackHandler(
         tgUserService.findByTgId(query.from.id)?.let {
             tgUserService.updatePromptType(it, promptType)
         }
+        senderService.send(text, chatId = query.message.chatId)
     }
 
     private fun String.toPromptType(): PromptType {

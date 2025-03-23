@@ -18,6 +18,8 @@ interface TgUserService {
     fun updatePromptType(tgUser: TgUser, promptType: PromptType): TgUser
 
     fun clearTypes(tgUser: TgUser): TgUser
+
+    fun getTypes(tgUser: TgUser): Pair<DocumentType, PromptType>?
 }
 
 @Service
@@ -48,5 +50,15 @@ class TgUserServiceImpl(private val tgUserRepository: TgUserRepository) : TgUser
         val savedUser = tgUserRepository.save(newUser)
         log.info("Saved new user: $savedUser")
         return savedUser
+    }
+
+    override fun getTypes(tgUser: TgUser): Pair<DocumentType, PromptType>? {
+        val docType = tgUser.chosenDocumentType
+        val promptType = tgUser.chosenPromptType
+        return if (docType != null && promptType != null) {
+            return docType to promptType
+        } else {
+            null
+        }
     }
 }

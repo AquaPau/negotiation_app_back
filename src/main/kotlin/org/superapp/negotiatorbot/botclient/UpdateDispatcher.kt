@@ -2,7 +2,7 @@ package org.superapp.negotiatorbot.botclient
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.botclient.handler.callbackhandler.TgCallbackHandler
+import org.superapp.negotiatorbot.botclient.handler.callbackhandler.CallbackQueryHandler
 import org.superapp.negotiatorbot.botclient.handler.commandhandler.CommandHandler
 import org.superapp.negotiatorbot.botclient.handler.documentHandler.DocumentHandler
 import org.superapp.negotiatorbot.botclient.keyboard.KeyBoardWithHandler
@@ -19,8 +19,8 @@ class UpdateDispatcher(
     inlineOptions: List<KeyBoardWithHandler>
 ) {
 
-    private val handlers: Map<String, TgCallbackHandler> =
-        inlineOptions.associate { it.callBackData() to it.tgCallbackHandler }
+    private val handlers: Map<String, CallbackQueryHandler> =
+        inlineOptions.associate { it.callBackData() to it.callbackQueryHandler }
 
     private val commandStart = "/"
 
@@ -38,13 +38,13 @@ class UpdateDispatcher(
     private fun dispatchMessage(message: Message) {
         when {
             message.isCommand -> commandHandler.handle(message.getCommandName(), message)
-            message.hasDocument() -> documentHandler.handle(message.document)
+            message.hasDocument() -> documentHandler.handle(message)
             else -> unknownMessageType(message)
         }
     }
 
     private fun unknownMessageType(message: Message) {
-        logger.info("Unknown message: $message");
+        logger.info("Unknown message: $message")
     }
 
     private fun Message.getCommandName(): String = this.text.substringAfter(commandStart)

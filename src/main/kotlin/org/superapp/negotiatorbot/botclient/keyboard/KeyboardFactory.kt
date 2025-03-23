@@ -5,22 +5,9 @@ import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow
 
-fun createMessageWithKeyboard(
-    @NonNull chatId: Long,
-    messageText: String,
-    keyboard: ReplyKeyboard
-): BotApiMethod<Message> {
-    val sendMessage: SendMessage = SendMessage.builder()
-        .chatId(chatId)
-        .text(messageText)
-        .replyMarkup(keyboard)
-        .build()
-    return sendMessage
-}
 
 fun createMessageWithKeyboard(
     @NonNull chatId: Long,

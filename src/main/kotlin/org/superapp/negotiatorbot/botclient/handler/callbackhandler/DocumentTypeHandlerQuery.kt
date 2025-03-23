@@ -12,12 +12,12 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 private val log = KotlinLogging.logger {}
 
 @Component
-class DocumentTypeHandlerTg(
+class DocumentTypeHandlerQuery(
     senderService: SenderService,
     private val tgUserService: TgUserService,
     private val promptTypeReply: PromptTypeReply
 ) :
-    AbstractTgCallbackHandler(senderService) {
+    AbstractCallbackQueryHandler(senderService) {
 
     override fun handleQuery(query: CallbackQuery) {
         val docType = query.data.toDocumentType()
@@ -25,7 +25,7 @@ class DocumentTypeHandlerTg(
         tgUserService.findByTgId(query.from.id)?.let {
             tgUserService.updateDocumentType(it, docType)
         }
-        val message = promptTypeReply.message(query.message.chatId);
+        val message = promptTypeReply.message(query.message.chatId)
         senderService.execute(message)
     }
 

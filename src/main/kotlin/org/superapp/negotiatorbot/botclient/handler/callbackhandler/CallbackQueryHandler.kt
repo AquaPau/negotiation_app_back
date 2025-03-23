@@ -2,6 +2,6 @@ package org.superapp.negotiatorbot.botclient.handler.callbackhandler
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 
-interface TgCallbackHandler {
+interface CallbackQueryHandler {
     fun handleResponse(callbackQuery: CallbackQuery)
 }
