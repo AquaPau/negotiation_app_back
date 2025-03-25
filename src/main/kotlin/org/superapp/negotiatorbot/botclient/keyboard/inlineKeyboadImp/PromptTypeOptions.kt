@@ -3,7 +3,7 @@ package org.superapp.negotiatorbot.botclient.keyboard.inlineKeyboadImp
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.handler.callbackhandler.PromptTypeCallbackQueryHandler
 import org.superapp.negotiatorbot.botclient.keyboard.KeyBoardWithHandler
-import org.superapp.negotiatorbot.webclient.enum.PromptType
+import org.superapp.negotiatorbot.webclient.enums.PromptType
 
 const val PROMPT_TYPE_CALLBACK = "analysisTypeCallback,chose:"
 

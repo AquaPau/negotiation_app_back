@@ -3,7 +3,7 @@ package org.superapp.negotiatorbot.botclient.keyboard.inlineKeyboadImp
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.handler.callbackhandler.DocumentTypeHandlerQuery
 import org.superapp.negotiatorbot.botclient.keyboard.KeyBoardWithHandler
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
 
 const val DOC_TYPE_CALLBACK = "documentTypeCallback,chose:"
 

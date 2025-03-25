@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.keyboard.inlineKeyboadImp.PROMPT_TYPE_CALLBACK
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgUserService
-import org.superapp.negotiatorbot.webclient.enum.PromptType
+import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 
 private val log = KotlinLogging.logger {}

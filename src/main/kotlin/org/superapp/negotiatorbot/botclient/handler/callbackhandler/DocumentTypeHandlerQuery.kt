@@ -6,7 +6,7 @@ import org.superapp.negotiatorbot.botclient.keyboard.inlineKeyboadImp.DOC_TYPE_C
 import org.superapp.negotiatorbot.botclient.reply.PromptTypeReply
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgUserService
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 
 private val log = KotlinLogging.logger {}

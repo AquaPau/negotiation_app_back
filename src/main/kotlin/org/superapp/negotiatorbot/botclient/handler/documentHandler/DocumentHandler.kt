@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.botclient.config.BotConfig
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgUserService
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
-import org.superapp.negotiatorbot.webclient.enum.PromptType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.telegram.telegrambots.meta.api.methods.GetFile
 import  org.telegram.telegrambots.meta.api.objects.Document
 import org.telegram.telegrambots.meta.api.objects.User

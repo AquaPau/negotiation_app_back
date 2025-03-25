@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.superapp.negotiatorbot.webclient.enum.LegalType
+import org.superapp.negotiatorbot.webclient.enums.LegalType
 import org.superapp.negotiatorbot.webclient.service.functionality.AnalyseService
 
 @RestController

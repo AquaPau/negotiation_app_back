@@ -2,7 +2,7 @@ package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
 import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
-import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
+import org.superapp.negotiatorbot.webclient.enums.CompanyRegion
 
 
 @Entity

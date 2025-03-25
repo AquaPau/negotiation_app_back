@@ -4,8 +4,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.botclient.model.TgUser
 import org.superapp.negotiatorbot.botclient.repository.TgUserRepository
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
-import org.superapp.negotiatorbot.webclient.enum.PromptType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.telegram.telegrambots.meta.api.objects.User
 
 private val log = KotlinLogging.logger {}

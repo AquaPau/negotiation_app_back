@@ -10,7 +10,7 @@ import org.superapp.negotiatorbot.webclient.dto.dadata.DadataRequest
 import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.entity.UserContractor
 import org.superapp.negotiatorbot.webclient.entity.toDto
-import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
+import org.superapp.negotiatorbot.webclient.enums.CompanyRegion
 import org.superapp.negotiatorbot.webclient.exception.CompanyAlreadyExistsException
 import org.superapp.negotiatorbot.webclient.port.DadataPort
 import org.superapp.negotiatorbot.webclient.repository.company.UserCompanyRepository

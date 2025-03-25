@@ -7,8 +7,18 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
+import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
+import org.superapp.negotiatorbot.webclient.entity.Project
+import org.superapp.negotiatorbot.webclient.entity.UserCompany
+import org.superapp.negotiatorbot.webclient.entity.UserContractor
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
+import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
+import org.superapp.negotiatorbot.webclient.enums.BusinessType
+import org.superapp.negotiatorbot.webclient.enums.TaskStatus
+import org.superapp.negotiatorbot.webclient.exception.TaskException
+import org.superapp.negotiatorbot.webclient.service.functionality.AssistantService
+import org.superapp.negotiatorbot.webclient.service.functionality.task.TaskRecordService
+import org.superapp.negotiatorbot.webclient.service.s3.S3Service
 import java.io.InputStream
 
 private val log = KotlinLogging.logger {}
@@ -18,64 +28,85 @@ private val log = KotlinLogging.logger {}
  */
 
 interface OpenAiUserService {
-    @Throws(NoSuchElementException::class)
-    fun startDialogWIthUserPrompt(openAiAssistant: OpenAiAssistant, prompt: String): String
-    fun uploadFile(openAiAssistant: OpenAiAssistant, fileContent: InputStream, fileName: String)
-    fun uploadFilesAndExtractCompanyData(
-        openAiAssistant: OpenAiAssistant,
-        documents: List<RawDocumentAndMetatype>,
-        prompt: String
-    ): String
 
-    fun deleteFilesFromOpenAi(openAiAssistant: OpenAiAssistant)
+    fun updateThread(documentMetadata: DocumentMetadata)
 
-    fun updateThread(openAiAssistant: OpenAiAssistant)
+    fun provideResponseFromOpenAi(taskRecord: TaskRecord, doc: DocumentMetadata, prompt: String): String
+
+    fun getAssistantByDocument(documentMetadata: DocumentMetadata): OpenAiAssistant
 }
 
 @Service
 class OpenAiUserServiceImpl(
-    val openAiAssistantService: OpenAiAssistantService,
+    private val openAiAssistantService: OpenAiAssistantService,
+    private val taskService: TaskRecordService,
+    private val s3Service: S3Service,
+    private val companyAssistantService: AssistantService<UserCompany>,
+    private val contractorAssistantService: AssistantService<UserContractor>,
+    private val projectAssistantService: AssistantService<Project>,
 ) : OpenAiUserService {
+
+    override fun provideResponseFromOpenAi(taskRecord: TaskRecord, doc: DocumentMetadata, prompt: String): String {
+        val fileContent = s3Service.download(doc, taskRecord)
+        val openAiAssistant = getAssistantByDocument(doc)
+        val fullDocName = doc.getNameWithExtension()
+
+        uploadFile(openAiAssistant, fileContent.inputStream, fullDocName, taskRecord)
+        val result = startDialogWIthUserPrompt(openAiAssistant, prompt, taskRecord)
+        deleteFilesFromOpenAi(openAiAssistant)
+        return result.replace(
+            regex = Regex("""【.*】"""),
+            ""
+        )
+    }
 
     @OptIn(BetaOpenAI::class)
     @Throws(NoSuchElementException::class)
-    override fun startDialogWIthUserPrompt(openAiAssistant: OpenAiAssistant, prompt: String): String {
+    private fun startDialogWIthUserPrompt(openAiAssistant: OpenAiAssistant, prompt: String, task: TaskRecord): String {
         val response = runBlocking { openAiAssistantService.runRequest(prompt, openAiAssistant) }
 
         return if (response.isEmpty()) {
-            "try again please"
+            throw TaskException(TaskStatus.ERROR_ASSISTANT_REPLY)
         } else {
             formResponse(response.first())
         }
     }
 
-    override fun uploadFile(openAiAssistant: OpenAiAssistant, fileContent: InputStream, fileName: String) {
-        openAiAssistantService.uploadFile(openAiAssistant, fileContent, fileName)
-        log.info("Successfully uploaded file $fileName")
-    }
-
-    override fun uploadFilesAndExtractCompanyData(
+    private fun uploadFile(
         openAiAssistant: OpenAiAssistant,
-        documents: List<RawDocumentAndMetatype>,
-        prompt: String
-    ): String {
-        documents.forEach {
-            openAiAssistantService.uploadFile(
-                openAiAssistant,
-                it.fileContent!!.inputStream(),
-                it.fileNameWithExtensions
-            )
+        fileContent: InputStream,
+        fileName: String,
+        task: TaskRecord
+    ) {
+        try {
+            openAiAssistantService.uploadFile(openAiAssistant, fileContent, fileName)
+            log.info("Successfully uploaded file [$fileName] to assistant id:[${openAiAssistant.id}]")
+            taskService.changeStatus(task, TaskStatus.SENT_TO_ASSISTANT)
+        } catch (ignored: Exception) {
+            log.error(ignored) { "Failed to upload file [$fileName] to assistant id:[${openAiAssistant.id}]" }
+            throw TaskException(TaskStatus.ERROR_UPLOADING_TO_ASSISTANT)
         }
-        return startDialogWIthUserPrompt(openAiAssistant, prompt)
     }
 
-    override fun deleteFilesFromOpenAi(openAiAssistant: OpenAiAssistant) {
+
+    private fun deleteFilesFromOpenAi(openAiAssistant: OpenAiAssistant) {
         openAiAssistantService.deleteVectorStoreFromAssistant(openAiAssistant)
         log.info("Successfully deleted all filer for $openAiAssistant")
     }
 
-    override fun updateThread(openAiAssistant: OpenAiAssistant) {
+    override fun updateThread(documentMetadata: DocumentMetadata) {
+        val openAiAssistant = getAssistantByDocument(documentMetadata)
         openAiAssistantService.updateThread(openAiAssistant)
+    }
+
+    override fun getAssistantByDocument(documentMetadata: DocumentMetadata): OpenAiAssistant {
+        val relatedId = documentMetadata.relatedId!!
+        return when (documentMetadata.businessType) {
+            BusinessType.USER -> companyAssistantService.getAssistant(relatedId)
+            BusinessType.PARTNER -> contractorAssistantService.getAssistant(relatedId)
+            BusinessType.PROJECT -> projectAssistantService.getAssistant(relatedId)
+            else -> throw UnsupportedOperationException()
+        }
     }
 
     @OptIn(BetaOpenAI::class)

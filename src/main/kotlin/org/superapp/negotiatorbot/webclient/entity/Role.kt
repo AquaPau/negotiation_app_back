@@ -1,7 +1,7 @@
 package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
-import org.superapp.negotiatorbot.webclient.enum.Roles
+import org.superapp.negotiatorbot.webclient.enums.Roles
 
 @Entity
 @Table(name = "roles")
