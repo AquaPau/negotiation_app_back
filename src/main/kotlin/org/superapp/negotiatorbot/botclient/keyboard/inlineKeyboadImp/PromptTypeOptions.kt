@@ -19,14 +19,14 @@ abstract class PromptTypeOption(
 
 @Component
 class DescriptionPromptTypeOption(handler: PromptTypeCallbackQueryHandler) : PromptTypeOption(
-    "Общий анализ документа",
+    "Описание содержания",
     PromptType.DESCRIPTION,
     handler
 )
 
 @Component
 class RisksPromptTypeOption(handler: PromptTypeCallbackQueryHandler) : PromptTypeOption(
-    "Проанализировать риски документа",
+    "Анализ рисков",
     PromptType.RISKS,
     handler
 )
