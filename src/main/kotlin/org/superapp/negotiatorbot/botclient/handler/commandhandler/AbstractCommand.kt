@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.botclient.command
+package org.superapp.negotiatorbot.botclient.handler.commandhandler
 
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.message.Message
