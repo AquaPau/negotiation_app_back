@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.superapp.negotiatorbot.botclient.model.TgUser
 import org.superapp.negotiatorbot.botclient.repository.TgUserRepository
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
-import org.superapp.negotiatorbot.webclient.enum.PromptType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.PromptType
 
 @SpringBootTest(
     classes = [TgUserServiceImpl::class],

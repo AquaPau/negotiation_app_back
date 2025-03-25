@@ -29,7 +29,7 @@ logging:
         security: DEBUG
 
 telegram:
-  token: {TELEGRAM_TOKEN}
+  token: ${TELEGRAM_TOKEN}
 
 open-ai:
   token: ${OPEN_AI_TOKEN}
