@@ -5,9 +5,10 @@ import com.aallam.openai.api.message.Message
 import com.aallam.openai.api.message.MessageContent
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.content.*
-import jakarta.transaction.Transactional
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.Project
 import org.superapp.negotiatorbot.webclient.entity.UserCompany
@@ -40,7 +41,6 @@ interface OpenAiUserService {
 }
 
 @Service
-@Transactional
 class OpenAiUserServiceImpl(
     private val openAiAssistantService: OpenAiAssistantService,
     private val taskService: TaskRecordService,
@@ -50,6 +50,8 @@ class OpenAiUserServiceImpl(
     private val projectAssistantService: AssistantService<Project>,
 ) : OpenAiUserService {
 
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun provideResponseFromOpenAi(taskRecord: TaskRecord, doc: DocumentMetadata, prompt: String): String {
         val fileContent = s3Service.download(doc, taskRecord)
         val openAiAssistant = getAssistantByDocument(doc)
@@ -65,6 +67,7 @@ class OpenAiUserServiceImpl(
         )
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun provideResponseFromOpenAi(
         taskRecord: TaskRecord,
         doc: List<DocumentMetadata>,

@@ -1,7 +1,8 @@
 package org.superapp.negotiatorbot.webclient.service.functionality.task
 
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.Project
 import org.superapp.negotiatorbot.webclient.entity.TaskEnabled
@@ -25,7 +26,6 @@ interface TaskRecordService {
 }
 
 @Service
-@Transactional
 class TaskRecordServiceImpl(
     private val taskRepository: TaskRecordRepository,
 ) : TaskRecordService {
@@ -38,10 +38,12 @@ class TaskRecordServiceImpl(
             ?: throw NoSuchElementException("No such task with type: [$type] related id: [$referenceId]")
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun createTask(taskEnabled: TaskEnabled, vararg data: Any): TaskRecord {
+        val args = (if (data is Array) data[0] else emptyArray<Any>())
         val type = when (taskEnabled) {
             is DocumentMetadata -> {
-                val promptType = if (data.isNotEmpty()) data[1] as PromptType
+                val promptType = if (args is Array<*> && args.size > 1) args[1] as PromptType
                 else throw TaskException(TaskStatus.ERROR_PARSE_PARAMS)
                 taskEnabled.defineTaskType(promptType)
             }
@@ -64,19 +66,23 @@ class TaskRecordServiceImpl(
         return taskRepository.save(task)
     }
 
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun changeStatus(task: TaskRecord, status: TaskStatus): TaskRecord {
         task.status = status
-        return taskRepository.save(task)
+        return taskRepository.saveAndFlush(task)
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun deleteTask(taskId: Long) {
         taskRepository.deleteById(taskId)
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun updateResult(taskId: Long, result: String): TaskRecord {
         val task = taskRepository.findById(taskId).orElseThrow { NoSuchElementException() }
         task.result = result
-        return taskRepository.save(task)
+        return taskRepository.saveAndFlush(task)
     }
 
     private fun DocumentMetadata.defineTaskType(promptType: PromptType): TaskType {

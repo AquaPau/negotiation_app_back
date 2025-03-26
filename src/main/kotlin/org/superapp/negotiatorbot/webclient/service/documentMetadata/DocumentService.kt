@@ -29,6 +29,8 @@ interface DocumentService {
 
     fun getDocumentList(relatedId: Long, userId: Long, businessType: BusinessType): List<DocumentMetadataDto>
 
+    fun getDocumentById(relatedId: Long, documentId: Long, businessType: BusinessType): DocumentMetadataDto
+
     fun deleteDocument(documentId: Long)
 
     fun deleteDocument(businessType: BusinessType, id: Long)
@@ -85,9 +87,20 @@ class DocumentServiceImpl(
         val recordsByDocument = taskRecordRepository.findAllByRelatedIdInAndTaskTypeIn(
             documents.map { it.id!! }, ELIGIBLE_TASK_TYPES
         )
-            .groupBy { it.relatedId }.entries.associate { it.key to it.value.sortedByDescending { it.id } }
+            .groupBy { it.relatedId }.entries.associate { it.key to it.value.sortedByDescending { task -> task.id } }
 
         return documents.map { it.entityToDto(recordsByDocument[it.id!!] ?: listOf()) }
+    }
+
+    override fun getDocumentById(relatedId: Long, documentId: Long, businessType: BusinessType): DocumentMetadataDto {
+        val document = documentMetadataRepository.findByIdAndBusinessTypeAndRelatedId(
+            documentId,
+            businessType, relatedId
+        ).orElseThrow { NoSuchElementException() }
+        val recordsByDocument = taskRecordRepository.findAllByRelatedIdInAndTaskTypeIn(
+            listOf(document.id!!), ELIGIBLE_TASK_TYPES
+        ).sortedByDescending { it.id }
+        return document.entityToDto(recordsByDocument)
     }
 
     override fun deleteDocument(documentId: Long) {

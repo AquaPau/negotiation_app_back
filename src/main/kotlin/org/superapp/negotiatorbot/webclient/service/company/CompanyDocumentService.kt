@@ -17,6 +17,8 @@ interface CompanyDocumentService : EnterpriseDocumentService<UserCompany> {
 
     fun getDocuments(companyId: Long, type: BusinessType): List<DocumentMetadataDto>
 
+    fun getDocument(companyId: Long, documentId: Long): DocumentMetadataDto
+
 
     fun deleteCompanyDocuments(companyId: Long)
 
@@ -52,6 +54,16 @@ class CompanyDocumentServiceImpl(
         return documentService.getDocumentList(
             userId = user!!.id!!,
             relatedId = companyId,
+            businessType = BusinessType.USER
+        )
+    }
+
+    override fun getDocument(companyId: Long, documentId: Long): DocumentMetadataDto {
+        userCompanyRepository.findById(companyId)
+            .orElseThrow { NoSuchElementException("Company is not found") }.user
+        return documentService.getDocumentById(
+            relatedId = companyId,
+            documentId = documentId,
             businessType = BusinessType.USER
         )
     }

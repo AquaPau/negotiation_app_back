@@ -19,6 +19,8 @@ interface ContractorDocumentService : EnterpriseDocumentService<UserContractor> 
 
     fun getDocuments(companyId: Long, contractorId: Long): List<DocumentMetadataDto>
 
+    fun getDocument(contractorId: Long, documentId: Long): DocumentMetadataDto
+
     fun deleteDocuments(contractorId: Long)
 
     fun deleteDocumentById(documentId: Long, companyId: Long, contractorId: Long)
@@ -50,6 +52,16 @@ class ContractorDocumentServiceImpl(
         return documentService.getDocumentList(
             userId = company.user!!.id!!,
             relatedId = contractorId,
+            businessType = BusinessType.PARTNER
+        )
+    }
+
+    override fun getDocument(contractorId: Long, documentId: Long): DocumentMetadataDto {
+        userContractorRepository.findById(contractorId)
+            .orElseThrow { NoSuchElementException("Company is not found") }.user
+        return documentService.getDocumentById(
+            relatedId = contractorId,
+            documentId = documentId,
             businessType = BusinessType.PARTNER
         )
     }

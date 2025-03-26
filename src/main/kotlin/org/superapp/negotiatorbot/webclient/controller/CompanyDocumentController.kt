@@ -41,6 +41,11 @@ class CompanyDocumentController(
         return companyDocumentService.getDocuments(companyId, BusinessType.USER)
     }
 
+    @GetMapping("/{companyId}/document/{documentId}")
+    fun getCompanyDocument(@PathVariable companyId: Long, @PathVariable documentId: Long): DocumentMetadataDto {
+        return companyDocumentService.getDocument(companyId, documentId)
+    }
+
     @DeleteMapping("/{companyId}/document")
     fun deleteDocuments(@PathVariable companyId: Long) {
         companyDocumentService.deleteCompanyDocuments(companyId)
