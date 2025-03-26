@@ -19,7 +19,7 @@ class AnalysisController(
     }
 
     @GetMapping("/document/{documentId}/description")
-    fun getDocumentDescription(@PathVariable documentId: Long, @RequestParam(required = false) retry: Boolean = false) {
+    fun getDocumentDescription(@PathVariable documentId: Long, @RequestParam retry: Boolean) {
         if (retry) {
             analyseService.updateThreadAndRun(documentId) {
                 analyseService.provideDescription(
@@ -33,7 +33,7 @@ class AnalysisController(
     }
 
     @GetMapping("project/{projectId}/resolution")
-    fun getProjectResolution(@PathVariable projectId: Long, @RequestParam(required = false) retry: Boolean = false) {
+    fun getProjectResolution(@PathVariable projectId: Long, @RequestParam retry: Boolean) {
         if (retry) {
             analyseService.updateThreadAndRun(projectId) {
                 analyseService.provideProjectResolution(

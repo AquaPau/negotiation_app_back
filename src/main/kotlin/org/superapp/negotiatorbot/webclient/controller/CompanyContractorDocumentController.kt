@@ -25,8 +25,13 @@ class CompanyContractorDocumentController(private val contractorDocumentService:
     }
 
     @GetMapping("/{companyId}/contractor/{contractorId}/document")
-    fun getDocumentsInfo(@PathVariable companyId: Long, @PathVariable contractorId: Long): List<DocumentMetadataDto> {
+    fun getContractorDocuments(@PathVariable companyId: Long, @PathVariable contractorId: Long): List<DocumentMetadataDto> {
         return contractorDocumentService.getDocuments(companyId, contractorId)
+    }
+
+    @GetMapping("/{companyId}/contractor/{contractorId}/document/{documentId}")
+    fun getContractorDocument(@PathVariable companyId: Long, @PathVariable contractorId: Long, @PathVariable documentId: Long): DocumentMetadataDto {
+        return contractorDocumentService.getDocument(contractorId, documentId)
     }
 
     @PutMapping("/{companyId}/contractor/{contractorId}/document")
