@@ -22,4 +22,7 @@ class TaskRecord(
 
     @Column(nullable = false, name = "related_id")
     val relatedId: Long,
+
+    @Column(nullable = true, name = "result")
+    var result: String? = null
 )

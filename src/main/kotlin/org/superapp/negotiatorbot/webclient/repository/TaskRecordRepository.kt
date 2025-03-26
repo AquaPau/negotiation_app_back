@@ -8,4 +8,5 @@ import org.superapp.negotiatorbot.webclient.enums.TaskType
 @Repository
 interface TaskRecordRepository : JpaRepository<TaskRecord, Long?> {
     fun findByTaskTypeAndRelatedId(taskType: TaskType, relatedId: Long): TaskRecord?
+    fun findAllByRelatedIdInAndTaskTypeIn(relatedId: List<Long>, taskType: List<TaskType>): List<TaskRecord>
 }

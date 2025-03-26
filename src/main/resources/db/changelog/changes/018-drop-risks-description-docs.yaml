@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 18
+      author: aquapau
+      changes:
+        - dropColumn:
+            tableName: document_metadata
+            columns:
+              - column:
+                  name: risks
+              - column:
+                  name: description

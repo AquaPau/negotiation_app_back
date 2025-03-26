@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 17
+      author: aquapau
+      changes:
+        - addColumn:
+            tableName: tasks
+            columns:
+              - column:
+                  name: result
+                  type: TEXT
+                  constraints:
+                    nullable: true

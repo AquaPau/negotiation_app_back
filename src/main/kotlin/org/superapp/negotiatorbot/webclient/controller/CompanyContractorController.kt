@@ -30,8 +30,8 @@ class CompanyContractorController(
         return contractorCrudService.get(companyId, contractorId)
     }
 
-    @DeleteMapping("/{contractorId}/contractor")
-    fun deleteContractor(@PathVariable contractorId: Long) {
+    @DeleteMapping("/{companyId}/contractor/{contractorId}/contractor")
+    fun deleteContractor(@PathVariable companyId: Long, @PathVariable contractorId: Long) {
         contractorCrudService.delete(contractorId)
     }
 

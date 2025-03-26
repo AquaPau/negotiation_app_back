@@ -16,7 +16,7 @@ abstract class AsyncTaskService<out T : TaskEnabled>(
     @OptIn(DelicateCoroutinesApi::class)
     fun execute(taskEnabled: TaskEnabled, vararg data: Any) {
         GlobalScope.launch {
-            val task = taskService.createTask(taskEnabled)
+            val task = taskService.createTask(taskEnabled, data)
             try {
                 run(task, taskEnabled, data)
                 taskService.changeStatus(task, TaskStatus.FINISHED)
