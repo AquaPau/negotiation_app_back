@@ -2,11 +2,17 @@ package org.superapp.negotiatorbot.webclient.service.documentMetadata
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.superapp.negotiatorbot.webclient.dto.document.DescriptionData
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
+import org.superapp.negotiatorbot.webclient.dto.document.RisksData
 import org.superapp.negotiatorbot.webclient.entity.*
+import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
+import org.superapp.negotiatorbot.webclient.enums.PromptType
+import org.superapp.negotiatorbot.webclient.enums.TaskType.*
 import org.superapp.negotiatorbot.webclient.repository.DocumentMetadataRepository
+import org.superapp.negotiatorbot.webclient.repository.TaskRecordRepository
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
 
 @Transactional
@@ -36,9 +42,11 @@ interface DocumentService {
 
 
 @Service
+@Transactional
 class DocumentServiceImpl(
     private val documentMetadataRepository: DocumentMetadataRepository,
     private val s3Service: S3Service,
+    private val taskRecordRepository: TaskRecordRepository
 ) : DocumentService {
 
     override fun save(document: DocumentMetadata): DocumentMetadata = documentMetadataRepository.save(document)
@@ -68,11 +76,18 @@ class DocumentServiceImpl(
     }
 
     override fun getDocumentList(relatedId: Long, userId: Long, businessType: BusinessType): List<DocumentMetadataDto> {
-        return documentMetadataRepository.findAllByBusinessTypeAndRelatedIdAndUserIdOrderByIdAsc(
+
+        val documents = documentMetadataRepository.findAllByBusinessTypeAndRelatedIdAndUserIdOrderByIdAsc(
             businessType = businessType,
             relatedId = relatedId,
             userId = userId
-        ).map { it.entityToDto() }
+        )
+        val recordsByDocument = taskRecordRepository.findAllByRelatedIdInAndTaskTypeIn(
+            documents.map { it.id!! }, ELIGIBLE_TASK_TYPES
+        )
+            .groupBy { it.relatedId }.entries.associate { it.key to it.value.sortedByDescending { it.id } }
+
+        return documents.map { it.entityToDto(recordsByDocument[it.id!!] ?: listOf()) }
     }
 
     override fun deleteDocument(documentId: Long) {
@@ -98,19 +113,37 @@ class DocumentServiceImpl(
             }
     }
 
-    private fun DocumentMetadata.entityToDto(): DocumentMetadataDto {
+
+    companion object {
+        private val ELIGIBLE_TASK_TYPES = listOf(
+            CONTRACTOR_DOCUMENT_DESCRIPTION,
+            CONTRACTOR_DOCUMENT_RISKS,
+            COMPANY_DOCUMENT_DESCRIPTION,
+            COMPANY_DOCUMENT_DESCRIPTION
+        )
+    }
+
+    /*
+    The aiResults list comes descending by id, so the freshest one will be used as a result for the user others will
+    be historical and will be reduced
+     */
+    private fun DocumentMetadata.entityToDto(aiResults: List<TaskRecord>): DocumentMetadataDto {
         val result = DocumentMetadataDto(
             id = this.id!!,
             name = "${this.name!!}.${this.extension}",
             userId = this.userId!!,
-            description = this.description,
-            risks = this.risks,
-            type = this.documentType!!
+            type = this.documentType!!,
+            description = aiResults.firstOrNull {
+                it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.DESCRIPTION
+            }?.let { DescriptionData(it.result, it.status, it.id!!) },
+            risks = aiResults.firstOrNull {
+                it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.RISKS
+            }?.let { RisksData(it.result, it.status, it.id!!) }
         )
         when (this.businessType!!) {
             BusinessType.USER -> result.companyId = this.relatedId
             BusinessType.PARTNER -> result.counterPartyId = this.relatedId
-            else -> TODO()
+            else -> throw UnsupportedOperationException()
         }
         return result
     }

@@ -1,6 +1,5 @@
 package org.superapp.negotiatorbot.webclient.service.functionality
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.LegalType
@@ -15,7 +14,7 @@ interface AnalyseService {
 
     fun provideDescription(documentId: Long, legalType: LegalType)
 
-    fun analyseCase(projectId: Long)
+    fun provideProjectResolution(projectId: Long)
 
     fun updateThreadAndRun(documentId: Long, consumer: (Long) -> Unit)
 }
@@ -28,7 +27,6 @@ class AnalyseServiceImpl(
     private val openAiTaskService: OpenAiTaskService
 ) : AnalyseService {
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun detectRisks(documentId: Long, legalType: LegalType) {
         val doc = documentService.get(documentId)
         val introPrompt = promptTextService.fetchPrompt(legalType, DocumentType.DEFAULT, PromptType.DEFAULT)
@@ -37,12 +35,9 @@ class AnalyseServiceImpl(
         } catch (e: NoSuchElementException) {
             promptTextService.fetchPrompt(legalType, DocumentType.DEFAULT, PromptType.RISKS)
         }
-        doc.risks = "Риски документа загружаются"
-        documentService.save(doc)
-        openAiTaskService.execute(doc, "$introPrompt prompt", PromptType.RISKS)
+        openAiTaskService.execute(doc, "$introPrompt $prompt", PromptType.RISKS)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun provideDescription(documentId: Long, legalType: LegalType) {
         val doc = documentService.get(documentId)
         val introPrompt = promptTextService.fetchPrompt(legalType, DocumentType.DEFAULT, PromptType.DEFAULT)
@@ -51,13 +46,11 @@ class AnalyseServiceImpl(
         } catch (e: NoSuchElementException) {
             promptTextService.fetchPrompt(legalType, DocumentType.DEFAULT, PromptType.DESCRIPTION)
         }
-        doc.description = "Содержимое документа загружается"
-        documentService.save(doc)
         openAiTaskService.execute(doc, "$introPrompt $prompt", PromptType.DESCRIPTION)
 
     }
 
-    override fun analyseCase(projectId: Long) {
+    override fun provideProjectResolution(projectId: Long) {
 
     }
 

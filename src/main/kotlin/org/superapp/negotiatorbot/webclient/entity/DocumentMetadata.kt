@@ -33,12 +33,6 @@ class DocumentMetadata : TaskEnabled {
     @Column(nullable = false)
     var userId: Long? = null
 
-    @Column(length = 5000)
-    var description: String? = null
-
-    @Column(length = 5000)
-    var risks: String? = null
-
     @Column(nullable = false)
     var relatedId: Long? = null
 

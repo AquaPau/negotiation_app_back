@@ -5,6 +5,7 @@ import com.aallam.openai.api.message.Message
 import com.aallam.openai.api.message.MessageContent
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.content.*
+import jakarta.transaction.Transactional
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
@@ -33,10 +34,13 @@ interface OpenAiUserService {
 
     fun provideResponseFromOpenAi(taskRecord: TaskRecord, doc: DocumentMetadata, prompt: String): String
 
+    fun provideResponseFromOpenAi(taskRecord: TaskRecord, doc: List<DocumentMetadata>, prompt: String): String
+
     fun getAssistantByDocument(documentMetadata: DocumentMetadata): OpenAiAssistant
 }
 
 @Service
+@Transactional
 class OpenAiUserServiceImpl(
     private val openAiAssistantService: OpenAiAssistantService,
     private val taskService: TaskRecordService,
@@ -50,14 +54,23 @@ class OpenAiUserServiceImpl(
         val fileContent = s3Service.download(doc, taskRecord)
         val openAiAssistant = getAssistantByDocument(doc)
         val fullDocName = doc.getNameWithExtension()
-
         uploadFile(openAiAssistant, fileContent.inputStream, fullDocName, taskRecord)
+
         val result = startDialogWIthUserPrompt(openAiAssistant, prompt, taskRecord)
+
         deleteFilesFromOpenAi(openAiAssistant)
         return result.replace(
             regex = Regex("""【.*】"""),
             ""
         )
+    }
+
+    override fun provideResponseFromOpenAi(
+        taskRecord: TaskRecord,
+        doc: List<DocumentMetadata>,
+        prompt: String
+    ): String {
+        TODO("Not yet implemented")
     }
 
     @OptIn(BetaOpenAI::class)
