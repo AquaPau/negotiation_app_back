@@ -89,8 +89,8 @@ class CompanyCrudServiceImpl(
         ).suggestions.firstOrNull()
             ?: throw CompanyNotFoundException(
                 null,
-                "Data about company " +
-                        "${request.customUserGeneratedName} is not found in dadata"
+                "Данные об ОГРН компании " +
+                        "${request.customUserGeneratedName} не найдены в ЕГРЮЛ/ЕГРИП"
             )
         userCompany.inn = companyData.data.inn
         userCompany.fullName = companyData.value

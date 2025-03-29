@@ -85,8 +85,8 @@ class ContractorCrudServiceImpl(
             DadataRequest(query = request.ogrn.toString()), token = dadataToken
         ).suggestions.firstOrNull()
             ?: throw ContractorNotFoundException(null,
-                "Data about counterparty" +
-                        " ${request.customUserGeneratedName} is not found in dadata"
+                "Данные об ОГРН контрагента " +
+                        "${request.customUserGeneratedName} не найдены в ЕГРЮЛ/ЕГРИП"
             )
 
         contractorCompany.inn = companyData.data.inn
