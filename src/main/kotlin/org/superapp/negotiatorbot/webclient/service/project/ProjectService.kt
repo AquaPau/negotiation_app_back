@@ -17,6 +17,8 @@ interface ProjectService {
 
     fun getProjectDtoById(id: Long): ProjectDto
 
+    fun getProjectById(id: Long): Project
+
     fun createProject(newProjectDto: NewProjectDto): ProjectDto
 
     fun deleteProject(id: Long)
@@ -36,8 +38,12 @@ class ProjectServiceImpl(
     }
 
     override fun getProjectDtoById(id: Long): ProjectDto {
+       return getProjectById(id).toDto()
+    }
+
+    override fun getProjectById(id: Long): Project {
         val user = userService.getCurrentUser()
-        return projectRepository.findByIdAndUser(id, user).orElseThrow { ProjectNotFoundException(id) }.toDto()
+        return projectRepository.findByIdAndUser(id, user).orElseThrow { ProjectNotFoundException(id) }
     }
 
     @Transactional
