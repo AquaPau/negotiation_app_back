@@ -11,7 +11,7 @@ import org.superapp.negotiatorbot.webclient.service.EnterpriseDocumentService
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
 
 interface ProjectDocumentService : EnterpriseDocumentService<Project> {
-    fun uploadDocuments(files: List<RawDocumentAndMetatype>, relatedId: Long, type: BusinessType)
+    fun uploadDocuments(files: List<RawDocumentAndMetatype>, relatedId: Long)
     fun getDocuments(projectId: Long, businessType: BusinessType): List<DocumentMetadataDto>
     fun deleteDocuments(projectId: Long)
     fun deleteDocumentById(documentId: Long, projectId: Long)
@@ -22,12 +22,12 @@ class ProjectDocumentServiceImpl(
     private val documentService: DocumentService,
     private val projectRepository: ProjectRepository
 ) : ProjectDocumentService {
-    override fun uploadDocuments(files: List<RawDocumentAndMetatype>, relatedId: Long, type: BusinessType) {
+    override fun uploadDocuments(files: List<RawDocumentAndMetatype>, relatedId: Long) {
         val user = projectRepository.findById(relatedId).orElseThrow { ProjectNotFoundException(null, relatedId) }.user
 
         documentService.batchSave(
             user!!.id!!,
-            type,
+            BusinessType.PROJECT,
             relatedId,
             files
         )

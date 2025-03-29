@@ -16,4 +16,9 @@ interface PromptTextRepository : JpaRepository<PromptText, Long> {
         type: DocumentType,
         promptType: PromptType
     ): Optional<PromptText>
+
+    fun findByAuditoryAndPromptType(
+        auditory: LegalType,
+        promptType: PromptType
+    ): Optional<PromptText>
 }

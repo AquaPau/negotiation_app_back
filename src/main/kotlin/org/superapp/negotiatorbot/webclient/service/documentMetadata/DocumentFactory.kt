@@ -42,7 +42,7 @@ class DocumentFactory {
             fileNameWithExtension: List<String>,
             documentTypes: List<DocumentType>
         ): List<DocumentMetadata> {
-            return fileNameWithExtension.mapIndexed { index, it ->
+            return List(fileNameWithExtension.size) { index ->
                 createFile(
                     userId = userId,
                     businessType = businessType,

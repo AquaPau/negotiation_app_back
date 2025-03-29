@@ -1,13 +1,16 @@
 package org.superapp.negotiatorbot.webclient.service.functionality
 
 import org.springframework.stereotype.Service
+import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.LegalType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.superapp.negotiatorbot.webclient.exception.PromptNotFoundException
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
 import org.superapp.negotiatorbot.webclient.service.functionality.openai.OpenAiUserService
+import org.superapp.negotiatorbot.webclient.service.project.ProjectService
 import org.superapp.negotiatorbot.webclient.service.task.OpenAiTaskService
+import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 
 interface AnalyseService {
@@ -25,7 +28,9 @@ class AnalyseServiceImpl(
     private val documentService: DocumentService,
     private val openAiUserService: OpenAiUserService,
     private val promptTextService: PromptTextService,
-    private val openAiTaskService: OpenAiTaskService
+    private val openAiTaskService: OpenAiTaskService,
+    private val userService: UserService,
+    private val projectService: ProjectService
 ) : AnalyseService {
 
     override fun detectRisks(documentId: Long, legalType: LegalType) {
@@ -52,6 +57,12 @@ class AnalyseServiceImpl(
     }
 
     override fun provideProjectResolution(projectId: Long) {
+        val currentUser = userService.getCurrentUser()
+        val project = projectService.getProjectById(projectId)
+        val documents = documentService.getDocumentList(projectId, currentUser.id!!, BusinessType.PROJECT)
+        val introPrompt = promptTextService.fetchPrompt(LegalType.ENTERPRISE, PromptType.PROJECT)
+        val prompt = "$introPrompt ${project.userGeneratedPrompt}"
+        openAiTaskService.execute(project, prompt, PromptType.PROJECT, documents)
 
     }
 

@@ -52,18 +52,12 @@ class OpenAiUserServiceImpl(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun provideResponseFromOpenAi(taskRecord: TaskRecord, doc: DocumentMetadata, prompt: String): String {
-        val fileContent = s3Service.download(doc, taskRecord)
-        val openAiAssistant = getAssistantByDocument(doc)
-        val fullDocName = doc.getNameWithExtension()
-        uploadFile(openAiAssistant, fileContent.inputStream, fullDocName, taskRecord)
+        val openAiAssistant = createDocAssistant(doc, taskRecord)
 
         val result = startDialogWIthUserPrompt(openAiAssistant, prompt)
 
         deleteFilesFromOpenAi(openAiAssistant)
-        return result.replace(
-            regex = Regex("""【.*】"""),
-            ""
-        )
+        return formatTheResultWithoutMarkdown(result)
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -72,7 +66,12 @@ class OpenAiUserServiceImpl(
         doc: List<DocumentMetadata>,
         prompt: String
     ): String {
-        TODO("Not yet implemented")
+        val assistants = doc.map { getAssistantByDocument(it) }.distinct()
+            .ifEmpty { throw TaskException(TaskStatus.ERROR_UPLOADING_TO_ASSISTANT) }
+        if (assistants.size > 1) throw TaskException(TaskStatus.ERROR_UPLOADING_TO_ASSISTANT)
+        val result = startDialogWIthUserPrompt(assistants.first(), prompt)
+        deleteFilesFromOpenAi(assistants.first())
+        return formatTheResultWithoutMarkdown(result)
     }
 
     @OptIn(BetaOpenAI::class)
@@ -83,6 +82,17 @@ class OpenAiUserServiceImpl(
         } else {
             formResponse(response.first())
         }
+    }
+
+    private fun createDocAssistant(
+        doc: DocumentMetadata,
+        taskRecord: TaskRecord
+    ): OpenAiAssistant {
+        val fileContent = s3Service.download(doc, taskRecord)
+        val openAiAssistant = getAssistantByDocument(doc)
+        val fullDocName = doc.getNameWithExtension()
+        uploadFile(openAiAssistant, fileContent.inputStream, fullDocName, taskRecord)
+        return openAiAssistant
     }
 
     private fun uploadFile(
@@ -101,6 +111,10 @@ class OpenAiUserServiceImpl(
         }
     }
 
+    private fun formatTheResultWithoutMarkdown(result: String) = result.replace(
+        regex = Regex("""【.*】"""),
+        ""
+    )
 
     private fun deleteFilesFromOpenAi(openAiAssistant: OpenAiAssistant) {
         openAiAssistantService.deleteVectorStoreFromAssistant(openAiAssistant)

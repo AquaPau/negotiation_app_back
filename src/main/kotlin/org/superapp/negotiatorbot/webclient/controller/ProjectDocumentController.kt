@@ -29,7 +29,7 @@ class ProjectDocumentController(
         runBlocking(Dispatchers.IO) {
             launch {
                 projectDocumentService.uploadDocuments(
-                    files = fileContents, relatedId = projectId, type = BusinessType.PROJECT
+                    files = fileContents, relatedId = projectId
                 )
             }
         }
