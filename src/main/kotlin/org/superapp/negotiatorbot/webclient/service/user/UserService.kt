@@ -13,6 +13,7 @@ import org.superapp.negotiatorbot.webclient.dto.user.UserDto
 import org.superapp.negotiatorbot.webclient.dto.user.UserRegistrationDto
 import org.superapp.negotiatorbot.webclient.entity.User
 import org.superapp.negotiatorbot.webclient.enums.Roles
+import org.superapp.negotiatorbot.webclient.exception.UserNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.user.RoleRepository
 import org.superapp.negotiatorbot.webclient.repository.user.UserRepository
 
@@ -34,7 +35,7 @@ interface UserService {
 
     fun getCurrentUserDto(): UserDto?
 
-    fun getCurrentUser(): User?
+    fun getCurrentUser(): User
 }
 
 @Service
@@ -81,7 +82,7 @@ class UserServiceImpl(
                 UsernamePasswordAuthenticationToken(login, password, emptyList())
             )
             SecurityContextHolder.getContext().authentication = token
-            return userRepository.findByEmail(login).orElseThrow { NoSuchElementException("User was not found") }.id
+            return userRepository.findByEmail(login).orElseThrow { UserNotFoundException(login) }.id
         } catch (e: AuthenticationException) {
             logout()
             null
@@ -101,13 +102,14 @@ class UserServiceImpl(
             return UserDto.toUserDto(
                 userRepository.findByEmail(
                     (authentication.principal as UserDetails).username
-                ).orElseThrow { NoSuchElementException("No user found") })
+                ).orElseThrow { UserNotFoundException((authentication.principal as UserDetails).username) })
         }
     }
 
-    override fun getCurrentUser(): User? {
+    override fun getCurrentUser(): User {
         val userId = getCurrentUserDto()?.id
-        return userId?.let { userRepository.findById(userId) }?.orElseGet { null }
+        val user = userId?.let { userRepository.findById(userId) }?.orElseGet { null }
+        return user ?: throw UserNotFoundException(userId.toString())
     }
 
     companion object {

@@ -11,6 +11,8 @@ import org.superapp.negotiatorbot.webclient.entity.UserCompany
 import org.superapp.negotiatorbot.webclient.entity.toDto
 import org.superapp.negotiatorbot.webclient.enums.CompanyRegion
 import org.superapp.negotiatorbot.webclient.exception.CompanyAlreadyExistsException
+import org.superapp.negotiatorbot.webclient.exception.CompanyNotFoundException
+import org.superapp.negotiatorbot.webclient.exception.UserNotFoundException
 import org.superapp.negotiatorbot.webclient.port.DadataPort
 import org.superapp.negotiatorbot.webclient.repository.company.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.company.UserContractorRepository
@@ -39,29 +41,29 @@ class CompanyCrudServiceImpl(
     @Transactional
     override fun create(enterpriseId: Long?, request: NewCompanyProfile): CompanyProfileDto {
         val user = userService.findById(request.userId)
-            ?: throw NoSuchElementException("User ${request.userId} is not found")
+            ?: throw UserNotFoundException(request.userId.toString())
         return createOwnCompany(user, request)
     }
 
 
     override fun getAll(): List<CompanyProfileDto> {
-        val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
+        val user = userService.getCurrentUser()
         return userCompanyRepository.findAllByUser(user).map {
             it.toDto()
         }
     }
 
     override fun get(companyId: Long): CompanyProfileDto {
-        val user = userService.getCurrentUser() ?: throw NoSuchElementException("User not found")
+        val user = userService.getCurrentUser()
         return userCompanyRepository.findByUserAndId(user, companyId)
-            .orElseThrow { NoSuchElementException("Company not found") }
+            .orElseThrow { CompanyNotFoundException(companyId) }
             .toDto()
     }
 
     @Transactional
     override fun delete(enterpriseId: Long) {
         val company = userCompanyRepository.findById(enterpriseId)
-            .orElseThrow { NoSuchElementException("User company is not found") }
+            .orElseThrow { CompanyNotFoundException(enterpriseId) }
         val contractors = userContractorRepository.findAllByCompanyId(enterpriseId)
 
         companyDocumentService.deleteCompanyDocuments(enterpriseId)
@@ -85,7 +87,8 @@ class CompanyCrudServiceImpl(
         val companyData = dadataPort.findCompanyByInn(
             DadataRequest(query = request.ogrn.toString()), token = dadataToken
         ).suggestions.firstOrNull()
-            ?: throw NoSuchElementException(
+            ?: throw CompanyNotFoundException(
+                null,
                 "Data about company " +
                         "${request.customUserGeneratedName} is not found in dadata"
             )

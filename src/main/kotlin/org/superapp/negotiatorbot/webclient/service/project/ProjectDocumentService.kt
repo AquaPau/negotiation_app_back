@@ -5,6 +5,7 @@ import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.Project
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
+import org.superapp.negotiatorbot.webclient.exception.ProjectNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.project.ProjectRepository
 import org.superapp.negotiatorbot.webclient.service.EnterpriseDocumentService
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
@@ -22,7 +23,7 @@ class ProjectDocumentServiceImpl(
     private val projectRepository: ProjectRepository
 ) : ProjectDocumentService {
     override fun uploadDocuments(files: List<RawDocumentAndMetatype>, relatedId: Long, type: BusinessType) {
-        val user = projectRepository.findById(relatedId).orElseThrow { NoSuchElementException() }.user
+        val user = projectRepository.findById(relatedId).orElseThrow { ProjectNotFoundException(null, relatedId) }.user
 
         documentService.batchSave(
             user!!.id!!,
@@ -34,7 +35,7 @@ class ProjectDocumentServiceImpl(
 
     override fun getDocuments(projectId: Long, businessType: BusinessType): List<DocumentMetadataDto> {
         val user = projectRepository.findById(projectId)
-            .orElseThrow { NoSuchElementException() }.user
+            .orElseThrow { ProjectNotFoundException(projectId) }.user
         return documentService.getDocumentList(
             userId = user!!.id!!,
             relatedId = projectId,

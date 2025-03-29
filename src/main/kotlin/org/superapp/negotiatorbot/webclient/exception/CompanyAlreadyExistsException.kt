@@ -1,3 +1,6 @@
 package org.superapp.negotiatorbot.webclient.exception
 
-class CompanyAlreadyExistsException(orgn: Long): RuntimeException("Company with ogrn $orgn already exists")
+import org.springframework.http.HttpStatus
+
+class CompanyAlreadyExistsException(orgn: Long) :
+    CustomUiException(HttpStatus.BAD_REQUEST, "Компания с ОГРН $orgn уже существует")

@@ -5,6 +5,7 @@ import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.UserCompany
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
+import org.superapp.negotiatorbot.webclient.exception.CompanyNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.company.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.service.EnterpriseDocumentService
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
@@ -37,7 +38,7 @@ class CompanyDocumentServiceImpl(
         relatedId: Long
     ) {
         val user = userCompanyRepository.findById(relatedId)
-            .orElseThrow { NoSuchElementException("Own company is not found") }.user
+            .orElseThrow { CompanyNotFoundException(relatedId) }.user
 
         documentService.batchSave(
             user!!.id!!,
@@ -50,7 +51,7 @@ class CompanyDocumentServiceImpl(
 
     override fun getDocuments(companyId: Long, type: BusinessType): List<DocumentMetadataDto> {
         val user = userCompanyRepository.findById(companyId)
-            .orElseThrow { NoSuchElementException("Company is not found") }.user
+            .orElseThrow { CompanyNotFoundException(companyId) }.user
         return documentService.getDocumentList(
             userId = user!!.id!!,
             relatedId = companyId,
@@ -60,7 +61,7 @@ class CompanyDocumentServiceImpl(
 
     override fun getDocument(companyId: Long, documentId: Long): DocumentMetadataDto {
         userCompanyRepository.findById(companyId)
-            .orElseThrow { NoSuchElementException("Company is not found") }.user
+            .orElseThrow { CompanyNotFoundException(companyId) }.user
         return documentService.getDocumentById(
             relatedId = companyId,
             documentId = documentId,
