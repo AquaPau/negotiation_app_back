@@ -1,7 +1,6 @@
 package org.superapp.negotiatorbot.webclient.service.task
 
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.Project

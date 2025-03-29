@@ -4,7 +4,6 @@ import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.message.Message
 import com.aallam.openai.api.message.MessageContent
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
@@ -58,7 +57,7 @@ class OpenAiUserServiceImpl(
         val fullDocName = doc.getNameWithExtension()
         uploadFile(openAiAssistant, fileContent.inputStream, fullDocName, taskRecord)
 
-        val result = startDialogWIthUserPrompt(openAiAssistant, prompt, taskRecord)
+        val result = startDialogWIthUserPrompt(openAiAssistant, prompt)
 
         deleteFilesFromOpenAi(openAiAssistant)
         return result.replace(
@@ -77,10 +76,8 @@ class OpenAiUserServiceImpl(
     }
 
     @OptIn(BetaOpenAI::class)
-    @Throws(NoSuchElementException::class)
-    private fun startDialogWIthUserPrompt(openAiAssistant: OpenAiAssistant, prompt: String, task: TaskRecord): String {
+    private fun startDialogWIthUserPrompt(openAiAssistant: OpenAiAssistant, prompt: String): String {
         val response = runBlocking { openAiAssistantService.runRequest(prompt, openAiAssistant) }
-
         return if (response.isEmpty()) {
             throw TaskException(TaskStatus.ERROR_ASSISTANT_REPLY)
         } else {

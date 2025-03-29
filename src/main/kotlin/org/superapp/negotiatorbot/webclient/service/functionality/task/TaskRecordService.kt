@@ -12,6 +12,7 @@ import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.superapp.negotiatorbot.webclient.enums.TaskStatus
 import org.superapp.negotiatorbot.webclient.enums.TaskType
 import org.superapp.negotiatorbot.webclient.exception.TaskException
+import org.superapp.negotiatorbot.webclient.exception.TaskNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.TaskRecordRepository
 
 interface TaskRecordService {
@@ -35,7 +36,7 @@ class TaskRecordServiceImpl(
 
     override fun getByTypeAndReference(type: TaskType, referenceId: Long): TaskRecord {
         return taskRepository.findByTaskTypeAndRelatedId(type, referenceId)
-            ?: throw NoSuchElementException("No such task with type: [$type] related id: [$referenceId]")
+            ?: throw TaskNotFoundException(null, referenceId)
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -80,7 +81,7 @@ class TaskRecordServiceImpl(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun updateResult(taskId: Long, result: String): TaskRecord {
-        val task = taskRepository.findById(taskId).orElseThrow { NoSuchElementException() }
+        val task = taskRepository.findById(taskId).orElseThrow { TaskNotFoundException(taskId) }
         task.result = result
         return taskRepository.saveAndFlush(task)
     }
@@ -95,7 +96,7 @@ class TaskRecordServiceImpl(
                 TaskType.CONTRACTOR_DOCUMENT_RISKS
             else TaskType.CONTRACTOR_DOCUMENT_DESCRIPTION
 
-            else -> throw IllegalArgumentException("Unknown business type: $businessType")
+            else -> throw UnsupportedOperationException("Unknown business type: $businessType")
         }
     }
 }

@@ -6,11 +6,12 @@ import org.superapp.negotiatorbot.webclient.dto.document.DescriptionData
 import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.dto.document.RisksData
-import org.superapp.negotiatorbot.webclient.entity.*
+import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.superapp.negotiatorbot.webclient.enums.TaskType.*
+import org.superapp.negotiatorbot.webclient.exception.DocumentNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.DocumentMetadataRepository
 import org.superapp.negotiatorbot.webclient.repository.TaskRecordRepository
 import org.superapp.negotiatorbot.webclient.service.s3.S3Service
@@ -24,7 +25,6 @@ interface DocumentService {
         userId: Long, businessType: BusinessType, relatedId: Long, fileData: List<RawDocumentAndMetatype>
     ): List<DocumentMetadata>
 
-    @Throws(NoSuchElementException::class)
     fun get(serverSideFileId: Long): DocumentMetadata
 
     fun getDocumentList(relatedId: Long, userId: Long, businessType: BusinessType): List<DocumentMetadataDto>
@@ -74,7 +74,8 @@ class DocumentServiceImpl(
     }
 
     override fun get(serverSideFileId: Long): DocumentMetadata {
-        return documentMetadataRepository.findById(serverSideFileId).orElseThrow()
+        return documentMetadataRepository.findById(serverSideFileId)
+            .orElseThrow { DocumentNotFoundException(serverSideFileId) }
     }
 
     override fun getDocumentList(relatedId: Long, userId: Long, businessType: BusinessType): List<DocumentMetadataDto> {
@@ -96,7 +97,7 @@ class DocumentServiceImpl(
         val document = documentMetadataRepository.findByIdAndBusinessTypeAndRelatedId(
             documentId,
             businessType, relatedId
-        ).orElseThrow { NoSuchElementException() }
+        ).orElseThrow { DocumentNotFoundException(documentId) }
         val recordsByDocument = taskRecordRepository.findAllByRelatedIdInAndTaskTypeIn(
             listOf(document.id!!), ELIGIBLE_TASK_TYPES
         ).sortedByDescending { it.id }
@@ -104,7 +105,8 @@ class DocumentServiceImpl(
     }
 
     override fun deleteDocument(documentId: Long) {
-        val documentMetadata = documentMetadataRepository.findById(documentId).orElseThrow()
+        val documentMetadata = documentMetadataRepository.findById(documentId)
+            .orElseThrow { DocumentNotFoundException(documentId) }
         s3Service.delete(documentMetadata)
         documentMetadataRepository.delete(documentMetadata)
     }
@@ -121,9 +123,7 @@ class DocumentServiceImpl(
         businessType: BusinessType
     ): DocumentMetadata {
         return documentMetadataRepository.findByIdAndBusinessTypeAndRelatedId(documentId, businessType, relatedId)
-            .orElseThrow {
-                NoSuchElementException()
-            }
+            .orElseThrow { DocumentNotFoundException(documentId) }
     }
 
 
@@ -134,30 +134,31 @@ class DocumentServiceImpl(
             COMPANY_DOCUMENT_DESCRIPTION,
             COMPANY_DOCUMENT_DESCRIPTION
         )
+
+        /*
+        The aiResults list comes descending by id, so the freshest one will be used as a result for the user others will
+        be historical and will be reduced
+        */
+        private fun DocumentMetadata.entityToDto(aiResults: List<TaskRecord>): DocumentMetadataDto {
+            val result = DocumentMetadataDto(
+                id = this.id!!,
+                name = "${this.name!!}.${this.extension}",
+                userId = this.userId!!,
+                type = this.documentType!!,
+                description = aiResults.firstOrNull {
+                    it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.DESCRIPTION
+                }?.let { DescriptionData(it.result, it.status, it.id!!) },
+                risks = aiResults.firstOrNull {
+                    it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.RISKS
+                }?.let { RisksData(it.result, it.status, it.id!!) }
+            )
+            when (this.businessType!!) {
+                BusinessType.USER -> result.companyId = this.relatedId
+                BusinessType.PARTNER -> result.counterPartyId = this.relatedId
+                else -> throw UnsupportedOperationException()
+            }
+            return result
+        }
     }
 
-    /*
-    The aiResults list comes descending by id, so the freshest one will be used as a result for the user others will
-    be historical and will be reduced
-     */
-    private fun DocumentMetadata.entityToDto(aiResults: List<TaskRecord>): DocumentMetadataDto {
-        val result = DocumentMetadataDto(
-            id = this.id!!,
-            name = "${this.name!!}.${this.extension}",
-            userId = this.userId!!,
-            type = this.documentType!!,
-            description = aiResults.firstOrNull {
-                it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.DESCRIPTION
-            }?.let { DescriptionData(it.result, it.status, it.id!!) },
-            risks = aiResults.firstOrNull {
-                it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.RISKS
-            }?.let { RisksData(it.result, it.status, it.id!!) }
-        )
-        when (this.businessType!!) {
-            BusinessType.USER -> result.companyId = this.relatedId
-            BusinessType.PARTNER -> result.counterPartyId = this.relatedId
-            else -> throw UnsupportedOperationException()
-        }
-        return result
-    }
 }

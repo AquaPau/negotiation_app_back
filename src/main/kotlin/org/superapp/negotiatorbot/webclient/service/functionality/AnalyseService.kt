@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.LegalType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
+import org.superapp.negotiatorbot.webclient.exception.PromptNotFoundException
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
 import org.superapp.negotiatorbot.webclient.service.functionality.openai.OpenAiUserService
 import org.superapp.negotiatorbot.webclient.service.task.OpenAiTaskService
@@ -32,7 +33,7 @@ class AnalyseServiceImpl(
         val introPrompt = promptTextService.fetchPrompt(legalType, DocumentType.DEFAULT, PromptType.DEFAULT)
         val prompt = try {
             promptTextService.fetchPrompt(legalType, doc.documentType!!, PromptType.RISKS)
-        } catch (e: NoSuchElementException) {
+        } catch (e: PromptNotFoundException) {
             promptTextService.fetchPrompt(legalType, DocumentType.DEFAULT, PromptType.RISKS)
         }
         openAiTaskService.execute(doc, "$introPrompt $prompt", PromptType.RISKS)
@@ -43,7 +44,7 @@ class AnalyseServiceImpl(
         val introPrompt = promptTextService.fetchPrompt(legalType, DocumentType.DEFAULT, PromptType.DEFAULT)
         val prompt = try {
             promptTextService.fetchPrompt(legalType, doc.documentType!!, PromptType.DESCRIPTION)
-        } catch (e: NoSuchElementException) {
+        } catch (e: PromptNotFoundException) {
             promptTextService.fetchPrompt(legalType, DocumentType.DEFAULT, PromptType.DESCRIPTION)
         }
         openAiTaskService.execute(doc, "$introPrompt $prompt", PromptType.DESCRIPTION)

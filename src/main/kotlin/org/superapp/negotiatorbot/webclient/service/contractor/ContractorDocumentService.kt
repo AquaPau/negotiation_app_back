@@ -5,6 +5,8 @@ import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.UserContractor
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
+import org.superapp.negotiatorbot.webclient.exception.CompanyNotFoundException
+import org.superapp.negotiatorbot.webclient.exception.ContractorNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.company.UserCompanyRepository
 import org.superapp.negotiatorbot.webclient.repository.company.UserContractorRepository
 import org.superapp.negotiatorbot.webclient.service.EnterpriseDocumentService
@@ -35,7 +37,7 @@ class ContractorDocumentServiceImpl(
     override fun uploadDocuments(files: List<RawDocumentAndMetatype>, relatedId: Long) {
 
         val user = userContractorRepository.findById(relatedId)
-            .orElseThrow { NoSuchElementException("Counterparty is not found") }.user
+            .orElseThrow { ContractorNotFoundException(relatedId) }.user
 
         documentService.batchSave(
             user.id!!,
@@ -47,8 +49,8 @@ class ContractorDocumentServiceImpl(
     }
 
     override fun getDocuments(companyId: Long, contractorId: Long): List<DocumentMetadataDto> {
-        val company = userCompanyRepository.findById(companyId).orElseThrow { NoSuchElementException() }
-        userContractorRepository.findById(contractorId).orElseThrow { NoSuchElementException() }
+        val company = userCompanyRepository.findById(companyId).orElseThrow { CompanyNotFoundException(companyId) }
+        userContractorRepository.findById(contractorId).orElseThrow { ContractorNotFoundException(contractorId) }
         return documentService.getDocumentList(
             userId = company.user!!.id!!,
             relatedId = contractorId,
@@ -58,7 +60,7 @@ class ContractorDocumentServiceImpl(
 
     override fun getDocument(contractorId: Long, documentId: Long): DocumentMetadataDto {
         userContractorRepository.findById(contractorId)
-            .orElseThrow { NoSuchElementException("Company is not found") }.user
+            .orElseThrow { ContractorNotFoundException(contractorId) }.user
         return documentService.getDocumentById(
             relatedId = contractorId,
             documentId = documentId,
