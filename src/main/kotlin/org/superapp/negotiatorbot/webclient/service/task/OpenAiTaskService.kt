@@ -14,7 +14,7 @@ import org.superapp.negotiatorbot.webclient.service.functionality.task.TaskRecor
 
 @Service
 class OpenAiTaskService(
-    private val taskService: TaskRecordService,
+    taskService: TaskRecordService,
     private val openAiUserService: OpenAiUserService,
 ) : AsyncTaskService<DocumentMetadata>(taskService) {
     @Transactional

@@ -19,7 +19,7 @@ class AnalysisController(
     }
 
     @GetMapping("/document/{documentId}/description")
-    fun getDocumentDescription(@PathVariable documentId: Long, @RequestParam retry: Boolean) {
+    fun getDocumentDescription(@PathVariable documentId: Long, @RequestParam(required = false) retry: Boolean = false) {
         if (retry) {
             analyseService.updateThreadAndRun(documentId) {
                 analyseService.provideDescription(

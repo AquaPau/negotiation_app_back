@@ -3,14 +3,16 @@ package org.superapp.negotiatorbot.webclient.service.task
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.webclient.entity.TaskEnabled
 import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
 import org.superapp.negotiatorbot.webclient.enums.TaskStatus
 import org.superapp.negotiatorbot.webclient.exception.TaskException
 import org.superapp.negotiatorbot.webclient.service.functionality.task.TaskRecordService
 
+@Component
 abstract class AsyncTaskService<out T : TaskEnabled>(
-    private val taskService: TaskRecordService
+    protected val taskService: TaskRecordService
 ) {
 
     @OptIn(DelicateCoroutinesApi::class)
