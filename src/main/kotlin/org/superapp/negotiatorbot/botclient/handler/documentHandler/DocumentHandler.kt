@@ -34,10 +34,6 @@ class DocumentHandler(
 
     }
 
-    private fun createUrL(document: Document): URL {
-        val getFile = GetFile(document.fileId)
-        return URI(senderService.downLoadTgFile(getFile).getFileUrl(botConfig.token)).toURL()
-    }
 
     private fun configurePrompt(docType: DocumentType, promptType: PromptType) {
         TODO()
