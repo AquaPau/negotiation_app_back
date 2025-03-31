@@ -7,17 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.message.Message
 
 @Component
-class StartReply(
-    private val documentOptions: List<DocumentOption>
-) {
-    private val replyText = "Этот бот поможет проанализировать документы. Пожалуйста выбарите тип документа "
-
-    fun message(chatId: Long): BotApiMethod<Message> = createMessageWithKeyboard(
-        chatId,
-        replyText,
-        documentOptions
-    )
-
-
+class StartReply{
+    private val replyText = "Этот бот поможет проанализировать документы. Пожалуйста загрузите документ чтобы начать"
 }
 

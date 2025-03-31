@@ -1,8 +1,8 @@
 package org.superapp.negotiatorbot.botclient.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
-import org.superapp.negotiatorbot.botclient.model.TgChat
+import org.superapp.negotiatorbot.botclient.model.TgDocument
 
-interface TgChatRepository : JpaRepository<TgChat, Long> {
-    fun findByTgUserId(tgUserId: Long): TgChat?
+interface TgChatRepository : JpaRepository<TgDocument, Long> {
+    fun findByTgUserId(tgUserId: Long): TgDocument?
 }

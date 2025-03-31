@@ -4,12 +4,10 @@ import jakarta.persistence.*
 import org.superapp.negotiatorbot.webclient.entity.TaskEnabled
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
-import org.telegram.telegrambots.meta.api.objects.Document
-import java.net.URL
 
 @Entity
 @Table(name = "tg_chats")
-class TgChat (
+class TgDocument (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
@@ -28,8 +26,11 @@ class TgChat (
     @Enumerated(EnumType.STRING)
     var chosenPromptType: PromptType? = null,
 
-    //its one time so better not to store it at all
-    @Transient
-    var document: Document? = null,
+    @Column(nullable = true)
+    var tgFileId: String? = null,
+
+    @Column(nullable = true)
+    var tgDocumentName: String? = null,
+
 ) : TaskEnabled {
 }

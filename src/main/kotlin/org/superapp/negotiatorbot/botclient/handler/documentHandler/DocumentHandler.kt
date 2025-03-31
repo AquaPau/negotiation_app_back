@@ -16,7 +16,6 @@ import java.net.URL
 @Service
 class DocumentHandler(
     private val senderService: SenderService,
-    private val botConfig: BotConfig,
     private val tgUserService: TgUserService,
 ) {
 
@@ -25,7 +24,6 @@ class DocumentHandler(
     fun handle(message: Message) {
         message.from?.let {
             val document = message.document
-            createUrL(document)
             senderService.send(text, message.chatId)
         }
     }

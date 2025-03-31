@@ -7,7 +7,7 @@ import org.superapp.negotiatorbot.webclient.enums.LegalType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.superapp.negotiatorbot.webclient.exception.PromptNotFoundException
 import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentService
-import org.superapp.negotiatorbot.webclient.service.functionality.openai.OpenAiUserService
+import org.superapp.negotiatorbot.webclient.service.functionality.openai.WebOpenAiService
 import org.superapp.negotiatorbot.webclient.service.project.ProjectService
 import org.superapp.negotiatorbot.webclient.service.task.OpenAiTaskService
 import org.superapp.negotiatorbot.webclient.service.user.UserService
@@ -26,7 +26,7 @@ interface AnalyseService {
 @Service
 class AnalyseServiceImpl(
     private val documentService: DocumentService,
-    private val openAiUserService: OpenAiUserService,
+    private val webOpenAiService: WebOpenAiService,
     private val promptTextService: PromptTextService,
     private val openAiTaskService: OpenAiTaskService,
     private val userService: UserService,
@@ -68,7 +68,7 @@ class AnalyseServiceImpl(
 
     override fun updateThreadAndRun(documentId: Long, consumer: (Long) -> Unit) {
         val document = documentService.get(documentId)
-        openAiUserService.updateThread(document)
+        webOpenAiService.updateThread(document)
         consumer.invoke(documentId)
     }
 }
