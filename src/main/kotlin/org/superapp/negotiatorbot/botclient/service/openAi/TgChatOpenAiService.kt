@@ -2,7 +2,6 @@ package org.superapp.negotiatorbot.botclient.service.openAi
 
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.botclient.config.BotConfig
-import org.superapp.negotiatorbot.botclient.exception.DocumentNotAttached
 import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
