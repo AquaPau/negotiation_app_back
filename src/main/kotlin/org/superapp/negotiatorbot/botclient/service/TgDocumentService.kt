@@ -19,6 +19,7 @@ class TgDocumentServiceImpl(
     override fun create(message: Message, tgUserDbId: Long): TgDocument {
         val document = message.document!!
         val tgDocument = TgDocument(
+            messageId = message.messageId,
             chatId = message.chat.id,
             tgUserDbId = tgUserDbId,
             tgFileId = document.fileId,
@@ -28,6 +29,6 @@ class TgDocumentServiceImpl(
     }
 
     override fun findByChatId(chatId: Long): TgDocument {
-        return tgDocumentRepository.findByChatId(chatId) ?: throw ChatNotFound("Dinit found documentchatId")
+        return tgDocumentRepository.findByChatId(chatId) ?: throw ChatNotFound("Dint found documentChatId")
     }
 }

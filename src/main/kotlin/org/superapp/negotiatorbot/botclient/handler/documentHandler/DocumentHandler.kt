@@ -12,14 +12,13 @@ class DocumentHandler(
     private val tgUserService: TgUserService,
     private val tgDocumentService: TgDocumentService,
     private val senderService: SenderService,
-    private val documentUploadResponse: DocumentUploadResponse
+    private val documentUploadResponse: DocumentUploadResponse,
 ) {
 
-
     fun handle(message: Message) {
-       val tgUserId = tgUserService.getTgUser(message.from).id!!
-        tgDocumentService.create(message, tgUserId)
-        val reply = documentUploadResponse.message(message.chatId, message.messageId)
+        val tgUserId = tgUserService.getTgUser(message.from).id!!
+        val tgDocument = tgDocumentService.create(message, tgUserId)
+        val reply = documentUploadResponse.formMessage(tgDocument)
         senderService.execute(reply)
     }
 

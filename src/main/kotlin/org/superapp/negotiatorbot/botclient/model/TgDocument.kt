@@ -13,10 +13,13 @@ class TgDocument (
     var id: Long? = null,
 
     @Column(nullable = false, unique = true)
+    val tgUserDbId: Long,
+
+    @Column(nullable = false, unique = true)
     val chatId: Long,
 
     @Column(nullable = false, unique = true)
-    val tgUserDbId: Long,
+    val messageId: Int,
 
     @Column(nullable = false)
     var tgFileId: String,
