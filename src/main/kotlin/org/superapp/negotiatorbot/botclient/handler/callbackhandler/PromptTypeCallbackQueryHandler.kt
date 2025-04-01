@@ -21,10 +21,12 @@ class PromptTypeCallbackQueryHandler(
     override fun handleQuery(query: CallbackQuery) {
         val promptType = query.data.toPromptType()
         log.info("Got prompt type $promptType from user TG id:  ${query.from.id}")
-        tgUserService.findByTgId(query.from.id)?.let {
-            tgUserService.updatePromptType(it, promptType)
-        }
+        TODO()
         senderService.send(text, chatId = query.message.chatId)
+    }
+
+    override fun mappingQuery(): String {
+        TODO("Not yet implemented")
     }
 
     private fun String.toPromptType(): PromptType {

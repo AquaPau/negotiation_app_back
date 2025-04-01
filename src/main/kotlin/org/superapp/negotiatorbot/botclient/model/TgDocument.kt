@@ -16,7 +16,13 @@ class TgDocument (
     val chatId: Long,
 
     @Column(nullable = false, unique = true)
-    val tgUserId: Long,
+    val tgUserDbId: Long,
+
+    @Column(nullable = false)
+    var tgFileId: String,
+
+    @Column(nullable = false)
+    var tgDocumentName: String,
 
     @Column(nullable = true)
     @Enumerated(EnumType.STRING)
@@ -26,11 +32,5 @@ class TgDocument (
     @Enumerated(EnumType.STRING)
     var chosenPromptType: PromptType? = null,
 
-    @Column(nullable = true)
-    var tgFileId: String? = null,
-
-    @Column(nullable = true)
-    var tgDocumentName: String? = null,
-
-) : TaskEnabled {
+    ) : TaskEnabled {
 }

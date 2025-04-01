@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.botclient.reply
+package org.superapp.negotiatorbot.botclient.response
 
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.keyboard.createMessageWithKeyboard
@@ -15,6 +15,6 @@ class PromptTypeReply(
     fun message(chatId: Long): BotApiMethod<Message> = createMessageWithKeyboard(
         chatId,
         replyText,
-        promptTypeOptions
+        TODO()
     )
 }

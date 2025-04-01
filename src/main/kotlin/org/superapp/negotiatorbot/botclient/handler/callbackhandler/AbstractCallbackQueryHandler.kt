@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 abstract class AbstractCallbackQueryHandler(
     protected val senderService: SenderService
 ) : CallbackQueryHandler {
-
     override fun handleResponse(callbackQuery: CallbackQuery) {
         try {
             handleQuery(callbackQuery)

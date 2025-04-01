@@ -2,10 +2,10 @@ package org.superapp.negotiatorbot.botclient
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
+import org.superapp.negotiatorbot.botclient.handler.callbackhandler.AbstractCallbackQueryHandler
 import org.superapp.negotiatorbot.botclient.handler.callbackhandler.CallbackQueryHandler
 import org.superapp.negotiatorbot.botclient.handler.commandhandler.CommandHandler
 import org.superapp.negotiatorbot.botclient.handler.documentHandler.DocumentHandler
-import org.superapp.negotiatorbot.botclient.keyboard.KeyBoardWithHandler
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.message.Message
@@ -16,11 +16,11 @@ private val logger = KotlinLogging.logger {}
 class UpdateDispatcher(
     private val commandHandler: CommandHandler,
     private val documentHandler: DocumentHandler,
-    inlineOptions: List<KeyBoardWithHandler>
+    inlineOptions: List<CallbackQueryHandler>
 ) {
 
     private val handlers: Map<String, CallbackQueryHandler> =
-        inlineOptions.associate { it.callBackData() to it.callbackQueryHandler }
+        inlineOptions.associateBy { it.mappingQuery() }
 
     private val commandStart = "/"
 

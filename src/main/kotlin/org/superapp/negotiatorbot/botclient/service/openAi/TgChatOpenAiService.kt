@@ -26,16 +26,16 @@ class TgChatOpenAiService(
 ) : AbstractOpenAiService<TgDocument>(openAiAssistantService, taskService) {
 
     override fun createAssistant(chat: TgDocument, taskRecord: TaskRecord): OpenAiAssistant {
-        val openAiAssistant = tgDocumentAssistantService.getAssistant(chat.tgUserId)
-        val tgFileId = chat.tgFileId ?: throw DocumentNotAttached("Document was not attached to this chat: $chat")
-        val tgFileName = chat.tgDocumentName ?: throw DocumentNotAttached("Document was not attached to this chat: $chat")
+        val openAiAssistant = tgDocumentAssistantService.getAssistant(chat.tgUserDbId)
+        val tgFileId = chat.tgFileId
+        val tgFileName = chat.tgDocumentName
         uploadFile(openAiAssistant, downloadDocument(tgFileId), tgFileName, taskRecord)
         deleteFilesFromOpenAi(openAiAssistant)
-        return openAiAssistant;
+        return openAiAssistant
     }
 
     private fun downloadDocument(tgFileId: String): InputStream {
         val getFile = GetFile(tgFileId)
-        return URI(senderService.downLoadTgFile(getFile).getFileUrl(botConfig.token)).toURL().openStream()
+        return URI(senderService.downloadTgFile(getFile).getFileUrl(botConfig.token)).toURL().openStream()
     }
 }

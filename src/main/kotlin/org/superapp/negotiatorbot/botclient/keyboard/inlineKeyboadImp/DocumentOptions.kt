@@ -1,31 +1,38 @@
 package org.superapp.negotiatorbot.botclient.keyboard.inlineKeyboadImp
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
-import org.superapp.negotiatorbot.botclient.handler.callbackhandler.DocumentTypeHandlerQuery
-import org.superapp.negotiatorbot.botclient.keyboard.KeyBoardWithHandler
+import org.superapp.negotiatorbot.botclient.handler.callbackhandler.DocumentTypeQueryHandler
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 
-const val DOC_TYPE_CALLBACK = "documentTypeCallback,chose:"
 
-abstract class DocumentOption(
+class DocumentOptionFactory/*(
     private val userView: String,
     private val docType: DocumentType,
-    handler: DocumentTypeHandlerQuery
-) : KeyBoardWithHandler(handler) {
+    private val objectMapper: ObjectMapper,
+    handler: DocumentTypeQueryHandler
+)  {
 
     override fun userView(): String = userView
 
-    override fun callBackData(): String = DOC_TYPE_CALLBACK + docType.name
+    override fun callBackData(): String{
+        val
+    }
 }
 
 @Component
-class LaborContractOption(handler: DocumentTypeHandlerQuery) : DocumentOption(
+class LaborContractOption(handler: DocumentTypeQueryHandler) : DocumentOption(
     "Трудовой договор",
     DocumentType.LABOR_CONTRACT, handler
 )
 
 @Component
-class RealEstateContractOption(handler: DocumentTypeHandlerQuery) : DocumentOption(
+class RealEstateContractOption(handler: DocumentTypeQueryHandler) : DocumentOption(
     "Договор аренды",
     DocumentType.REAL_ESTATE_LEASE_CONTRACT, handler
 )
+
+data class DocumentTypeWrapper(
+    val documentType: DocumentType,
+    val dbFileId: Long
+)*/

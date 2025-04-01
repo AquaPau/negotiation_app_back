@@ -17,7 +17,7 @@ class SenderService(val telegramClient: TelegramClient) {
 
     fun <T : Serializable> execute(method: BotApiMethod<T>) = telegramClient.execute(method)
 
-    fun downLoadTgFile(fileMethod: BotApiMethod<File>) = telegramClient.execute(fileMethod)
+    fun downloadTgFile(fileMethod: BotApiMethod<File>): File = telegramClient.execute(fileMethod)
 
     private fun doSendTextMessage(txt: String, groupId: Long, format: Boolean): Message {
         val sendMessage = SendMessage(groupId.toString(), txt)

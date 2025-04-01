@@ -9,15 +9,30 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow
 
 
-fun createMessageWithKeyboard(
-    @NonNull chatId: Long,
+fun createReplyMessageWithKeyboard(
+    chatId: Long,
+    messageToReplyId: Int,
     messageText: String,
-    @NonNull options: List<InlineKeyboardOption>
+    options: List<InlineKeyboardOption>
+): BotApiMethod<Message> {
+    val sendMessage: SendMessage = SendMessage.builder()
+        .replyToMessageId(messageToReplyId)
+        .chatId(chatId)
+        .text(messageText)
+        .replyMarkup(createInlineKeyboard(options))
+        .build()
+    return sendMessage
+}
+
+fun createMessageWithKeyboard(
+     chatId: Long,
+    messageText: String,
+    options: List<InlineKeyboardOption>
 ): BotApiMethod<Message> {
     val sendMessage: SendMessage = SendMessage.builder()
         .chatId(chatId)
         .text(messageText)
-        .replyMarkup(createReplyKeyboard(options))
+        .replyMarkup(createInlineKeyboard(options))
         .build()
     return sendMessage
 }
@@ -28,7 +43,7 @@ fun createMessageWithKeyboard(
  * @param options options to list
  * @return vertical keyboard
  */
-fun createReplyKeyboard(@NonNull options: List<InlineKeyboardOption>): InlineKeyboardMarkup {
+fun createInlineKeyboard(options: List<InlineKeyboardOption>): InlineKeyboardMarkup {
     val buttons = options.map { InlineKeyboardRow(createButton(it)) }
     return InlineKeyboardMarkup(buttons)
 }
