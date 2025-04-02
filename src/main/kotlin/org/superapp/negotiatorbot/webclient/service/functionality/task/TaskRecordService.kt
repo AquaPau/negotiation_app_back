@@ -63,6 +63,7 @@ class TaskRecordServiceImpl(
         val relatedId = when (taskEnabled) {
             is DocumentMetadata -> taskEnabled.id!!
             is Project -> taskEnabled.id!!
+            is TgDocument -> taskEnabled.id!!
             else -> throw UnsupportedOperationException()
         }
         val task = TaskRecord(

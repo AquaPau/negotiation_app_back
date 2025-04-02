@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class QueryMappingService() {
-    private val MAX_BYTE_LENGTH = 64;
+    private val MAX_BYTE_LENGTH = 64
 
     val objectMapper = jacksonObjectMapper()
     val divider = '~'

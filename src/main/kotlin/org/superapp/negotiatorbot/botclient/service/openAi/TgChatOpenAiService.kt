@@ -29,7 +29,6 @@ class TgChatOpenAiService(
         val tgFileId = chat.tgFileId
         val tgFileName = chat.tgDocumentName
         uploadFile(openAiAssistant, downloadDocument(tgFileId), tgFileName, taskRecord)
-        deleteFilesFromOpenAi(openAiAssistant)
         return openAiAssistant
     }
 

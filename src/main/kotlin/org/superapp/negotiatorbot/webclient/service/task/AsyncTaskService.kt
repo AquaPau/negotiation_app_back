@@ -2,6 +2,7 @@ package org.superapp.negotiatorbot.webclient.service.task
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.webclient.entity.TaskEnabled
@@ -16,8 +17,8 @@ abstract class AsyncTaskService<out T : TaskEnabled>(
 ) {
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun execute(taskEnabled: TaskEnabled, vararg data: Any) {
-        GlobalScope.launch {
+    fun execute(taskEnabled: TaskEnabled, vararg data: Any): Job {
+        return GlobalScope.launch {
             var task = taskService.createTask(taskEnabled, data)
             try {
                 task = run(task, taskEnabled, data)
