@@ -6,16 +6,16 @@ import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 
 @Entity
-@Table(name = "tg_chats")
-class TgDocument (
+@Table(name = "tg_documents")
+class TgDocument(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     val tgUserDbId: Long,
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     val chatId: Long,
 
     @Column(nullable = false, unique = true)

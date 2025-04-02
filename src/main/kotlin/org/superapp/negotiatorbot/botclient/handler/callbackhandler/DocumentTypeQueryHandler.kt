@@ -18,12 +18,15 @@ class DocumentTypeQueryHandler(
     private val queryMappingService: QueryMappingService,
     private val promptTypeResponse: PromptTypeResponse
 ) : AbstractCallbackQueryHandler(senderService) {
+    override fun mappingQuery(): String {
+        return "DocType"
+    }
 
     override fun handleQuery(query: CallbackQuery) {
         val chosenDocumentOption = query.data.toChosenDocumentOption()
         log.info("Got document type $chosenDocumentOption from user TG id:  ${query.from.id}")
         val tgDocument =
-            tgDocumentService.updateDocumentType(chosenDocumentOption.tgDocumentId, chosenDocumentOption.documentType)
+            tgDocumentService.updateDocumentType(chosenDocumentOption.tgDocumentDbId, chosenDocumentOption.documentType)
         val message = promptTypeResponse.message(tgDocument)
         senderService.execute(message)
     }

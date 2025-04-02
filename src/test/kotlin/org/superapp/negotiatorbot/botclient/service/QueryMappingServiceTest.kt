@@ -2,6 +2,7 @@ package org.superapp.negotiatorbot.botclient.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.superapp.negotiatorbot.botclient.dto.ChosenDocumentOption
@@ -13,6 +14,14 @@ import org.superapp.negotiatorbot.webclient.enums.PromptType
     classes = [QueryMappingService::class],
 )
 class QueryMappingServiceTest {
+
+    @Test
+    fun `too long query should throw`() {
+        val mappingQuery = "DocumentTypeQueryHandle"
+        val addedQuery = "{\"tgDocumentId\":1,\"documentType\":\"LABOR_CONTRACT\"}"
+        //then
+        assertThrows<IllegalArgumentException> { queryMappingService.toCallbackQuery(mappingQuery, addedQuery) }
+    }
 
     @Test
     fun `should return mapping query`() {

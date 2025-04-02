@@ -3,6 +3,7 @@ package org.superapp.negotiatorbot.webclient.service.functionality.task
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.Project
 import org.superapp.negotiatorbot.webclient.entity.TaskEnabled
@@ -51,6 +52,10 @@ class TaskRecordServiceImpl(
 
             is Project -> {
                 TaskType.PROJECT_RESOLUTION
+            }
+
+            is TgDocument -> {
+                TaskType.TG_DOCUMENT
             }
 
             else -> throw UnsupportedOperationException()

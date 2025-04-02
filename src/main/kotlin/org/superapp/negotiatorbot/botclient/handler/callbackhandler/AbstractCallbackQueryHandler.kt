@@ -23,10 +23,6 @@ abstract class AbstractCallbackQueryHandler(
 
     protected abstract fun handleQuery(query: CallbackQuery)
 
-    override fun mappingQuery(): String {
-        return this.javaClass.simpleName
-    }
-
     private fun CallbackQuery.close() {
         val close = AnswerCallbackQuery.builder().callbackQueryId(this.id).build()
         senderService.execute(close)

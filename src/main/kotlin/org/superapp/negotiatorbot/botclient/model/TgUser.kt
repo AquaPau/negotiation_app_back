@@ -16,8 +16,6 @@ class TgUser(
     @Column(nullable = false)
     val tgUsername: String,
 
-    @Column(nullable = true)
+    @Column(nullable = true, unique = true)
     var assistantDbId: Long? = null,
-) {
-
-}
+)

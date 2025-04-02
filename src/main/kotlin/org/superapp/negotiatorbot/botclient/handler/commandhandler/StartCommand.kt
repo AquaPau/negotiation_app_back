@@ -1,7 +1,6 @@
 package org.superapp.negotiatorbot.botclient.handler.commandhandler
 
 import org.springframework.stereotype.Component
-import org.superapp.negotiatorbot.botclient.model.TgUser
 import org.superapp.negotiatorbot.botclient.response.StartResponse
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgUserService

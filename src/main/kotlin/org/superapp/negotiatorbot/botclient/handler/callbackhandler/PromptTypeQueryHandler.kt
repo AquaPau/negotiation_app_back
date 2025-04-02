@@ -19,11 +19,15 @@ class PromptTypeQueryHandler(
 ) : AbstractCallbackQueryHandler(senderService) {
 
     private val text = "Ваш документ анализируется. Пожалуйста ожидайте ответ"
+    override fun mappingQuery(): String {
+        return "PromptType"
+    }
 
     override fun handleQuery(query: CallbackQuery) {
         val chosenPromptType = query.data.toPromptOption()
         log.info("Got prompt type $chosenPromptType from user TG id:  ${query.from.id}")
-        val tgDocument = tgDocumentService.updatePromptType(chosenPromptType.tgDocumentId, chosenPromptType.promptType)
+        val tgDocument =
+            tgDocumentService.updatePromptType(chosenPromptType.tgDocumentDbId, chosenPromptType.promptType)
         senderService.sendReplyText(text, chatId = tgDocument.chatId, messageToReplyId = tgDocument.messageId)
         tgDocument.sendToOpenAi()
     }

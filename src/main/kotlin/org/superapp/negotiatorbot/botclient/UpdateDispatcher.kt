@@ -2,10 +2,10 @@ package org.superapp.negotiatorbot.botclient
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.botclient.handler.callbackhandler.AbstractCallbackQueryHandler
 import org.superapp.negotiatorbot.botclient.handler.callbackhandler.CallbackQueryHandler
 import org.superapp.negotiatorbot.botclient.handler.commandhandler.CommandHandler
 import org.superapp.negotiatorbot.botclient.handler.documentHandler.DocumentHandler
+import org.superapp.negotiatorbot.botclient.service.QueryMappingService
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.message.Message
@@ -16,11 +16,15 @@ private val logger = KotlinLogging.logger {}
 class UpdateDispatcher(
     private val commandHandler: CommandHandler,
     private val documentHandler: DocumentHandler,
+    private val queryMappingService: QueryMappingService,
     inlineOptions: List<CallbackQueryHandler>
 ) {
 
     private val handlers: Map<String, CallbackQueryHandler> =
-        inlineOptions.associateBy { it.mappingQuery() }
+        inlineOptions
+            .toSet()
+            .apply { require(this.size == inlineOptions.size) { "Duplicate key found in $inlineOptions" } }
+            .associateBy { it.mappingQuery() }
 
     private val commandStart = "/"
 
@@ -31,9 +35,13 @@ class UpdateDispatcher(
 
     private fun dispatchCallback(callbackQuery: CallbackQuery) {
         logger.info { "Dispatching callback: ${callbackQuery.data}" }
-
-        handlers.get(callbackQuery.data)?.handleResponse(callbackQuery)
+        getHandler(callbackQuery).handleResponse(callbackQuery)
     }
+
+    private fun getHandler(query: CallbackQuery): CallbackQueryHandler =
+        handlers[queryMappingService.toMapQuery(query.data)]
+            ?: throw IllegalStateException("Unknown callback query: ${query.data} known [${handlers.keys}]")
+
 
     private fun dispatchMessage(message: Message) {
         when {
