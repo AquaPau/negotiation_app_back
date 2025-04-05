@@ -11,6 +11,5 @@ import org.telegram.telegrambots.meta.generics.TelegramClient
 @Configuration
 class BotConfig( @Value("\${telegram.token}") val token: String) {
     @Bean
-    @Profile("telegram")
     fun telegramClient() = OkHttpTelegramClient(token)
 }

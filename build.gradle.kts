@@ -61,6 +61,7 @@ dependencies {
     // Для работы с Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
 
     // Для тестирования
     testImplementation("org.springframework.boot:spring-boot-starter-test")

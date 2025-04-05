@@ -2,7 +2,7 @@ package org.superapp.negotiatorbot.webclient.service.util
 
 import org.springframework.web.multipart.MultipartFile
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
 
 class FileTransformationHelper {
 

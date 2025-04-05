@@ -2,7 +2,7 @@ package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
 import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
-import org.superapp.negotiatorbot.webclient.enum.CompanyRegion
+import org.superapp.negotiatorbot.webclient.enums.CompanyRegion
 
 
 @Entity
@@ -44,7 +44,10 @@ data class UserContractor(
     var fullName: String? = null,
 
     @Column
-    var opportunities: String? = null
+    var opportunities: String? = null,
+
+    @Column(nullable = true, unique = true)
+    var assistantDbId: Long? = null
 )
 
 fun UserContractor.toDto(): CompanyProfileDto = CompanyProfileDto(

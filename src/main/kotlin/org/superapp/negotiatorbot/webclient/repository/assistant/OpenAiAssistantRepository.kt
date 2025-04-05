@@ -6,5 +6,4 @@ import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 
 @Repository
 interface OpenAiAssistantRepository : JpaRepository<OpenAiAssistant, Long> {
-    fun findFirstByUserId(userId: Long): OpenAiAssistant?
 }

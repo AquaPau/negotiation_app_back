@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 9
+      author: aquapau
+      changes:
+        - dropColumn:
+            tableName: open_ai_assistants
+            columnName: user_id

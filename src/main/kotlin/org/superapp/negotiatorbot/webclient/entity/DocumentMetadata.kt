@@ -1,12 +1,13 @@
 package org.superapp.negotiatorbot.webclient.entity
 
 import jakarta.persistence.*
-import org.superapp.negotiatorbot.webclient.enum.DocumentType
+import org.superapp.negotiatorbot.webclient.enums.BusinessType
+import org.superapp.negotiatorbot.webclient.enums.DocumentType
 
 
 @Entity
-@Table(name = "document_metadata", uniqueConstraints = [UniqueConstraint(columnNames = ["name", "user_id"])])
-class DocumentMetadata {
+@Table(name = "document_metadata")
+class DocumentMetadata : TaskEnabled {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,19 +33,8 @@ class DocumentMetadata {
     @Column(nullable = false)
     var userId: Long? = null
 
-    @Column(length = 5000)
-    var description: String? = null
-
-    @Column(length = 5000)
-    var risks: String? = null
-
-    @Column
-    var companyId: Long? = null
-
-    @Column
-    var contractorId: Long? = null
+    @Column(nullable = false)
+    var relatedId: Long? = null
 
     fun getNameWithExtension() = "$name.$extension"
 }
-
-enum class BusinessType { USER, PARTNER }

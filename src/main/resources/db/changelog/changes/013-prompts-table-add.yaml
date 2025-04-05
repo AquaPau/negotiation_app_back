@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 13
+      author: aquapau
+      changes:
+        - addColumn:
+            tableName: prompt_data
+            columns:
+              - column:
+                  name: prompt_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false

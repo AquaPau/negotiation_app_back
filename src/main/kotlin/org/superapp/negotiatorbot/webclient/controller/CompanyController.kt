@@ -4,32 +4,32 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
 import org.superapp.negotiatorbot.webclient.dto.company.NewCompanyProfile
-import org.superapp.negotiatorbot.webclient.service.company.CompanyService
+import org.superapp.negotiatorbot.webclient.service.company.CompanyCrudService
 
 @RestController
 @RequestMapping("/api/company")
 class CompanyController(
-    private val companyService: CompanyService,
+    private val companyCrudService: CompanyCrudService,
 ) {
 
     @GetMapping()
     fun getCompanies(): List<CompanyProfileDto> {
-        return companyService.getCompanies()
+        return companyCrudService.getAll()
     }
 
     @GetMapping("/{companyId}")
     fun getCompany(@PathVariable companyId: Long): CompanyProfileDto {
-        return companyService.getCompanyById(companyId)
+        return companyCrudService.get(companyId)
     }
 
     @PostMapping()
     fun createNewCompanyProfile(@RequestBody profile: NewCompanyProfile): CompanyProfileDto {
-        return companyService.createCompany(null, profile, isOwn = true)
+        return companyCrudService.create(null, profile)
     }
 
     @DeleteMapping("/{companyId}")
     fun deleteCompany(@PathVariable companyId: Long) {
-        companyService.deleteCompany(companyId)
+        companyCrudService.delete(companyId)
     }
 
     @ExceptionHandler(IllegalArgumentException::class)

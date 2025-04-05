@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 15
+      author: aquapau
+      changes:
+        - addColumn:
+            tableName: projects
+            columns:
+              - column:
+                  name: assistant_db_id
+                  type: BIGINT
+                  constraints:
+                    unique: true
+                    nullable: true
