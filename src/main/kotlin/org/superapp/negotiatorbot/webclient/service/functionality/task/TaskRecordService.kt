@@ -4,10 +4,12 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.botclient.model.TgDocument
+import org.superapp.negotiatorbot.webclient.dto.TaskRecordDto
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.Project
 import org.superapp.negotiatorbot.webclient.entity.TaskEnabled
 import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
+import org.superapp.negotiatorbot.webclient.entity.task.toDto
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.superapp.negotiatorbot.webclient.enums.TaskStatus
@@ -17,8 +19,10 @@ import org.superapp.negotiatorbot.webclient.exception.TaskNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.TaskRecordRepository
 
 interface TaskRecordService {
-    fun getById(id: Long): TaskRecord
-    fun getByTypeAndReference(type: TaskType, referenceId: Long): TaskRecord
+    fun getById(id: Long): TaskRecordDto
+    fun getLastByTypeAndReference(type: TaskType, referenceId: Long): TaskRecord
+
+    fun getAllByTypeAndReference(type: TaskType, referenceId: Long): List<TaskRecord>
 
     fun createTask(taskEnabled: TaskEnabled, vararg data: Any): TaskRecord
     fun changeStatus(task: TaskRecord, status: TaskStatus): TaskRecord
@@ -31,13 +35,18 @@ interface TaskRecordService {
 class TaskRecordServiceImpl(
     private val taskRepository: TaskRecordRepository,
 ) : TaskRecordService {
-    override fun getById(id: Long): TaskRecord {
-        return taskRepository.findById(id).orElseThrow()
+    override fun getById(id: Long): TaskRecordDto {
+        return taskRepository.findById(id).orElseThrow { TaskNotFoundException(id)}.toDto()
     }
 
-    override fun getByTypeAndReference(type: TaskType, referenceId: Long): TaskRecord {
-        return taskRepository.findByTaskTypeAndRelatedId(type, referenceId)
+    override fun getLastByTypeAndReference(type: TaskType, referenceId: Long): TaskRecord {
+        return taskRepository.findFirstByTaskTypeAndRelatedIdOrderByIdDesc(type, referenceId)
             ?: throw TaskNotFoundException(null, referenceId)
+    }
+
+    override fun getAllByTypeAndReference(type: TaskType, referenceId: Long): List<TaskRecord> {
+        return taskRepository.findAllByTaskTypeAndRelatedIdOrderByIdDesc(type, referenceId)
+            .ifEmpty { throw TaskNotFoundException(null, referenceId) }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
