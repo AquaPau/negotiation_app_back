@@ -3,6 +3,7 @@ package org.superapp.negotiatorbot.webclient.controller
 import org.springframework.web.bind.annotation.*
 import org.superapp.negotiatorbot.webclient.dto.project.NewProjectDto
 import org.superapp.negotiatorbot.webclient.dto.project.ProjectDto
+import org.superapp.negotiatorbot.webclient.dto.project.ProjectSlimDto
 import org.superapp.negotiatorbot.webclient.service.project.ProjectService
 
 @RestController
@@ -10,7 +11,7 @@ import org.superapp.negotiatorbot.webclient.service.project.ProjectService
 class ProjectController(private val projectService: ProjectService) {
 
     @GetMapping()
-    fun getProjects(): List<ProjectDto> {
+    fun getProjects(): List<ProjectSlimDto> {
         return projectService.getProjects()
     }
 

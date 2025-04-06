@@ -5,7 +5,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
+import org.superapp.negotiatorbot.webclient.dto.document.DocumentEnterpriseMetadataDto
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.service.contractor.ContractorDocumentService
 import org.superapp.negotiatorbot.webclient.service.util.FileTransformationHelper
@@ -25,12 +25,12 @@ class CompanyContractorDocumentController(private val contractorDocumentService:
     }
 
     @GetMapping("/{companyId}/contractor/{contractorId}/document")
-    fun getContractorDocuments(@PathVariable companyId: Long, @PathVariable contractorId: Long): List<DocumentMetadataDto> {
+    fun getContractorDocuments(@PathVariable companyId: Long, @PathVariable contractorId: Long): List<DocumentEnterpriseMetadataDto> {
         return contractorDocumentService.getDocuments(companyId, contractorId)
     }
 
     @GetMapping("/{companyId}/contractor/{contractorId}/document/{documentId}")
-    fun getContractorDocument(@PathVariable companyId: Long, @PathVariable contractorId: Long, @PathVariable documentId: Long): DocumentMetadataDto {
+    fun getContractorDocument(@PathVariable companyId: Long, @PathVariable contractorId: Long, @PathVariable documentId: Long): DocumentEnterpriseMetadataDto {
         return contractorDocumentService.getDocument(contractorId, documentId)
     }
 
