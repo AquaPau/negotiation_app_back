@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 21
+      author: aquapau
+      changes:
+        - addColumn:
+            tableName: tg_documents
+            columns:
+              - column:
+                  name: message_id_of_document_uploading_message
+                  type: INT
+                  constraints:
+                    nullable: true
+
+        - dropUniqueConstraint:
+            tableName: tg_documents
+            uniqueColumns: message_id
+            constraintName: tg_documents_message_id_key
+
+        - dropNotNullConstraint:
+            tableName: tg_documents
+            columnName: message_id
+            columnDataType: INT
+        - dropNotNullConstraint:
+            tableName: tg_documents
+            columnName: tg_file_id
+            columnDataType: VARCHAR(255)
+        - dropNotNullConstraint:
+            tableName: tg_documents
+            columnName: tg_document_name
+            columnDataType: VARCHAR(255)

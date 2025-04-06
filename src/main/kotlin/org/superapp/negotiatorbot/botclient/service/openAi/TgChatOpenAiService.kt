@@ -26,8 +26,8 @@ class TgChatOpenAiService(
 
     override fun createAssistant(chat: TgDocument, taskRecord: TaskRecord): OpenAiAssistant {
         val openAiAssistant = tgDocumentAssistantService.getAssistant(chat.tgUserDbId)
-        val tgFileId = chat.tgFileId
-        val tgFileName = chat.tgDocumentName
+        val tgFileId = chat.tgFileId!!
+        val tgFileName = chat.tgDocumentName!!
         uploadFile(openAiAssistant, downloadDocument(tgFileId), tgFileName, taskRecord)
         return openAiAssistant
     }

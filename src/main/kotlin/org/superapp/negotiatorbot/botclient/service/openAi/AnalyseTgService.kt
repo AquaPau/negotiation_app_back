@@ -20,7 +20,8 @@ class AnalyseTgService(
 
     suspend fun analyseDoc(tgDocument: TgDocument): String {
         openAiTaskService.execute(tgDocument, createPrompt(tgDocument)).join()
-        return taskRecordService.getByTypeAndReference(TaskType.TG_DOCUMENT, tgDocument.id!!).result!!
+        return taskRecordService.getByTypeAndReference(TaskType.TG_DOCUMENT, tgDocument.id!!).result
+            ?: "Возникла ошибка при анализе. Пожалуйста, попробуйте снова"
     }
 
     private fun createPrompt(tgDocument: TgDocument): String {
