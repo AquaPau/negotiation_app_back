@@ -3,7 +3,7 @@ package org.superapp.negotiatorbot.botclient.handler.callbackhandler
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.dto.ChosenDocumentOption
-import org.superapp.negotiatorbot.botclient.response.PromptTypeQuestion
+import org.superapp.negotiatorbot.botclient.view.response.PromptTypeQuestion
 import org.superapp.negotiatorbot.botclient.service.QueryMappingService
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgDocumentService

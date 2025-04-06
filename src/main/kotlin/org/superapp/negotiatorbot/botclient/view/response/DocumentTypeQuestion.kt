@@ -1,10 +1,10 @@
-package org.superapp.negotiatorbot.botclient.response
+package org.superapp.negotiatorbot.botclient.view.response
 
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.dto.ChosenDocumentOption
 import org.superapp.negotiatorbot.botclient.handler.callbackhandler.DocumentTypeQueryHandler
-import org.superapp.negotiatorbot.botclient.keyboard.InlineKeyboardOption
-import org.superapp.negotiatorbot.botclient.keyboard.createMessageWithKeyboard
+import org.superapp.negotiatorbot.botclient.view.keyboard.InlineKeyboardOption
+import org.superapp.negotiatorbot.botclient.view.keyboard.createMessageWithKeyboard
 import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.botclient.service.QueryMappingService
 import org.superapp.negotiatorbot.webclient.enums.DocumentType

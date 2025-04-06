@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.botclient.exception.DocumentNotReadyForAssistantException
 import org.superapp.negotiatorbot.botclient.handler.commandhandler.StartCommand
 import org.superapp.negotiatorbot.botclient.model.TgDocument
-import org.superapp.negotiatorbot.botclient.response.SendToAssistantResponse
+import org.superapp.negotiatorbot.botclient.view.response.SendToAssistantResponse
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgDocumentService
 import org.superapp.negotiatorbot.botclient.service.openAi.AnalyseTgService

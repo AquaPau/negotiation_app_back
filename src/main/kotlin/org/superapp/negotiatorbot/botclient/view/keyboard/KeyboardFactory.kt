@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.botclient.keyboard
+package org.superapp.negotiatorbot.botclient.view.keyboard
 
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage

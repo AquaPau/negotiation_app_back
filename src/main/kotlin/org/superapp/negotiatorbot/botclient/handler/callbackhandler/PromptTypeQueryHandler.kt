@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.dto.ChosenPromptOption
 import org.superapp.negotiatorbot.botclient.model.TgDocument
-import org.superapp.negotiatorbot.botclient.response.DocumentUploadQuestion
+import org.superapp.negotiatorbot.botclient.view.response.DocumentUploadQuestion
 import org.superapp.negotiatorbot.botclient.service.QueryMappingService
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgDocumentService

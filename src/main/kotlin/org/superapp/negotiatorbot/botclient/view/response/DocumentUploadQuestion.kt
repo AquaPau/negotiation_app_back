@@ -1,15 +1,16 @@
-package org.superapp.negotiatorbot.botclient.response
+package org.superapp.negotiatorbot.botclient.view.response;
 
 import org.springframework.stereotype.Component
-import org.superapp.negotiatorbot.botclient.keyboard.createMessage
+import org.superapp.negotiatorbot.botclient.view.keyboard.createMessage
 import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.message.Message
 
 @Component
-class SendToAssistantResponse(
+class DocumentUploadQuestion(
     private val typesToViewFactory: TypesToViewFactory
 ) {
+
     fun message(tgDocument: TgDocument): BotApiMethod<Message> {
         return createMessage(
             chatId = tgDocument.chatId,
@@ -19,10 +20,7 @@ class SendToAssistantResponse(
 
     private fun createReplyMessageText(tgDocument: TgDocument): String {
         return """
-            Ваш документ загружен для анализа. 
-            Пожалуйста, ожидайте окончания анализа, он может занять до 2х минут.
-            Номер документа: ${tgDocument.id}
-            Имя документа: ${tgDocument.tgDocumentName}
+            Пожалуйста, загрузите документ для анализа.
             Выбранный тип документа: ${typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)}
             Выбранный тип анализа: ${typesToViewFactory.viewOf(tgDocument.chosenPromptType!!)}
         """.trimIndent()
