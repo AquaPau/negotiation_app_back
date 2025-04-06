@@ -19,9 +19,6 @@ class TgDocument(
     val chatId: Long,
 
     @Column(nullable = true)
-    var messageIdOfDocumentUploadingMessage: Int? = null,
-
-    @Column(nullable = true)
     var messageId: Int? = null,
 
     @Column(nullable = true)

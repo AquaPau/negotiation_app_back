@@ -1,7 +1,7 @@
 package org.superapp.negotiatorbot.botclient.response;
 
 import org.springframework.stereotype.Component
-import org.superapp.negotiatorbot.botclient.keyboard.createMessageForceReply
+import org.superapp.negotiatorbot.botclient.keyboard.createMessage
 import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.message.Message
@@ -12,7 +12,7 @@ class DocumentUploadQuestion(
 ) {
 
     fun message(tgDocument: TgDocument): BotApiMethod<Message> {
-        return createMessageForceReply(
+        return createMessage(
             chatId = tgDocument.chatId,
             messageText = createReplyMessageText(tgDocument),
         )
@@ -20,7 +20,7 @@ class DocumentUploadQuestion(
 
     private fun createReplyMessageText(tgDocument: TgDocument): String {
         return """
-            Пожалуйста, загрузите документ для анализа ответом на это сообщение.
+            Пожалуйста, загрузите документ для анализа.
             Выбранный тип документа: ${typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)}
             Выбранный тип анализа: ${typesToViewFactory.viewOf(tgDocument.chosenPromptType!!)}
         """.trimIndent()

@@ -29,7 +29,7 @@ class DocumentHandler(
     @Transactional
     fun handle(message: Message) {
         try {
-            val tgDocument = getTgDocument(message)
+            val tgDocument = getTgDocument()
             tgDocument.addDocument(message.document)
             tgDocument.addReplyTo(message.messageId)
             sendUploadToAssistantMessage(tgDocument)
@@ -42,21 +42,14 @@ class DocumentHandler(
     }
 
 
-    private fun getTgDocument(message: Message): TgDocument {
-        if (message.isReply) {
-            val prevMessage = message.replyToMessage
-            return tgDocumentService.foundByChatIdMessageIdOfDocumentUploadingMessage(
-                prevMessage.chatId,
-                prevMessage.messageId
-            ) ?: throw DocumentNotReadyForAssistantException()
-        } else {
-            throw DocumentNotReadyForAssistantException()
-        }
+    private fun getTgDocument(): TgDocument {
+        return tgDocumentService.getReadyToUploadDoc() ?: throw DocumentNotReadyForAssistantException()
     }
+
 
     private fun TgDocument.addDocument(document: Document) {
         this.validateOrThrow()
-        this.addDocument(document)
+        tgDocumentService.addDocument(this, document)
     }
 
     private fun TgDocument.addReplyTo(messageId: Int) {

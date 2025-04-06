@@ -19,8 +19,9 @@ class SendToAssistantResponse(
 
     private fun createReplyMessageText(tgDocument: TgDocument): String {
         return """
-            Ваш дрокумент загружен для анализа. 
-            Пожалуйста, ожидайте окончание анализа, он может занять до 5 минут.
+            Ваш документ загружен для анализа. 
+            Пожалуйста, ожидайте окончания анализа, он может занять до 2х минут.
+            Номер документа: ${tgDocument.id}
             Имя документа: ${tgDocument.tgDocumentName}
             Выбранный тип документа: ${typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)}
             Выбранный тип анализа: ${typesToViewFactory.viewOf(tgDocument.chosenPromptType!!)}

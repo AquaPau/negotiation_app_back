@@ -3,15 +3,6 @@ databaseChangeLog:
       id: 21
       author: aquapau
       changes:
-        - addColumn:
-            tableName: tg_documents
-            columns:
-              - column:
-                  name: message_id_of_document_uploading_message
-                  type: INT
-                  constraints:
-                    nullable: true
-
         - dropUniqueConstraint:
             tableName: tg_documents
             uniqueColumns: message_id

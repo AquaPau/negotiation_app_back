@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.message.Message
 @Component
 class StartResponse {
     private val replyText =
-        "Этот бот поможет проанализировать документы. Пожалуйста выберите тип документа чтобы начать"
+        "Этот бот поможет проанализировать документы."
 
     fun message(chatId: Long): BotApiMethod<Message> = SendMessage.builder()
         .chatId(chatId)

@@ -10,8 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.message.Message
 
 interface TgDocumentService {
     fun create(message: Message, tgUserDbId: Long): TgDocument
-    fun updateMessageIdOfDocumentUploadingMessage(tgDocument: TgDocument, messageId: Int): TgDocument
-    fun foundByChatIdMessageIdOfDocumentUploadingMessage(chatId: Long, messageId: Int): TgDocument?
+    fun getReadyToUploadDoc(): TgDocument?
     fun addDocument(tgDocument: TgDocument, document: Document): TgDocument
     fun addReplyTo(tgDocument: TgDocument, messageId: Int): TgDocument
     fun updateDocumentType(idDb: Long, docType: DocumentType): TgDocument
@@ -30,12 +29,10 @@ class TgDocumentServiceImpl(
         return tgDocumentRepository.save(tgDocument)
     }
 
-    override fun foundByChatIdMessageIdOfDocumentUploadingMessage(chatId: Long, messageId: Int) =
-        tgDocumentRepository.findByChatIdAndMessageIdOfDocumentUploadingMessage(chatId, messageId)
-
-    override fun updateMessageIdOfDocumentUploadingMessage(tgDocument: TgDocument, messageId: Int): TgDocument {
-        tgDocument.messageIdOfDocumentUploadingMessage = messageId
-        return tgDocumentRepository.save(tgDocument)
+    override fun getReadyToUploadDoc(): TgDocument? {
+        val readyDocs =
+            tgDocumentRepository.findByChosenDocumentTypeNotNullAndChosenPromptTypeNotNullAndMessageIdIsNull()
+        if (readyDocs.isEmpty()) return null else return readyDocs.first()
     }
 
     override fun addDocument(tgDocument: TgDocument, document: Document): TgDocument {

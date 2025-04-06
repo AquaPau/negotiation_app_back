@@ -30,17 +30,13 @@ class PromptTypeQueryHandler(
         log.info("Got prompt type $chosenPromptType from user TG id:  ${query.from.id}")
         val tgDocument =
             tgDocumentService.updatePromptType(chosenPromptType.tgDocumentDbId, chosenPromptType.promptType)
-        val sentMessage = sendDocumentUploadMessage(tgDocument)
-        tgDocument.messageOfDocumentUploadingMessage(sentMessage)
+        sendDocumentUploadMessage(tgDocument)
     }
 
     private fun sendDocumentUploadMessage(tgDocument: TgDocument): Message {
         val message = documentUploadQuestion.message(tgDocument)
         return senderService.execute(message)
     }
-
-    private fun TgDocument.messageOfDocumentUploadingMessage(message: Message): TgDocument =
-        tgDocumentService.updateMessageIdOfDocumentUploadingMessage(this, message.messageId)
 
 
     private fun String.toPromptOption(): ChosenPromptOption =
