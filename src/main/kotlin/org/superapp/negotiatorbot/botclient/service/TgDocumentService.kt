@@ -1,6 +1,7 @@
 package org.superapp.negotiatorbot.botclient.service
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.botclient.repository.TgDocumentRepository
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
@@ -8,14 +9,17 @@ import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.telegram.telegrambots.meta.api.objects.Document
 import org.telegram.telegrambots.meta.api.objects.message.Message
 
+@Transactional
 interface TgDocumentService {
     fun create(message: Message, tgUserDbId: Long): TgDocument
-    fun getReadyToUploadDoc(): TgDocument?
+    fun getReadyToUploadDoc(chatId: Long): TgDocument?
+    fun deleteUnfinishedDocuments(chatId: Long)
     fun addDocument(tgDocument: TgDocument, document: Document): TgDocument
     fun addReplyTo(tgDocument: TgDocument, messageId: Int): TgDocument
     fun updateDocumentType(idDb: Long, docType: DocumentType): TgDocument
     fun updatePromptType(idDb: Long, promptType: PromptType): TgDocument
 }
+
 
 @Service
 class TgDocumentServiceImpl(
@@ -29,9 +33,13 @@ class TgDocumentServiceImpl(
         return tgDocumentRepository.save(tgDocument)
     }
 
-    override fun getReadyToUploadDoc(): TgDocument? {
+    override fun deleteUnfinishedDocuments(chatId: Long) {
+        tgDocumentRepository.deleteByChatIdAndChosenPromptTypeIsNull(chatId)
+    }
+
+    override fun getReadyToUploadDoc(chatId: Long): TgDocument? {
         val readyDocs =
-            tgDocumentRepository.findByChosenDocumentTypeNotNullAndChosenPromptTypeNotNullAndMessageIdIsNull()
+            tgDocumentRepository.findByChatIdAndChosenDocumentTypeNotNullAndChosenPromptTypeIsNull(chatId)
         if (readyDocs.isEmpty()) return null else return readyDocs.first()
     }
 

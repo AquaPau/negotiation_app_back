@@ -16,7 +16,7 @@ import java.net.URI
 
 
 @Service
-class TgChatOpenAiService(
+class TgDocumentOpenAiService(
     openAiAssistantService: OpenAiAssistantService,
     taskService: TaskRecordService,
     private val senderService: SenderService,

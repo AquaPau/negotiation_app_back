@@ -3,10 +3,10 @@ package org.superapp.negotiatorbot.botclient.view.response
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.dto.ChosenPromptOption
 import org.superapp.negotiatorbot.botclient.handler.callbackhandler.PromptTypeQueryHandler
-import org.superapp.negotiatorbot.botclient.view.keyboard.InlineKeyboardOption
-import org.superapp.negotiatorbot.botclient.view.keyboard.createMessageWithKeyboard
 import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.botclient.service.QueryMappingService
+import org.superapp.negotiatorbot.botclient.view.keyboard.InlineKeyboardOption
+import org.superapp.negotiatorbot.botclient.view.keyboard.createReplyMessageWithKeyboard
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.message.Message
@@ -20,16 +20,21 @@ class PromptTypeQuestion(
 
     fun message(tgDocument: TgDocument): BotApiMethod<Message> {
         val keyBoardFactory = PromptOptionsFactory(promptTypeQueryHandler.mappingQuery(), tgDocument.id!!)
-        return createMessageWithKeyboard(
+        return createReplyMessageWithKeyboard(
             chatId = tgDocument.chatId,
+            messageToReplyId = tgDocument.messageId!!,
             messageText = createReplyMessageText(tgDocument),
             options = keyBoardFactory.createKeyboards()
         )
     }
 
     private fun createReplyMessageText(tgDocument: TgDocument): String {
-        val chosenTypeView = typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)
-        return "Выбран тип документа: $chosenTypeView. Пожалуйста, выберите тип анализа"
+        return """
+                Пожалуйста, выберите тип анализа.
+                Номер документа: ${tgDocument.id}
+                Имя документа: ${tgDocument.tgDocumentName}
+                Выбранный тип документа: ${typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)}
+        """.trimIndent()
     }
 
     private inner class PromptOptionsFactory(

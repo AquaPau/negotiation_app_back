@@ -3,12 +3,13 @@ package org.superapp.negotiatorbot.botclient.handler.commandhandler
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.botclient.model.TgUser
-import org.superapp.negotiatorbot.botclient.view.response.DocumentTypeQuestion
-import org.superapp.negotiatorbot.botclient.view.response.StartResponse
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgDocumentService
 import org.superapp.negotiatorbot.botclient.service.TgUserService
+import org.superapp.negotiatorbot.botclient.view.response.DocumentTypeQuestion
+import org.superapp.negotiatorbot.botclient.view.response.StartResponse
 import org.telegram.telegrambots.meta.api.objects.User
+import org.telegram.telegrambots.meta.api.objects.chat.Chat
 import org.telegram.telegrambots.meta.api.objects.message.Message
 
 @Component
@@ -21,9 +22,14 @@ class StartCommand(
 ) : AbstractCommand("start", "Начало работы с ботом") {
 
     override fun execute(message: Message) {
+        cleanUnfinishedDocuments(message.chat)
         sendWelcomeMessage(message)
         val tgDocument = createTgDocument(message)
         sendDocumentTypeQuestion(tgDocument)
+    }
+
+    private fun cleanUnfinishedDocuments(chat: Chat) {
+        tgDocumentService.deleteUnfinishedDocuments(chat.id)
     }
 
     private fun sendWelcomeMessage(message: Message) {

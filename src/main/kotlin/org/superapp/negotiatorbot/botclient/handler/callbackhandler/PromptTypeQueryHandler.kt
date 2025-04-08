@@ -1,15 +1,15 @@
 package org.superapp.negotiatorbot.botclient.handler.callbackhandler
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.dto.ChosenPromptOption
-import org.superapp.negotiatorbot.botclient.model.TgDocument
-import org.superapp.negotiatorbot.botclient.view.response.DocumentUploadQuestion
+import org.superapp.negotiatorbot.botclient.service.AnalyseResultSender
 import org.superapp.negotiatorbot.botclient.service.QueryMappingService
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgDocumentService
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
-import org.telegram.telegrambots.meta.api.objects.message.Message
 
 private val log = KotlinLogging.logger {}
 
@@ -18,7 +18,7 @@ class PromptTypeQueryHandler(
     senderService: SenderService,
     private val queryMappingService: QueryMappingService,
     private val tgDocumentService: TgDocumentService,
-    private val documentUploadQuestion: DocumentUploadQuestion
+    private val analyseResultSender: AnalyseResultSender
 ) : AbstractCallbackQueryHandler(senderService) {
 
     override fun mappingQuery(): String {
@@ -30,14 +30,10 @@ class PromptTypeQueryHandler(
         log.info("Got prompt type $chosenPromptType from user TG id:  ${query.from.id}")
         val tgDocument =
             tgDocumentService.updatePromptType(chosenPromptType.tgDocumentDbId, chosenPromptType.promptType)
-        sendDocumentUploadMessage(tgDocument)
+        GlobalScope.launch {
+            analyseResultSender.analyseAndSendRelatedMessages(tgDocument)
+        }
     }
-
-    private fun sendDocumentUploadMessage(tgDocument: TgDocument): Message {
-        val message = documentUploadQuestion.message(tgDocument)
-        return senderService.execute(message)
-    }
-
 
     private fun String.toPromptOption(): ChosenPromptOption =
         queryMappingService.getPayload(this, ChosenPromptOption::class.java)

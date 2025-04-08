@@ -1,54 +1,43 @@
 package org.superapp.negotiatorbot.botclient.handler.documentHandler
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.botclient.exception.DocumentNotReadyForAssistantException
 import org.superapp.negotiatorbot.botclient.handler.commandhandler.StartCommand
 import org.superapp.negotiatorbot.botclient.model.TgDocument
-import org.superapp.negotiatorbot.botclient.view.response.SendToAssistantResponse
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgDocumentService
-import org.superapp.negotiatorbot.botclient.service.openAi.AnalyseTgService
+import org.superapp.negotiatorbot.botclient.view.response.PromptTypeQuestion
 import org.telegram.telegrambots.meta.api.objects.Document
+import org.telegram.telegrambots.meta.api.objects.chat.Chat
 import org.telegram.telegrambots.meta.api.objects.message.Message
-import java.util.Objects.isNull
 
 @Service
 class DocumentHandler(
     private val tgDocumentService: TgDocumentService,
     private val senderService: SenderService,
-    private val sendToAssistantResponse: SendToAssistantResponse,
-    private val analyseTgService: AnalyseTgService,
+    private val promptTypeQuestion: PromptTypeQuestion,
     private val startCommand: StartCommand
 ) {
 
-    @OptIn(DelicateCoroutinesApi::class)
-    @Transactional
     fun handle(message: Message) {
         try {
-            val tgDocument = getTgDocument()
+            val tgDocument = getTgDocument(message.chat)
             tgDocument.addDocument(message.document)
             tgDocument.addReplyTo(message.messageId)
-            sendUploadToAssistantMessage(tgDocument)
-            GlobalScope.launch {
-                tgDocument.analyseAndSendResponseToUser()
-            }
+            sendPromptQuestion(tgDocument)
         } catch (ignored: DocumentNotReadyForAssistantException) {
             startCommand.execute(message)
         }
     }
 
 
-    private fun getTgDocument(): TgDocument {
-        return tgDocumentService.getReadyToUploadDoc() ?: throw DocumentNotReadyForAssistantException()
+    @Throws(DocumentNotReadyForAssistantException::class)
+    private fun getTgDocument(chat: Chat): TgDocument {
+        return tgDocumentService.getReadyToUploadDoc(chat.id) ?: throw DocumentNotReadyForAssistantException()
     }
 
 
     private fun TgDocument.addDocument(document: Document) {
-        this.validateOrThrow()
         tgDocumentService.addDocument(this, document)
     }
 
@@ -56,20 +45,10 @@ class DocumentHandler(
         tgDocumentService.addReplyTo(this, messageId)
     }
 
-
-    private fun sendUploadToAssistantMessage(tgDocument: TgDocument) {
-        val message = sendToAssistantResponse.message(tgDocument)
+    private fun sendPromptQuestion(document: TgDocument) {
+        val message = promptTypeQuestion.message(document)
         senderService.execute(message)
     }
 
-    private suspend fun TgDocument.analyseAndSendResponseToUser() {
-        val analysisResult = analyseTgService.analyseDoc(this)
-        senderService.sendReplyText(analysisResult, chatId = chatId, messageToReplyId = messageId!!)
-    }
 
-    private fun TgDocument.validateOrThrow() {
-        if (isNull(chosenDocumentType) || isNull(chosenPromptType)) {
-            throw DocumentNotReadyForAssistantException()
-        }
-    }
 }

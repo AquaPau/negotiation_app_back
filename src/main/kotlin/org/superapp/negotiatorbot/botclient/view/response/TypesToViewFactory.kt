@@ -11,7 +11,7 @@ class TypesToViewFactory {
         DocumentType.LABOR_CONTRACT to "Трудовой договор",
         DocumentType.REAL_ESTATE_LEASE_CONTRACT to "Договор аренды",
         DocumentType.SALES_CONTRACT to "Договор купли-продажи",
-        DocumentType.SERVICE_CONTRACT to "Договор обслуживания",
+        DocumentType.SERVICE_CONTRACT to "Договор работ/услуг",
         DocumentType.OTHER to "Другой тип"
     )
 
