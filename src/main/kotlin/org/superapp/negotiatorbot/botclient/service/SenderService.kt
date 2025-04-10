@@ -28,9 +28,9 @@ class SenderService(val telegramClient: TelegramClient) {
         return telegramClient.execute(sendMessage)
     }
 
-    fun <T : Serializable> execute(method: BotApiMethod<T>) {
+    fun <T : Serializable> execute(method: BotApiMethod<T>): T {
         log.info("Try to Sending message: {}", method)
-        telegramClient.execute(method)
+        return telegramClient.execute(method)
     }
 
     fun downloadTgFile(fileMethod: BotApiMethod<File>): File {

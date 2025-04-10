@@ -18,14 +18,14 @@ class TgDocument(
     @Column(nullable = false)
     val chatId: Long,
 
-    @Column(nullable = false, unique = true)
-    val messageId: Int,
+    @Column(nullable = true)
+    var messageId: Int? = null,
 
-    @Column(nullable = false)
-    var tgFileId: String,
+    @Column(nullable = true)
+    var tgFileId: String? = null,
 
-    @Column(nullable = false)
-    var tgDocumentName: String,
+    @Column(nullable = true)
+    var tgDocumentName: String? = null,
 
     @Column(nullable = true)
     @Enumerated(EnumType.STRING)

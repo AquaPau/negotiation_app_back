@@ -3,7 +3,7 @@ package org.superapp.negotiatorbot.webclient.service.task
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.superapp.negotiatorbot.botclient.model.TgDocument
-import org.superapp.negotiatorbot.botclient.service.openAi.TgChatOpenAiService
+import org.superapp.negotiatorbot.botclient.service.openAi.TgDocumentOpenAiService
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.Project
 import org.superapp.negotiatorbot.webclient.entity.TaskEnabled
@@ -18,12 +18,12 @@ import org.superapp.negotiatorbot.webclient.service.functionality.task.TaskRecor
 class OpenAiTaskService(
     taskService: TaskRecordService,
     private val webOpenAiService: WebOpenAiService,
-    private val tgChatOpenAiService: TgChatOpenAiService,
+    private val tgDocumentOpenAiService: TgDocumentOpenAiService,
 ) : AsyncTaskService<DocumentMetadata>(taskService) {
     @Transactional
     override fun run(task: TaskRecord, taskEnabled: TaskEnabled, vararg data: Any): TaskRecord {
         val args = (if (data is Array) data[0] else emptyArray<Any>())
-        if (taskEnabled is DocumentMetadata ) {
+        if (taskEnabled is DocumentMetadata) {
             val prompt = getSinglePrompt(args)
             val result = webOpenAiService.provideResponseFromOpenAi(task, taskEnabled, prompt)
             return taskService.updateResult(task.id!!, result)
@@ -36,9 +36,9 @@ class OpenAiTaskService(
             else throw TaskException(TaskStatus.ERROR_PARSE_PARAMS)
             val result = webOpenAiService.provideResponseFromOpenAi(task, documents, prompt)
             return taskService.updateResult(task.id!!, result)
-        } else if(taskEnabled is TgDocument) {
+        } else if (taskEnabled is TgDocument) {
             val prompt = getSinglePrompt(args)
-            val result = tgChatOpenAiService.provideResponseFromOpenAi(task, taskEnabled, prompt)
+            val result = tgDocumentOpenAiService.provideResponseFromOpenAi(task, taskEnabled, prompt)
             return taskService.updateResult(task.id!!, result)
         } else throw UnsupportedOperationException()
     }

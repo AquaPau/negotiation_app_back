@@ -1,8 +1,9 @@
-package org.superapp.negotiatorbot.botclient.keyboard
+package org.superapp.negotiatorbot.botclient.view.keyboard
 
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.message.Message
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow
@@ -35,6 +36,17 @@ fun createMessageWithKeyboard(
         .build()
     return sendMessage
 }
+
+fun createMessage(chatId: Long, messageText: String): BotApiMethod<Message> = SendMessage.builder()
+    .chatId(chatId)
+    .text(messageText)
+    .build()
+
+fun createMessageForceReply(chatId: Long, messageText: String): BotApiMethod<Message> = SendMessage.builder()
+    .chatId(chatId)
+    .replyMarkup(ForceReplyKeyboard())
+    .text(messageText)
+    .build()
 
 /**
  * Vertical keyboard with all listed options
