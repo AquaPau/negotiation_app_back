@@ -21,7 +21,6 @@ class DocumentUploadQuestion(
     private fun createReplyMessageText(tgDocument: TgDocument): String {
         return """
             Пожалуйста, загрузите документ для анализа.
-            Номер документа: ${tgDocument.id}
             Выбранный тип документа: ${typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)}
         """.trimIndent()
     }

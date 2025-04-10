@@ -31,7 +31,6 @@ class PromptTypeQuestion(
     private fun createReplyMessageText(tgDocument: TgDocument): String {
         return """
                 Пожалуйста, выберите тип анализа.
-                Номер документа: ${tgDocument.id}
                 Имя документа: ${tgDocument.tgDocumentName}
                 Выбранный тип документа: ${typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)}
         """.trimIndent()
