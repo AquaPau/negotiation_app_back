@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.botclient.view.response;
+package org.superapp.negotiatorbot.botclient.view.response
 
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.model.TgDocument
@@ -21,7 +21,6 @@ class DocumentUploadQuestion(
     private fun createReplyMessageText(tgDocument: TgDocument): String {
         return """
             Пожалуйста, загрузите документ для анализа.
-            Номер документа: ${tgDocument.id}
             Выбранный тип документа: ${typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)}
         """.trimIndent()
     }
