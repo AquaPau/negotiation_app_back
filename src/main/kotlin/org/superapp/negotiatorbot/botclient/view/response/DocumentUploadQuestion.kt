@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.botclient.view.response;
+package org.superapp.negotiatorbot.botclient.view.response
 
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.model.TgDocument
