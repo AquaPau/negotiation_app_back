@@ -9,7 +9,7 @@ import java.util.*
 @Repository
 interface ProjectRepository : JpaRepository<Project, Long> {
 
-    fun findAllByUser(user: User): List<Project>
+    fun findAllByUserOrderByIdAsc(user: User): List<Project>
 
     fun findByIdAndUser(id: Long, user: User): Optional<Project>
 }

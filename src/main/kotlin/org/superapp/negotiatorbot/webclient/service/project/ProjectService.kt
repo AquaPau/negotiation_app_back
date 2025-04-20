@@ -38,7 +38,7 @@ class ProjectServceImpl(
 ) : ProjectService {
     override fun getProjects(): List<ProjectSlimDto> {
         val user = userService.getCurrentUser()
-        return projectRepository.findAllByUser(user).map { it.toDto() }
+        return projectRepository.findAllByUserOrderByIdAsc(user).map { it.toDto() }
     }
 
     override fun getProjectDtoById(id: Long): ProjectDto {

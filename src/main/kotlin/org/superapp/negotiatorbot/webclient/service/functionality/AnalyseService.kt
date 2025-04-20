@@ -20,7 +20,7 @@ interface AnalyseService {
 
     fun provideProjectResolution(projectId: Long)
 
-    fun updateThreadAndRun(documentId: Long, consumer: (Long) -> Unit)
+    fun updateThreadAndRun(documentId: Long, isProject: Boolean = false, consumer: (Long) -> Unit)
 }
 
 @Service
@@ -66,9 +66,19 @@ class AnalyseServiceImpl(
 
     }
 
-    override fun updateThreadAndRun(documentId: Long, consumer: (Long) -> Unit) {
-        val document = documentService.get(documentId)
-        webOpenAiService.updateThread(document)
-        consumer.invoke(documentId)
+    override fun updateThreadAndRun(relatedId: Long, isProject: Boolean, consumer: (Long) -> Unit) {
+        if (isProject) {
+            val currentUser = userService.getCurrentUser()
+            val project = projectService.getProjectById(relatedId)
+            documentService.getDocumentList(
+                project.id!!,
+                currentUser.id!!,
+                BusinessType.PROJECT
+            ).forEach { webOpenAiService.updateThread(it) }
+        } else {
+            val document = documentService.get(relatedId)
+            webOpenAiService.updateThread(document)
+        }
+        consumer.invoke(relatedId)
     }
 }

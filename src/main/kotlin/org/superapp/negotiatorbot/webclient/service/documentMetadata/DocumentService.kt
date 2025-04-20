@@ -153,7 +153,7 @@ class DocumentServiceImpl(
     }
 
     override fun deleteDocument(businessType: BusinessType, id: Long) {
-        val docs = documentMetadataRepository.findAllByBusinessTypeAndRelatedId(businessType, id)
+        val docs = documentMetadataRepository.findAllByBusinessTypeAndRelatedIdOrderByIdAsc(businessType, id)
         docs.forEach { s3Service.delete(it) }
         documentMetadataRepository.deleteAll(docs)
     }
