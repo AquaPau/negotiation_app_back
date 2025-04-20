@@ -63,7 +63,7 @@ abstract class AbstractOpenAiService<in T : TaskEnabled>(
     protected fun formatTheResultWithoutMarkdown(result: String) = result.replace(
         regex = Regex("""【.*】"""),
         ""
-    )
+    ).replace(regex = Regex("""###|##|#"""), "\n")
 
     protected fun deleteFilesFromOpenAi(openAiAssistant: OpenAiAssistant) {
         openAiAssistantService.deleteVectorStoreFromAssistant(openAiAssistant)
