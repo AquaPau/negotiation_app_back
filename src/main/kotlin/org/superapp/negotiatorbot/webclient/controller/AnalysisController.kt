@@ -12,7 +12,7 @@ class AnalysisController(
     @GetMapping("/document/{documentId}/risks")
     fun getDocumentRisks(@PathVariable documentId: Long, @RequestParam(required = false) retry: Boolean = false) {
         if (retry) {
-            analyseService.updateThreadAndRun(documentId) { analyseService.detectRisks(it, LegalType.ENTERPRISE) }
+            analyseService.updateThreadAndRun(documentId, ) { analyseService.detectRisks(it, LegalType.ENTERPRISE) }
         } else {
             analyseService.detectRisks(documentId, LegalType.ENTERPRISE)
         }
@@ -35,7 +35,7 @@ class AnalysisController(
     @GetMapping("project/{projectId}/resolution")
     fun getProjectResolution(@PathVariable projectId: Long, @RequestParam retry: Boolean) {
         if (retry) {
-            analyseService.updateThreadAndRun(projectId) {
+            analyseService.updateThreadAndRun(projectId, isProject = true) {
                 analyseService.provideProjectResolution(
                     it
                 )

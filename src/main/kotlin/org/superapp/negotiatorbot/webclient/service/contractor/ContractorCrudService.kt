@@ -62,7 +62,7 @@ class ContractorCrudServiceImpl(
     override fun getContractorsByCompanyId(companyId: Long): List<CounterpartyDto> {
         val user = userCompanyRepository.findById(companyId)
             .orElseThrow { CompanyNotFoundException(companyId) }.user
-        return userContractorRepository.findAllByCompanyIdAndUser(companyId, user!!).map {
+        return userContractorRepository.findAllByCompanyIdAndUserOrderByIdAsc(companyId, user!!).map {
             CounterpartyDto(it.id!!, it.customUserGeneratedName)
         }
     }

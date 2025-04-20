@@ -15,7 +15,7 @@ interface DocumentMetadataRepository : JpaRepository<DocumentMetadata, Long> {
         userId: Long
     ): List<DocumentMetadata>
 
-    fun findAllByBusinessTypeAndRelatedId(businessType: BusinessType, relatedId: Long): List<DocumentMetadata>
+    fun findAllByBusinessTypeAndRelatedIdOrderByIdAsc(businessType: BusinessType, relatedId: Long): List<DocumentMetadata>
 
     fun existsByUserIdAndName(userId: Long, name: String): Boolean
 
