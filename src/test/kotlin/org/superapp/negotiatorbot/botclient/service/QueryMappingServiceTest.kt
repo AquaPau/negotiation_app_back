@@ -37,7 +37,7 @@ class QueryMappingServiceTest {
     fun `should parse and deparse chosenDocumentOption payload`() {
         //given
         val mappingQuery = "expectedMapping"
-        val expected = ChosenDocumentOption(1, DocumentType.LABOR_CONTRACT)
+        val expected = ChosenDocumentOption(1, DocumentType.LABOR_CONTRACT_EMPLOYEE)
 
         val fullQuery = queryMappingService.toCallbackQuery(mappingQuery, expected)
 
