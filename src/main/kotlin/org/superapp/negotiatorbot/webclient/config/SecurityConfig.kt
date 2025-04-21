@@ -38,7 +38,8 @@ class SecurityConfig(private val userRepository: UserRepository) {
                         "/api/auth/login", "/api/auth/logout", "/api/auth/register", "/api/auth",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
-                        "/swagger-ui.html"
+                        "/swagger-ui.html",
+                        "/api/faq"
                     ).permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                     .anyRequest().authenticated()
