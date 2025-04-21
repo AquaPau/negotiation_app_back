@@ -12,6 +12,13 @@ interface FaqService {
 class FaqServiceImpl() : FaqService {
     override fun get(): String {
         val file = File("README.md")
-        return if (file.exists()) file.readText() else "FAQ не найдено"
+        if (file.exists()) {
+            return file.readText()
+        } else {
+            val inputStream = javaClass.classLoader.getResourceAsStream("README.md")
+                ?: return "FAQ не найдено"
+            return inputStream.bufferedReader().use { it.readText() }
+        }
     }
+
 }
