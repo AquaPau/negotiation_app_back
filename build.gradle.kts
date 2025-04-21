@@ -81,3 +81,10 @@ dependencyManagement {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.processResources {
+    from("README.md") {
+        into("") 
+    }
+}
+
