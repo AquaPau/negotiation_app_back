@@ -1,17 +1,17 @@
 package org.superapp.negotiatorbot.webclient.dto.project
 
-import org.superapp.negotiatorbot.webclient.enums.TaskStatus
+import org.superapp.negotiatorbot.webclient.dto.TaskDtoStatus
 
 data class ProjectDto(
     val id: Long,
     val customUserGeneratedName: String,
     val userId: Long,
     val userGeneratedPrompt: String,
-    val taskHistory: List<ProjectTaskHistory>,
-    val taskResult: String?
+    val resolution: Resolution?
 )
 
-data class ProjectTaskHistory(
-    val id: Long,
-    val status: TaskStatus
+data class Resolution(
+    val text: String?,
+    val status: TaskDtoStatus,
+    val id: Long
 )
