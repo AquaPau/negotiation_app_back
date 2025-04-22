@@ -8,6 +8,7 @@ import org.superapp.negotiatorbot.botclient.service.TgDocumentService
 import org.superapp.negotiatorbot.botclient.service.TgUserService
 import org.superapp.negotiatorbot.botclient.view.response.DocumentTypeQuestion
 import org.superapp.negotiatorbot.botclient.view.response.StartResponse
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.chat.Chat
 import org.telegram.telegrambots.meta.api.objects.message.Message
@@ -22,9 +23,18 @@ class StartCommand(
 ) : AbstractCommand("start", "Начало работы с ботом") {
 
     override fun execute(message: Message) {
-        cleanUnfinishedDocuments(message.chat)
-        sendWelcomeMessage(message)
-        val tgDocument = createTgDocument(message)
+        val currentChat = message.chat
+        cleanUnfinishedDocuments(currentChat)
+        sendWelcomeMessage(currentChat)
+        val tgDocument = createTgDocument(currentChat, message.from)
+        sendDocumentTypeQuestion(tgDocument)
+    }
+
+    fun execute(callbackQuery: CallbackQuery) {
+        val currentChat = callbackQuery.message.chat
+        cleanUnfinishedDocuments(currentChat)
+        sendWelcomeMessage(currentChat)
+        val tgDocument = createTgDocument(currentChat, callbackQuery.from)
         sendDocumentTypeQuestion(tgDocument)
     }
 
@@ -32,14 +42,14 @@ class StartCommand(
         tgDocumentService.deleteUnfinishedDocuments(chat.id)
     }
 
-    private fun sendWelcomeMessage(message: Message) {
-        val replyMessage = startResponse.message(message.chatId)
+    private fun sendWelcomeMessage(chat: Chat) {
+        val replyMessage = startResponse.message(chat.id)
         senderService.execute(replyMessage)
     }
 
-    private fun createTgDocument(message: Message): TgDocument {
-        val tgUser = createOrUpdateTgUser(message.from!!)
-        return tgDocumentService.create(message, tgUser.id!!)
+    private fun createTgDocument(chat: Chat, user: User): TgDocument {
+        val tgUser = createOrUpdateTgUser(user)
+        return tgDocumentService.create(chat, tgUser.id!!)
     }
 
     private fun createOrUpdateTgUser(from: User): TgUser = tgUserService.getTgUser(from)

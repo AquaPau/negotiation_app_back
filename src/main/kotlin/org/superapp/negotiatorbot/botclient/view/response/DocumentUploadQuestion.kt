@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.message.Message
 
 @Component
 class DocumentUploadQuestion(
-    private val typesToViewFactory: TypesToViewFactory
+    private val typesToViewFactory: TypesToViewFactory,
 ) {
 
     fun message(tgDocument: TgDocument): BotApiMethod<Message> {

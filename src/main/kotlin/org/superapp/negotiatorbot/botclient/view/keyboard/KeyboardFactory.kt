@@ -48,6 +48,7 @@ fun createMessageForceReply(chatId: Long, messageText: String): BotApiMethod<Mes
     .text(messageText)
     .build()
 
+
 /**
  * Vertical keyboard with all listed options
  *
@@ -60,7 +61,7 @@ fun createInlineKeyboard(options: List<InlineKeyboardOption>): InlineKeyboardMar
 }
 
 
-private fun createButton(option: InlineKeyboardOption): InlineKeyboardButton {
+fun createButton(option: InlineKeyboardOption): InlineKeyboardButton {
     return InlineKeyboardButton.builder().text(option.userView()).callbackData(option.callBackData()).build()
 }
 

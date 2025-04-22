@@ -2,6 +2,7 @@ package org.superapp.negotiatorbot.botclient.view.response
 
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.dto.ChosenPromptOption
+import org.superapp.negotiatorbot.botclient.handler.callbackhandler.GoBackQueryHandler
 import org.superapp.negotiatorbot.botclient.handler.callbackhandler.PromptTypeQueryHandler
 import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.botclient.service.QueryMappingService
@@ -16,6 +17,7 @@ class PromptTypeQuestion(
     private val queryMappingService: QueryMappingService,
     private val promptTypeQueryHandler: PromptTypeQueryHandler,
     private val typesToViewFactory: TypesToViewFactory,
+    private val goBackQueryHandler: GoBackQueryHandler
 ) {
 
     fun message(tgDocument: TgDocument): BotApiMethod<Message> {
@@ -43,9 +45,11 @@ class PromptTypeQuestion(
     ) {
 
         fun createKeyboards(): List<InlineKeyboardOption> {
-            return typesToViewFactory.promptTypes.keys.map {
+            val options = typesToViewFactory.promptTypes.keys.map {
                 createKeyboard(it)
-            }
+            }.toMutableList()
+            options.add(goBackQueryHandler.createBackButton())
+            return options
         }
 
         fun createKeyboard(promptType: PromptType): InlineKeyboardOption {
