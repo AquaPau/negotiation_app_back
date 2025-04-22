@@ -60,7 +60,7 @@ fun createInlineKeyboard(options: List<InlineKeyboardOption>): InlineKeyboardMar
 }
 
 
-private fun createButton(option: InlineKeyboardOption): InlineKeyboardButton {
+fun createButton(option: InlineKeyboardOption): InlineKeyboardButton {
     return InlineKeyboardButton.builder().text(option.userView()).callbackData(option.callBackData()).build()
 }
 

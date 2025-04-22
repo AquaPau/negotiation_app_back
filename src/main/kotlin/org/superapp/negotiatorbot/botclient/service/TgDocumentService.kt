@@ -7,11 +7,11 @@ import org.superapp.negotiatorbot.botclient.repository.TgDocumentRepository
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.telegram.telegrambots.meta.api.objects.Document
-import org.telegram.telegrambots.meta.api.objects.message.Message
+import org.telegram.telegrambots.meta.api.objects.chat.Chat
 
 @Transactional
 interface TgDocumentService {
-    fun create(message: Message, tgUserDbId: Long): TgDocument
+    fun create(chat: Chat, tgUserDbId: Long): TgDocument
     fun getReadyToUploadDoc(chatId: Long): TgDocument?
     fun deleteUnfinishedDocuments(chatId: Long)
     fun addDocument(tgDocument: TgDocument, document: Document): TgDocument
@@ -25,9 +25,9 @@ interface TgDocumentService {
 class TgDocumentServiceImpl(
     private val tgDocumentRepository: TgDocumentRepository
 ) : TgDocumentService {
-    override fun create(message: Message, tgUserDbId: Long): TgDocument {
+    override fun create(chat: Chat, tgUserDbId: Long): TgDocument {
         val tgDocument = TgDocument(
-            chatId = message.chat.id,
+            chatId = chat.id,
             tgUserDbId = tgUserDbId,
         )
         return tgDocumentRepository.save(tgDocument)
