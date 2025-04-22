@@ -3,8 +3,9 @@ package org.superapp.negotiatorbot.webclient.entity
 import jakarta.persistence.*
 import org.superapp.negotiatorbot.webclient.dto.project.ProjectDto
 import org.superapp.negotiatorbot.webclient.dto.project.ProjectSlimDto
-import org.superapp.negotiatorbot.webclient.dto.project.ProjectTaskHistory
+import org.superapp.negotiatorbot.webclient.dto.project.Resolution
 import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
+import org.superapp.negotiatorbot.webclient.enums.toDto
 
 @Entity
 @Table(name = "projects")
@@ -32,13 +33,13 @@ fun Project.toDto(tasks: List<TaskRecord>?) =
         customUserGeneratedName = this.customUserGeneratedName,
         userId = user!!.id!!,
         userGeneratedPrompt = userGeneratedPrompt,
-        taskResult = tasks?.first()?.result,
-        taskHistory = tasks?.map {
-            ProjectTaskHistory(
+        resolution = tasks?.firstOrNull()?.let {
+            Resolution(
                 id = it.id!!,
-                status = it.status
+                status = it.status.toDto(),
+                text = it.result
             )
-        } ?: listOf()
+        }
     )
 
 fun Project.toDto() =
