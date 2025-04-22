@@ -48,7 +48,6 @@ fun createMessageForceReply(chatId: Long, messageText: String): BotApiMethod<Mes
     .text(messageText)
     .build()
 
-
 /**
  * Vertical keyboard with all listed options
  *

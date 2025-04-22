@@ -48,7 +48,7 @@ class CompanyCrudServiceImpl(
 
     override fun getAll(): List<CompanyProfileDto> {
         val user = userService.getCurrentUser()
-        return userCompanyRepository.findAllByUser(user).map {
+        return userCompanyRepository.findAllByUserOrderByIdAsc(user).map {
             it.toDto()
         }
     }

@@ -4,16 +4,20 @@ import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import org.superapp.negotiatorbot.webclient.dto.project.NewProjectDto
 import org.superapp.negotiatorbot.webclient.dto.project.ProjectDto
+import org.superapp.negotiatorbot.webclient.dto.project.ProjectSlimDto
 import org.superapp.negotiatorbot.webclient.entity.Project
 import org.superapp.negotiatorbot.webclient.entity.toDto
+import org.superapp.negotiatorbot.webclient.enums.TaskType
 import org.superapp.negotiatorbot.webclient.exception.ProjectNotFoundException
+import org.superapp.negotiatorbot.webclient.exception.TaskNotFoundException
 import org.superapp.negotiatorbot.webclient.exception.UserNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.project.ProjectRepository
+import org.superapp.negotiatorbot.webclient.service.functionality.task.TaskRecordService
 import org.superapp.negotiatorbot.webclient.service.user.UserService
 
 interface ProjectService {
 
-    fun getProjects(): List<ProjectDto>
+    fun getProjects(): List<ProjectSlimDto>
 
     fun getProjectDtoById(id: Long): ProjectDto
 
@@ -29,15 +33,22 @@ interface ProjectService {
 class ProjectServceImpl(
     private val projectRepository: ProjectRepository,
     private val userService: UserService,
-    private val projectDocumentService: ProjectDocumentService
+    private val projectDocumentService: ProjectDocumentService,
+    private val taskRecordService: TaskRecordService
 ) : ProjectService {
-    override fun getProjects(): List<ProjectDto> {
+    override fun getProjects(): List<ProjectSlimDto> {
         val user = userService.getCurrentUser()
-        return projectRepository.findAllByUser(user).map { it.toDto() }
+        return projectRepository.findAllByUserOrderByIdAsc(user).map { it.toDto() }
     }
 
     override fun getProjectDtoById(id: Long): ProjectDto {
-       return getProjectById(id).toDto()
+        val project = getProjectById(id)
+        val tasks = try {
+            taskRecordService.getAllByTypeAndReference(TaskType.PROJECT_RESOLUTION, id)
+        } catch (e: TaskNotFoundException) {
+            null
+        }
+        return project.toDto(tasks)
     }
 
     override fun getProjectById(id: Long): Project {
@@ -54,7 +65,7 @@ class ProjectServceImpl(
             this.user = user
             this.userGeneratedPrompt = newProjectDto.userGeneratedPrompt
         }
-        return projectRepository.save(project).toDto()
+        return projectRepository.save(project).toDto(null)
     }
 
     @Transactional

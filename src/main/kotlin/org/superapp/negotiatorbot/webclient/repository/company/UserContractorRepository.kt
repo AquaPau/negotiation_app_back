@@ -7,7 +7,7 @@ import java.util.*
 
 interface UserContractorRepository: JpaRepository<UserContractor, Long> {
 
-    fun findAllByCompanyIdAndUser(companyId: Long, user: User): List<UserContractor>
+    fun findAllByCompanyIdAndUserOrderByIdAsc(companyId: Long, user: User): List<UserContractor>
 
     fun findByIdAndCompanyIdAndUser(id: Long, companyId: Long, user: User): Optional<UserContractor>
     fun findAllByCompanyId(companyId: Long): List<UserContractor>

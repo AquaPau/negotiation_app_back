@@ -5,7 +5,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
+import org.superapp.negotiatorbot.webclient.dto.document.DocumentEnterpriseMetadataDto
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.service.company.CompanyDocumentService
@@ -37,12 +37,12 @@ class CompanyDocumentController(
     }
 
     @GetMapping("/{companyId}/document")
-    fun getCompanyDocuments(@PathVariable companyId: Long): List<DocumentMetadataDto> {
+    fun getCompanyDocuments(@PathVariable companyId: Long): List<DocumentEnterpriseMetadataDto> {
         return companyDocumentService.getDocuments(companyId, BusinessType.USER)
     }
 
     @GetMapping("/{companyId}/document/{documentId}")
-    fun getCompanyDocument(@PathVariable companyId: Long, @PathVariable documentId: Long): DocumentMetadataDto {
+    fun getCompanyDocument(@PathVariable companyId: Long, @PathVariable documentId: Long): DocumentEnterpriseMetadataDto {
         return companyDocumentService.getDocument(companyId, documentId)
     }
 

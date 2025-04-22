@@ -1,8 +1,10 @@
 package org.superapp.negotiatorbot.webclient.entity.task
 
 import jakarta.persistence.*
+import org.superapp.negotiatorbot.webclient.dto.TaskRecordDto
 import org.superapp.negotiatorbot.webclient.enums.TaskStatus
 import org.superapp.negotiatorbot.webclient.enums.TaskType
+import org.superapp.negotiatorbot.webclient.enums.toDto
 
 @Entity
 @Table(name = "tasks", uniqueConstraints = [UniqueConstraint(columnNames = ["task_type", "related_id"])])
@@ -26,3 +28,11 @@ class TaskRecord(
     @Column(nullable = true, name = "result")
     var result: String? = null
 )
+
+fun TaskRecord.toDto() =
+    TaskRecordDto(
+        id = this.id!!,
+        relatedId = this.relatedId,
+        result = this.result,
+        status = this.status.toDto()
+    )

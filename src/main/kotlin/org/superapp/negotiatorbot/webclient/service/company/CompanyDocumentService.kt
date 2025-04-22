@@ -1,7 +1,7 @@
 package org.superapp.negotiatorbot.webclient.service.company
 
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
+import org.superapp.negotiatorbot.webclient.dto.document.DocumentEnterpriseMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.UserCompany
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
@@ -16,9 +16,9 @@ interface CompanyDocumentService : EnterpriseDocumentService<UserCompany> {
         relatedId: Long
     )
 
-    fun getDocuments(companyId: Long, type: BusinessType): List<DocumentMetadataDto>
+    fun getDocuments(companyId: Long, type: BusinessType): List<DocumentEnterpriseMetadataDto>
 
-    fun getDocument(companyId: Long, documentId: Long): DocumentMetadataDto
+    fun getDocument(companyId: Long, documentId: Long): DocumentEnterpriseMetadataDto
 
 
     fun deleteCompanyDocuments(companyId: Long)
@@ -49,20 +49,20 @@ class CompanyDocumentServiceImpl(
 
     }
 
-    override fun getDocuments(companyId: Long, type: BusinessType): List<DocumentMetadataDto> {
+    override fun getDocuments(companyId: Long, type: BusinessType): List<DocumentEnterpriseMetadataDto> {
         val user = userCompanyRepository.findById(companyId)
             .orElseThrow { CompanyNotFoundException(companyId) }.user
-        return documentService.getDocumentList(
+        return documentService.getEnterpriseDocumentListDto(
             userId = user!!.id!!,
             relatedId = companyId,
             businessType = BusinessType.USER
         )
     }
 
-    override fun getDocument(companyId: Long, documentId: Long): DocumentMetadataDto {
+    override fun getDocument(companyId: Long, documentId: Long): DocumentEnterpriseMetadataDto {
         userCompanyRepository.findById(companyId)
             .orElseThrow { CompanyNotFoundException(companyId) }.user
-        return documentService.getDocumentById(
+        return documentService.getEnterpriseDocumentById(
             relatedId = companyId,
             documentId = documentId,
             businessType = BusinessType.USER

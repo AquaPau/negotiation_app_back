@@ -2,15 +2,13 @@ package org.superapp.negotiatorbot.webclient.service.documentMetadata
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.superapp.negotiatorbot.webclient.dto.document.DescriptionData
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
-import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
-import org.superapp.negotiatorbot.webclient.dto.document.RisksData
+import org.superapp.negotiatorbot.webclient.dto.document.*
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.superapp.negotiatorbot.webclient.enums.TaskType.*
+import org.superapp.negotiatorbot.webclient.enums.toDto
 import org.superapp.negotiatorbot.webclient.exception.DocumentNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.DocumentMetadataRepository
 import org.superapp.negotiatorbot.webclient.repository.TaskRecordRepository
@@ -27,9 +25,29 @@ interface DocumentService {
 
     fun get(serverSideFileId: Long): DocumentMetadata
 
-    fun getDocumentList(relatedId: Long, userId: Long, businessType: BusinessType): List<DocumentMetadataDto>
+    fun getEnterpriseDocumentListDto(
+        relatedId: Long,
+        userId: Long,
+        businessType: BusinessType
+    ): List<DocumentEnterpriseMetadataDto>
 
-    fun getDocumentById(relatedId: Long, documentId: Long, businessType: BusinessType): DocumentMetadataDto
+    fun getProjectDocumentListDto(
+        relatedId: Long,
+        userId: Long,
+        businessType: BusinessType
+    ): List<DocumentProjectMetadataDto>
+
+    fun getDocumentList(
+        relatedId: Long,
+        userId: Long,
+        businessType: BusinessType
+    ): List<DocumentMetadata>
+
+    fun getEnterpriseDocumentById(
+        relatedId: Long,
+        documentId: Long,
+        businessType: BusinessType
+    ): DocumentEnterpriseMetadataDto
 
     fun deleteDocument(documentId: Long)
 
@@ -78,22 +96,46 @@ class DocumentServiceImpl(
             .orElseThrow { DocumentNotFoundException(serverSideFileId) }
     }
 
-    override fun getDocumentList(relatedId: Long, userId: Long, businessType: BusinessType): List<DocumentMetadataDto> {
+    override fun getEnterpriseDocumentListDto(
+        relatedId: Long,
+        userId: Long,
+        businessType: BusinessType
+    ): List<DocumentEnterpriseMetadataDto> {
 
-        val documents = documentMetadataRepository.findAllByBusinessTypeAndRelatedIdAndUserIdOrderByIdAsc(
-            businessType = businessType,
-            relatedId = relatedId,
-            userId = userId
-        )
+        val documents = getDocumentList(relatedId, userId, businessType)
         val recordsByDocument = taskRecordRepository.findAllByRelatedIdInAndTaskTypeIn(
             documents.map { it.id!! }, ELIGIBLE_TASK_TYPES
         )
             .groupBy { it.relatedId }.entries.associate { it.key to it.value.sortedByDescending { task -> task.id } }
 
-        return documents.map { it.entityToDto(recordsByDocument[it.id!!] ?: listOf()) }
+        return documents.map { it.entityToDtoForEnterprises(recordsByDocument[it.id!!] ?: listOf()) }
     }
 
-    override fun getDocumentById(relatedId: Long, documentId: Long, businessType: BusinessType): DocumentMetadataDto {
+    override fun getProjectDocumentListDto(
+        relatedId: Long,
+        userId: Long,
+        businessType: BusinessType
+    ): List<DocumentProjectMetadataDto> {
+        return getDocumentList(relatedId, userId, businessType).map { it.entityToDtoForProjects() }
+    }
+
+    override fun getDocumentList(
+        relatedId: Long,
+        userId: Long,
+        businessType: BusinessType
+    ): List<DocumentMetadata> {
+        return documentMetadataRepository.findAllByBusinessTypeAndRelatedIdAndUserIdOrderByIdAsc(
+            businessType = businessType,
+            relatedId = relatedId,
+            userId = userId
+        )
+    }
+
+    override fun getEnterpriseDocumentById(
+        relatedId: Long,
+        documentId: Long,
+        businessType: BusinessType
+    ): DocumentEnterpriseMetadataDto {
         val document = documentMetadataRepository.findByIdAndBusinessTypeAndRelatedId(
             documentId,
             businessType, relatedId
@@ -101,7 +143,7 @@ class DocumentServiceImpl(
         val recordsByDocument = taskRecordRepository.findAllByRelatedIdInAndTaskTypeIn(
             listOf(document.id!!), ELIGIBLE_TASK_TYPES
         ).sortedByDescending { it.id }
-        return document.entityToDto(recordsByDocument)
+        return document.entityToDtoForEnterprises(recordsByDocument)
     }
 
     override fun deleteDocument(documentId: Long) {
@@ -112,7 +154,7 @@ class DocumentServiceImpl(
     }
 
     override fun deleteDocument(businessType: BusinessType, id: Long) {
-        val docs = documentMetadataRepository.findAllByBusinessTypeAndRelatedId(businessType, id)
+        val docs = documentMetadataRepository.findAllByBusinessTypeAndRelatedIdOrderByIdAsc(businessType, id)
         docs.forEach { s3Service.delete(it) }
         documentMetadataRepository.deleteAll(docs)
     }
@@ -139,22 +181,36 @@ class DocumentServiceImpl(
         The aiResults list comes descending by id, so the freshest one will be used as a result for the user others will
         be historical and will be reduced
         */
-        private fun DocumentMetadata.entityToDto(aiResults: List<TaskRecord>): DocumentMetadataDto {
-            val result = DocumentMetadataDto(
+        private fun DocumentMetadata.entityToDtoForEnterprises(aiResults: List<TaskRecord>): DocumentEnterpriseMetadataDto {
+            val result = DocumentEnterpriseMetadataDto(
                 id = this.id!!,
                 name = "${this.name!!}.${this.extension}",
                 userId = this.userId!!,
                 type = this.documentType!!,
                 description = aiResults.firstOrNull {
                     it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.DESCRIPTION
-                }?.let { DescriptionData(it.result, it.status, it.id!!) },
+                }?.let { DescriptionData(it.result, it.status.toDto(), it.id!!) },
                 risks = aiResults.firstOrNull {
                     it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.RISKS
-                }?.let { RisksData(it.result, it.status, it.id!!) }
+                }?.let { RisksData(it.result, it.status.toDto(), it.id!!) }
             )
             when (this.businessType!!) {
                 BusinessType.USER -> result.companyId = this.relatedId
                 BusinessType.PARTNER -> result.counterPartyId = this.relatedId
+                else -> throw UnsupportedOperationException()
+            }
+            return result
+        }
+
+        private fun DocumentMetadata.entityToDtoForProjects(): DocumentProjectMetadataDto {
+            val result = DocumentProjectMetadataDto(
+                id = this.id!!,
+                name = "${this.name!!}.${this.extension}",
+                userId = this.userId!!,
+                type = this.documentType!!
+            )
+            when (this.businessType!!) {
+                BusinessType.PROJECT -> result.projectId = this.relatedId
                 else -> throw UnsupportedOperationException()
             }
             return result

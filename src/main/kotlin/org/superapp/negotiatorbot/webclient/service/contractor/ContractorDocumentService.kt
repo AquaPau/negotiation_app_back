@@ -1,7 +1,7 @@
 package org.superapp.negotiatorbot.webclient.service.contractor
 
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
+import org.superapp.negotiatorbot.webclient.dto.document.DocumentEnterpriseMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.UserContractor
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
@@ -19,9 +19,9 @@ interface ContractorDocumentService : EnterpriseDocumentService<UserContractor> 
         relatedId: Long
     )
 
-    fun getDocuments(companyId: Long, contractorId: Long): List<DocumentMetadataDto>
+    fun getDocuments(companyId: Long, contractorId: Long): List<DocumentEnterpriseMetadataDto>
 
-    fun getDocument(contractorId: Long, documentId: Long): DocumentMetadataDto
+    fun getDocument(contractorId: Long, documentId: Long): DocumentEnterpriseMetadataDto
 
     fun deleteDocuments(contractorId: Long)
 
@@ -48,20 +48,20 @@ class ContractorDocumentServiceImpl(
 
     }
 
-    override fun getDocuments(companyId: Long, contractorId: Long): List<DocumentMetadataDto> {
+    override fun getDocuments(companyId: Long, contractorId: Long): List<DocumentEnterpriseMetadataDto> {
         val company = userCompanyRepository.findById(companyId).orElseThrow { CompanyNotFoundException(companyId) }
         userContractorRepository.findById(contractorId).orElseThrow { ContractorNotFoundException(contractorId) }
-        return documentService.getDocumentList(
+        return documentService.getEnterpriseDocumentListDto(
             userId = company.user!!.id!!,
             relatedId = contractorId,
             businessType = BusinessType.PARTNER
         )
     }
 
-    override fun getDocument(contractorId: Long, documentId: Long): DocumentMetadataDto {
+    override fun getDocument(contractorId: Long, documentId: Long): DocumentEnterpriseMetadataDto {
         userContractorRepository.findById(contractorId)
             .orElseThrow { ContractorNotFoundException(contractorId) }.user
-        return documentService.getDocumentById(
+        return documentService.getEnterpriseDocumentById(
             relatedId = contractorId,
             documentId = documentId,
             businessType = BusinessType.PARTNER

@@ -15,7 +15,7 @@ class DocumentFactoryTest {
             userId = 123L,
             businessType = BusinessType.USER,
             relatedId = 456L,
-            documentType = DocumentType.CONTRACT,
+            documentType = DocumentType.DEFAULT,
             fileNameWithExtension = fileNameWithExtension
         )
 

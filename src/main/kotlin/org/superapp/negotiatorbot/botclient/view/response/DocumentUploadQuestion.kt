@@ -1,4 +1,4 @@
-package org.superapp.negotiatorbot.botclient.view.response;
+package org.superapp.negotiatorbot.botclient.view.response
 
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.botclient.model.TgDocument
@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.message.Message
 
 @Component
 class DocumentUploadQuestion(
-    private val typesToViewFactory: TypesToViewFactory,
+    private val typesToViewFactory: TypesToViewFactory
 ) {
 
     fun message(tgDocument: TgDocument): BotApiMethod<Message> {
@@ -21,7 +21,6 @@ class DocumentUploadQuestion(
     private fun createReplyMessageText(tgDocument: TgDocument): String {
         return """
             Пожалуйста, загрузите документ для анализа.
-            Номер документа: ${tgDocument.id}
             Выбранный тип документа: ${typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)}
         """.trimIndent()
     }

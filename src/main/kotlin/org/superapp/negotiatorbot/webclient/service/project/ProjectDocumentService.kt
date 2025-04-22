@@ -1,7 +1,7 @@
 package org.superapp.negotiatorbot.webclient.service.project
 
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.webclient.dto.document.DocumentMetadataDto
+import org.superapp.negotiatorbot.webclient.dto.document.DocumentProjectMetadataDto
 import org.superapp.negotiatorbot.webclient.dto.document.RawDocumentAndMetatype
 import org.superapp.negotiatorbot.webclient.entity.Project
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
@@ -12,7 +12,7 @@ import org.superapp.negotiatorbot.webclient.service.documentMetadata.DocumentSer
 
 interface ProjectDocumentService : EnterpriseDocumentService<Project> {
     fun uploadDocuments(files: List<RawDocumentAndMetatype>, relatedId: Long)
-    fun getDocuments(projectId: Long, businessType: BusinessType): List<DocumentMetadataDto>
+    fun getDocuments(projectId: Long, businessType: BusinessType): List<DocumentProjectMetadataDto>
     fun deleteDocuments(projectId: Long)
     fun deleteDocumentById(documentId: Long, projectId: Long)
 }
@@ -33,10 +33,10 @@ class ProjectDocumentServiceImpl(
         )
     }
 
-    override fun getDocuments(projectId: Long, businessType: BusinessType): List<DocumentMetadataDto> {
+    override fun getDocuments(projectId: Long, businessType: BusinessType): List<DocumentProjectMetadataDto> {
         val user = projectRepository.findById(projectId)
             .orElseThrow { ProjectNotFoundException(projectId) }.user
-        return documentService.getDocumentList(
+        return documentService.getProjectDocumentListDto(
             userId = user!!.id!!,
             relatedId = projectId,
             businessType = BusinessType.PROJECT

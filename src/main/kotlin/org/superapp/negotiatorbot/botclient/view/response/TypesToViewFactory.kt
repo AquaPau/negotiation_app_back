@@ -8,16 +8,16 @@ import org.superapp.negotiatorbot.webclient.enums.PromptType
 class TypesToViewFactory {
 
     val documentTypes = mapOf(
-        DocumentType.LABOR_CONTRACT to "Трудовой договор",
-        DocumentType.REAL_ESTATE_LEASE_CONTRACT to "Договор аренды",
-        DocumentType.SALES_CONTRACT to "Договор купли-продажи",
-        DocumentType.SERVICE_CONTRACT to "Договор работ/услуг",
-        DocumentType.OTHER to "Другой тип"
+        DocumentType.LABOR_CONTRACT_EMPLOYEE to "Трудовой договор",
+        DocumentType.REAL_ESTATE_LEASE_CONTRACT_TENANT to "Договор аренды",
+        DocumentType.SALES_CONTRACT_CUSTOMER to "Договор купли-продажи",
+        DocumentType.SERVICE_CONTRACT_CUSTOMER to "Договор работ/услуг",
+        DocumentType.DEFAULT to "Другой тип"
     )
 
     val promptTypes = mapOf(
         PromptType.DESCRIPTION to "Описание содержания документа",
-        PromptType.RISKS to "Риски связанные с документом"
+        PromptType.RISKS to "Риски, связанные с документом"
     )
 
     fun viewOf(docType: DocumentType) =
