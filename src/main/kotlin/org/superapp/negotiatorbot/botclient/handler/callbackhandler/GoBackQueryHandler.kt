@@ -7,7 +7,10 @@ import org.superapp.negotiatorbot.botclient.view.keyboard.InlineKeyboardOption
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 
 @Component
-class GoBackQueryHandler(senderService: SenderService, private val startCommand: StartCommand) :
+class GoBackQueryHandler(
+    senderService: SenderService,
+    private val startCommand: StartCommand
+) :
     AbstractCallbackQueryHandler(senderService) {
 
     override fun handleQuery(query: CallbackQuery) {
