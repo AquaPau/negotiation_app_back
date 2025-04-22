@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 22
+      author: aquapau
+      changes:
+        - dropUniqueConstraint:
+            tableName: tasks
+            constraintName: uq_task_type_related_id
