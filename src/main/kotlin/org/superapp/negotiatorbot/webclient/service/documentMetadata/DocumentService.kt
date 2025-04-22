@@ -8,6 +8,7 @@ import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 import org.superapp.negotiatorbot.webclient.enums.TaskType.*
+import org.superapp.negotiatorbot.webclient.enums.toDto
 import org.superapp.negotiatorbot.webclient.exception.DocumentNotFoundException
 import org.superapp.negotiatorbot.webclient.repository.DocumentMetadataRepository
 import org.superapp.negotiatorbot.webclient.repository.TaskRecordRepository
@@ -188,10 +189,10 @@ class DocumentServiceImpl(
                 type = this.documentType!!,
                 description = aiResults.firstOrNull {
                     it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.DESCRIPTION
-                }?.let { DescriptionData(it.result, it.status, it.id!!) },
+                }?.let { DescriptionData(it.result, it.status.toDto(), it.id!!) },
                 risks = aiResults.firstOrNull {
                     it.relatedId == this.id!! && it.taskType.toPromptType() == PromptType.RISKS
-                }?.let { RisksData(it.result, it.status, it.id!!) }
+                }?.let { RisksData(it.result, it.status.toDto(), it.id!!) }
             )
             when (this.businessType!!) {
                 BusinessType.USER -> result.companyId = this.relatedId

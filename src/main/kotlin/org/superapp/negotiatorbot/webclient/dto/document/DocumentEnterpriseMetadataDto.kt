@@ -1,5 +1,6 @@
 package org.superapp.negotiatorbot.webclient.dto.document
 
+import org.superapp.negotiatorbot.webclient.dto.TaskDtoStatus
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.TaskStatus
 
@@ -16,12 +17,12 @@ data class DocumentEnterpriseMetadataDto(
 
 data class DescriptionData(
     val text: String?,
-    val status: TaskStatus,
+    val status: TaskDtoStatus,
     val id: Long
 )
 
 data class RisksData(
     val text: String?,
-    val status: TaskStatus,
+    val status: TaskDtoStatus,
     val id: Long
 )
