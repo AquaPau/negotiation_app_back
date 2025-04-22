@@ -1,10 +1,10 @@
 package org.superapp.negotiatorbot.webclient.service.task
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import org.springframework.stereotype.Component
 import org.superapp.negotiatorbot.webclient.entity.TaskEnabled
 import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
@@ -20,8 +20,8 @@ abstract class AsyncTaskService<out T : TaskEnabled>(
 ) {
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun execute(taskEnabled: TaskEnabled, vararg data: Any): Job {
-        return GlobalScope.launch {
+    fun execute(taskEnabled: TaskEnabled, vararg data: Any): Deferred<TaskRecord> {
+        return GlobalScope.async {
             var task = taskService.createTask(taskEnabled, data)
             try {
                 log.info("Starting task [$taskEnabled]")
@@ -35,6 +35,8 @@ abstract class AsyncTaskService<out T : TaskEnabled>(
                 log.error("Unexpected exception in task  occur: ", e)
                 taskService.changeStatus(task, TaskStatus.UNEXPECTED_ERROR)
             }
+            task
+
         }
     }
 

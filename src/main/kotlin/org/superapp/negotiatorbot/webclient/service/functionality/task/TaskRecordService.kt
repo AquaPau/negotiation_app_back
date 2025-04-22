@@ -20,7 +20,6 @@ import org.superapp.negotiatorbot.webclient.repository.TaskRecordRepository
 
 interface TaskRecordService {
     fun getById(id: Long): TaskRecordDto
-    fun getLastByTypeAndReference(type: TaskType, referenceId: Long): TaskRecord
 
     fun getAllByTypeAndReference(type: TaskType, referenceId: Long): List<TaskRecord>
 
@@ -35,13 +34,9 @@ interface TaskRecordService {
 class TaskRecordServiceImpl(
     private val taskRepository: TaskRecordRepository,
 ) : TaskRecordService {
-    override fun getById(id: Long): TaskRecordDto {
-        return taskRepository.findById(id).orElseThrow { TaskNotFoundException(id)}.toDto()
-    }
 
-    override fun getLastByTypeAndReference(type: TaskType, referenceId: Long): TaskRecord {
-        return taskRepository.findFirstByTaskTypeAndRelatedIdOrderByIdDesc(type, referenceId)
-            ?: throw TaskNotFoundException(null, referenceId)
+    override fun getById(id: Long): TaskRecordDto {
+        return taskRepository.findById(id).orElseThrow { TaskNotFoundException(id) }.toDto()
     }
 
     override fun getAllByTypeAndReference(type: TaskType, referenceId: Long): List<TaskRecord> {

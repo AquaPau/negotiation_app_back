@@ -5,7 +5,6 @@ import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.LegalType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
-import org.superapp.negotiatorbot.webclient.enums.TaskType
 import org.superapp.negotiatorbot.webclient.exception.PromptNotFoundException
 import org.superapp.negotiatorbot.webclient.service.functionality.PromptTextService
 import org.superapp.negotiatorbot.webclient.service.functionality.task.TaskRecordService
@@ -19,8 +18,8 @@ class AnalyseTgService(
 ) {
 
     suspend fun analyseDoc(tgDocument: TgDocument): String {
-        openAiTaskService.execute(tgDocument, createPrompt(tgDocument)).join()
-        return taskRecordService.getLastByTypeAndReference(TaskType.TG_DOCUMENT, tgDocument.id!!).result
+        val taskId = openAiTaskService.execute(tgDocument, createPrompt(tgDocument)).await().id!!
+        return taskRecordService.getById(taskId).result
             ?: "Возникла ошибка при анализе. Пожалуйста, попробуйте снова"
     }
 

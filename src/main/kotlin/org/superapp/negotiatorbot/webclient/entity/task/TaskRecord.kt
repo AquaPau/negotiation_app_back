@@ -7,7 +7,7 @@ import org.superapp.negotiatorbot.webclient.enums.TaskType
 import org.superapp.negotiatorbot.webclient.enums.toDto
 
 @Entity
-@Table(name = "tasks", uniqueConstraints = [UniqueConstraint(columnNames = ["task_type", "related_id"])])
+@Table(name = "tasks")
 class TaskRecord(
 
     @Id
