@@ -1,21 +1,27 @@
 package org.superapp.negotiatorbot.botclient.handler.documentHandler
 
 import org.springframework.stereotype.Service
-import org.superapp.negotiatorbot.botclient.exception.DocumentNotReadyForAssistantException
 import org.superapp.negotiatorbot.botclient.handler.commandhandler.StartCommand
 import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.botclient.service.TgDocumentService
-import org.superapp.negotiatorbot.botclient.view.response.PromptTypeQuestion
+import org.superapp.negotiatorbot.botclient.view.response.CounterpartyTypeQuestion
+import org.superapp.negotiatorbot.webclient.exception.CustomUiException
+import org.superapp.negotiatorbot.webclient.exception.DocumentFormatIsNotAppropriateException
+import org.superapp.negotiatorbot.webclient.exception.DocumentNotReadyForAssistantException
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Document
 import org.telegram.telegrambots.meta.api.objects.chat.Chat
 import org.telegram.telegrambots.meta.api.objects.message.Message
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow
 
 @Service
 class DocumentHandler(
     private val tgDocumentService: TgDocumentService,
     private val senderService: SenderService,
-    private val promptTypeQuestion: PromptTypeQuestion,
+    private val counterpartyTypeQuestion: CounterpartyTypeQuestion,
     private val startCommand: StartCommand
 ) {
 
@@ -24,9 +30,42 @@ class DocumentHandler(
             val tgDocument = getTgDocument(message.chat)
             tgDocument.addDocument(message.document)
             tgDocument.addReplyTo(message.messageId)
-            sendPromptQuestion(tgDocument)
-        } catch (ignored: DocumentNotReadyForAssistantException) {
-            startCommand.execute(message)
+            tgDocument.validateExtension()
+            sendCounterpartyQuestion(tgDocument)
+        } catch (e: CustomUiException) {
+            val exceptionMessage = SendMessage(
+                message.chatId.toString(),
+                e.message
+            ).apply {
+                replyMarkup = InlineKeyboardMarkup(
+                    listOf(
+                        InlineKeyboardRow(
+                            InlineKeyboardButton.builder()
+                                .text(TO_START_MENU_ACTION)
+                                .callbackData(TO_START_MENU)
+                                .build()
+                        )
+                    )
+                )
+            }
+            senderService.execute(exceptionMessage)
+        } catch (e: Exception) {
+            val exceptionMessage = SendMessage(
+                message.chatId.toString(),
+                DEFAULT_EXCEPTION_MESSAGE
+            ).apply {
+                replyMarkup = InlineKeyboardMarkup(
+                    listOf(
+                        InlineKeyboardRow(
+                            InlineKeyboardButton.builder()
+                                .text(TO_START_MENU_ACTION)
+                                .callbackData(TO_START_MENU)
+                                .build()
+                        )
+                    )
+                )
+            }
+            senderService.execute(exceptionMessage)
         }
     }
 
@@ -45,9 +84,22 @@ class DocumentHandler(
         tgDocumentService.addReplyTo(this, messageId)
     }
 
-    private fun sendPromptQuestion(document: TgDocument) {
-        val message = promptTypeQuestion.message(document)
+    private fun sendCounterpartyQuestion(document: TgDocument) {
+        val message = counterpartyTypeQuestion.message(document)
         senderService.execute(message)
+    }
+
+    companion object {
+        private val APPROPRIATE_EXTENSIONS = listOf("PDF", "DOC", "DOCX", "TXT")
+        private const val DEFAULT_EXCEPTION_MESSAGE =
+            "Произошла ошибка при выполнении запроса. Пожалуйста, попробуйте снова"
+        private const val TO_START_MENU_ACTION = "На главную"
+        private const val TO_START_MENU = "backToStart"
+        private fun TgDocument.validateExtension() {
+            val extension = this.tgDocumentName?.split(".")?.lastOrNull()?.uppercase()
+            if (extension == null || !APPROPRIATE_EXTENSIONS.contains(extension))
+                throw DocumentFormatIsNotAppropriateException()
+        }
     }
 
 

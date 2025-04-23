@@ -2,8 +2,6 @@ package org.superapp.negotiatorbot.botclient.model
 
 import jakarta.persistence.*
 import org.superapp.negotiatorbot.webclient.entity.TaskEnabled
-import org.superapp.negotiatorbot.webclient.enums.DocumentType
-import org.superapp.negotiatorbot.webclient.enums.PromptType
 
 @Entity
 @Table(name = "tg_documents")
@@ -29,11 +27,11 @@ class TgDocument(
 
     @Column(nullable = true)
     @Enumerated(EnumType.STRING)
-    var chosenDocumentType: DocumentType? = null,
+    var chosenDocumentType: TelegramDocumentType? = null,
 
     @Column(nullable = true)
     @Enumerated(EnumType.STRING)
-    var chosenPromptType: PromptType? = null,
+    var chosenCounterpartyType: TelegramDocumentCounterpartyType? = null
 
     ) : TaskEnabled {
 }

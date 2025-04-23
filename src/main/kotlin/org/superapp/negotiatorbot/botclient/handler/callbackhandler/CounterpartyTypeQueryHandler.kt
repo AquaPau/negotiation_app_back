@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.springframework.stereotype.Component
-import org.superapp.negotiatorbot.botclient.dto.ChosenPromptOption
+import org.superapp.negotiatorbot.botclient.dto.ChosenCounterpartyOption
 import org.superapp.negotiatorbot.botclient.service.AnalyseResultSender
 import org.superapp.negotiatorbot.botclient.service.QueryMappingService
 import org.superapp.negotiatorbot.botclient.service.SenderService
@@ -14,7 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 private val log = KotlinLogging.logger {}
 
 @Component
-class PromptTypeQueryHandler(
+class CounterpartyTypeQueryHandler(
     senderService: SenderService,
     private val queryMappingService: QueryMappingService,
     private val tgDocumentService: TgDocumentService,
@@ -22,20 +22,23 @@ class PromptTypeQueryHandler(
 ) : AbstractCallbackQueryHandler(senderService) {
 
     override fun mappingQuery(): String {
-        return "PromptType"
+        return "CounterpartyType"
     }
 
     override fun handleQuery(query: CallbackQuery) {
-        val chosenPromptType = query.data.toPromptOption()
-        log.info("Got prompt type $chosenPromptType from user TG id:  ${query.from.id}")
+        val chosenCounterpartyOption = query.data.toCounterpartyOption()
+        log.info("Got counterparty type $chosenCounterpartyOption from user TG id:  ${query.from.id}")
         val tgDocument =
-            tgDocumentService.updatePromptType(chosenPromptType.tgDocumentDbId, chosenPromptType.promptType)
+            tgDocumentService.updateCounterpartyType(
+                chosenCounterpartyOption.tgDocumentDbId,
+                chosenCounterpartyOption.counterparty
+            )
         GlobalScope.launch {
             analyseResultSender.analyseAndSendRelatedMessages(tgDocument)
         }
     }
 
-    private fun String.toPromptOption(): ChosenPromptOption =
-        queryMappingService.getPayload(this, ChosenPromptOption::class.java)
+    private fun String.toCounterpartyOption(): ChosenCounterpartyOption =
+        queryMappingService.getPayload(this, ChosenCounterpartyOption::class.java)
 
 }
