@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.superapp.negotiatorbot.botclient.dto.ChosenCounterpartyOption
 import org.superapp.negotiatorbot.botclient.dto.ChosenDocumentOption
 import org.superapp.negotiatorbot.botclient.model.TelegramDocumentCounterpartyType
+import org.superapp.negotiatorbot.botclient.model.TelegramDocumentType
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 
 @SpringBootTest(
@@ -18,7 +19,7 @@ class QueryMappingServiceTest {
     @Test
     fun `too long query should throw`() {
         val mappingQuery = "DocumentTypeQueryHandle"
-        val addedQuery = "{\"tgDocumentId\":1,\"documentType\":\"LABOR_CONTRACT\"}"
+        val addedQuery = "{\"tgDocumentId\":1,\"documentType\":\"SALES_CONTRACT\",\"contractorType\":\"CUSTOMER\"}"
         //then
         assertThrows<IllegalArgumentException> { queryMappingService.toCallbackQuery(mappingQuery, addedQuery) }
     }
@@ -28,7 +29,7 @@ class QueryMappingServiceTest {
         //given
         val mappingQuery = "expectedMapping"
         val addedQuery = "addedQuery"
-        val fullQuery = mappingQuery + queryMappingService.divider + addedQuery
+        val fullQuery = mappingQuery + QueryMappingService.DIVIDER + addedQuery
         //then
         assertEquals(mappingQuery, queryMappingService.toMapQuery(fullQuery))
     }
@@ -37,7 +38,7 @@ class QueryMappingServiceTest {
     fun `should parse and deparse chosenDocumentOption payload`() {
         //given
         val mappingQuery = "expectedMapping"
-        val expected = ChosenDocumentOption(1, DocumentType.LABOR_CONTRACT_EMPLOYEE)
+        val expected = ChosenDocumentOption(1, TelegramDocumentType.SALES_CONTRACT)
 
         val fullQuery = queryMappingService.toCallbackQuery(mappingQuery, expected)
 

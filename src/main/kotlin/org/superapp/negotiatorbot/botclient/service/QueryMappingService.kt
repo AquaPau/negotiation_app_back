@@ -33,6 +33,6 @@ class QueryMappingService {
     companion object {
         private const val MAX_BYTE_LENGTH = 64
         private val objectMapper = jacksonObjectMapper()
-        private const val DIVIDER = '~'
+        const val DIVIDER = '~'
     }
 }
