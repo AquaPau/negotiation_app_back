@@ -1,9 +1,11 @@
 package org.superapp.negotiatorbot.webclient.enums
 
+import org.superapp.negotiatorbot.botclient.model.TelegramDocumentType
+
 enum class DocumentType {
     /**
      * Is used by default if not classified
-      */
+     */
     DEFAULT,
 
     /**
@@ -28,7 +30,13 @@ enum class DocumentType {
      */
     REAL_ESTATE_LEASE_CONTRACT_TENANT,
     SALES_CONTRACT_CUSTOMER,
-    SERVICE_CONTRACT_CUSTOMER,
+    SERVICE_CONTRACT_CUSTOMER;
+
+    fun toTelegramType(): TelegramDocumentType = when (this) {
+        SALES_CONTRACT_CUSTOMER, SALES_CONTRACT_SELLER -> TelegramDocumentType.SALES_CONTRACT
+        SERVICE_CONTRACT_CUSTOMER, SERVICE_CONTRACT_CONTRACTOR -> TelegramDocumentType.SERVICE_CONTRACT
+        else -> throw UnsupportedOperationException()
+    }
 
 
 }

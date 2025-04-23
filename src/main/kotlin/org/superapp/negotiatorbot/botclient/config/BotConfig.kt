@@ -10,6 +10,10 @@ import org.telegram.telegrambots.meta.generics.TelegramClient
 
 @Configuration
 class BotConfig( @Value("\${telegram.token}") val token: String) {
+
+    /**
+     * TODO: check the backward compatibility for the issue https://github.com/rubenlagus/TelegramBots/pull/1453
+     */
     @Bean
     fun telegramClient() = OkHttpTelegramClient(token)
 }

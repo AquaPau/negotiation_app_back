@@ -6,6 +6,7 @@ import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
+import org.superapp.negotiatorbot.webclient.exception.DocumentFormatIsNotAppropriateException
 import org.superapp.negotiatorbot.webclient.service.functionality.AssistantService
 import org.superapp.negotiatorbot.webclient.service.functionality.openai.AbstractOpenAiService
 import org.superapp.negotiatorbot.webclient.service.functionality.openai.OpenAiAssistantService
@@ -24,10 +25,11 @@ class TgDocumentOpenAiService(
     private val tgDocumentAssistantService: AssistantService<TgDocument>,
 ) : AbstractOpenAiService<TgDocument>(openAiAssistantService, taskService) {
 
-    override fun createAssistant(chat: TgDocument, taskRecord: TaskRecord): OpenAiAssistant {
-        val openAiAssistant = tgDocumentAssistantService.getAssistant(chat.tgUserDbId)
-        val tgFileId = chat.tgFileId!!
-        val tgFileName = chat.tgDocumentName!!
+    override fun createAssistant(task: TgDocument, taskRecord: TaskRecord): OpenAiAssistant {
+        val openAiAssistant = tgDocumentAssistantService.getAssistant(task.tgUserDbId)
+
+        val tgFileId = task.tgFileId!!
+        val tgFileName = task.tgDocumentName!!
         uploadFile(openAiAssistant, downloadDocument(tgFileId), tgFileName, taskRecord)
         return openAiAssistant
     }
@@ -36,4 +38,6 @@ class TgDocumentOpenAiService(
         val getFile = GetFile(tgFileId)
         return URI(senderService.downloadTgFile(getFile).getFileUrl(botConfig.token)).toURL().openStream()
     }
+
+
 }

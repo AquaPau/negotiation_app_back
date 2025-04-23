@@ -15,13 +15,12 @@ fun createReplyMessageWithKeyboard(
     messageText: String,
     options: List<InlineKeyboardOption>
 ): BotApiMethod<Message> {
-    val sendMessage: SendMessage = SendMessage.builder()
+    return SendMessage.builder()
         .replyToMessageId(messageToReplyId)
         .chatId(chatId)
         .text(messageText)
         .replyMarkup(createInlineKeyboard(options))
         .build()
-    return sendMessage
 }
 
 fun createMessageWithKeyboard(
@@ -29,12 +28,11 @@ fun createMessageWithKeyboard(
     messageText: String,
     options: List<InlineKeyboardOption>
 ): BotApiMethod<Message> {
-    val sendMessage: SendMessage = SendMessage.builder()
+    return SendMessage.builder()
         .chatId(chatId)
         .text(messageText)
         .replyMarkup(createInlineKeyboard(options))
         .build()
-    return sendMessage
 }
 
 fun createMessage(chatId: Long, messageText: String): BotApiMethod<Message> = SendMessage.builder()

@@ -24,6 +24,7 @@ class SenderService(val telegramClient: TelegramClient) {
             .chatId(chatId)
             .text(messageText)
             .build()
+        sendMessage.enableMarkdown(true)
         log.info("Try to Sending message: {}", sendMessage)
         return telegramClient.execute(sendMessage)
     }

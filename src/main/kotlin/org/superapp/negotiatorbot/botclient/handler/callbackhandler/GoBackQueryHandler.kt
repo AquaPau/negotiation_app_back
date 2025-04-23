@@ -10,8 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery
 class GoBackQueryHandler(
     senderService: SenderService,
     private val startCommand: StartCommand
-) :
-    AbstractCallbackQueryHandler(senderService) {
+) : AbstractCallbackQueryHandler(senderService) {
 
     override fun handleQuery(query: CallbackQuery) {
         startCommand.execute(query)

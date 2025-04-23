@@ -6,7 +6,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.superapp.negotiatorbot.botclient.dto.ChosenDocumentOption
-import org.superapp.negotiatorbot.botclient.dto.ChosenPromptOption
+import org.superapp.negotiatorbot.botclient.dto.ChosenCounterpartyOption
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
 
@@ -49,11 +49,11 @@ class QueryMappingServiceTest {
     fun `should parse and deparse chosenPromptOption payload`() {
         //given
         val mappingQuery = "expectedMapping"
-        val expected = ChosenPromptOption(1, PromptType.RISKS)
+        val expected = ChosenCounterpartyOption(1, PromptType.RISKS)
         val fullQuery = queryMappingService.toCallbackQuery(mappingQuery, expected)
 
         //then
-        assertEquals(expected, queryMappingService.getPayload(fullQuery, ChosenPromptOption::class.java))
+        assertEquals(expected, queryMappingService.getPayload(fullQuery, ChosenCounterpartyOption::class.java))
     }
 
     @Autowired

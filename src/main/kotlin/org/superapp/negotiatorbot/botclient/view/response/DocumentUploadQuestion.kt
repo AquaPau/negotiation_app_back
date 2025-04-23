@@ -7,9 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.message.Message
 
 @Component
-class DocumentUploadQuestion(
-    private val typesToViewFactory: TypesToViewFactory
-) {
+class DocumentUploadQuestion {
 
     fun message(tgDocument: TgDocument): BotApiMethod<Message> {
         return createMessage(
@@ -18,10 +16,13 @@ class DocumentUploadQuestion(
         )
     }
 
-    private fun createReplyMessageText(tgDocument: TgDocument): String {
-        return """
-            Пожалуйста, загрузите документ для анализа.
-            Выбранный тип документа: ${typesToViewFactory.viewOf(tgDocument.chosenDocumentType!!)}
+    companion object {
+        private fun createReplyMessageText(tgDocument: TgDocument): String {
+            return """
+            Пожалуйста, загрузите договор для анализа.
+            Принимаются только документы в форматах .doc, .docx, .txt, .pdf (не скан)
+            Выбранный тип договора: ${tgDocument.chosenDocumentType?.getContractName() ?: "не выбран"}
         """.trimIndent()
+        }
     }
 }

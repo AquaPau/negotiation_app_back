@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 23
+      author: aquapau
+      changes:
+        - dropColumn:
+            tableName: tg_documents
+            columnName: chosen_prompt_type
+        - addColumn:
+            tableName: tg_documents
+            columns:
+              - column:
+                  name: chosen_counterparty_type
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: true
