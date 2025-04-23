@@ -7,15 +7,10 @@ import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.enums.LegalType
 import org.superapp.negotiatorbot.webclient.enums.PromptType
-import org.superapp.negotiatorbot.webclient.exception.CustomUiException
 import org.superapp.negotiatorbot.webclient.exception.PromptNotFoundException
 import org.superapp.negotiatorbot.webclient.service.functionality.PromptTextService
 import org.superapp.negotiatorbot.webclient.service.functionality.task.TaskRecordService
 import org.superapp.negotiatorbot.webclient.service.task.OpenAiTaskService
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow
 
 @Service
 class AnalyseTgService(
@@ -41,7 +36,7 @@ class AnalyseTgService(
         } catch (e: PromptNotFoundException) {
             promptTextService.fetchPrompt(LegalType.INDIVIDUAL, DocumentType.DEFAULT, PromptType.CHECKLIST)
         }
-        return "$introPrompt $prompt";
+        return "$introPrompt $prompt"
     }
 
     companion object {
@@ -56,7 +51,7 @@ class AnalyseTgService(
 
                 TelegramDocumentType.SALES_CONTRACT -> when (tgDocument.chosenCounterpartyType) {
                     TelegramDocumentCounterpartyType.SELLER -> DocumentType.SALES_CONTRACT_SELLER
-                    TelegramDocumentCounterpartyType.SERVICES_CUSTOMER -> DocumentType.SALES_CONTRACT_CUSTOMER
+                    TelegramDocumentCounterpartyType.GOODS_CUSTOMER -> DocumentType.SALES_CONTRACT_CUSTOMER
                     else -> throw UnsupportedOperationException()
                 }
 

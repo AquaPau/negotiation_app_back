@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.superapp.negotiatorbot.botclient.dto.ChosenDocumentOption
 import org.superapp.negotiatorbot.botclient.dto.ChosenCounterpartyOption
+import org.superapp.negotiatorbot.botclient.dto.ChosenDocumentOption
+import org.superapp.negotiatorbot.botclient.model.TelegramDocumentCounterpartyType
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
-import org.superapp.negotiatorbot.webclient.enums.PromptType
 
 @SpringBootTest(
     classes = [QueryMappingService::class],
@@ -49,7 +49,7 @@ class QueryMappingServiceTest {
     fun `should parse and deparse chosenPromptOption payload`() {
         //given
         val mappingQuery = "expectedMapping"
-        val expected = ChosenCounterpartyOption(1, PromptType.RISKS)
+        val expected = ChosenCounterpartyOption(1, TelegramDocumentCounterpartyType.GOODS_CUSTOMER)
         val fullQuery = queryMappingService.toCallbackQuery(mappingQuery, expected)
 
         //then

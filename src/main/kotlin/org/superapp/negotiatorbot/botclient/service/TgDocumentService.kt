@@ -40,7 +40,7 @@ class TgDocumentServiceImpl(
     override fun getReadyToUploadDoc(chatId: Long): TgDocument? {
         val readyDocs =
             tgDocumentRepository.findByChatIdAndChosenDocumentTypeNotNullAndChosenCounterpartyTypeIsNull(chatId)
-        if (readyDocs.isEmpty()) return null else return readyDocs.first()
+        return if (readyDocs.isEmpty()) null else readyDocs.first()
     }
 
     override fun addDocument(tgDocument: TgDocument, document: Document): TgDocument {

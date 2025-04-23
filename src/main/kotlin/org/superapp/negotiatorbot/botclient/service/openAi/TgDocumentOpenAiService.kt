@@ -6,7 +6,6 @@ import org.superapp.negotiatorbot.botclient.model.TgDocument
 import org.superapp.negotiatorbot.botclient.service.SenderService
 import org.superapp.negotiatorbot.webclient.entity.assistant.OpenAiAssistant
 import org.superapp.negotiatorbot.webclient.entity.task.TaskRecord
-import org.superapp.negotiatorbot.webclient.exception.DocumentFormatIsNotAppropriateException
 import org.superapp.negotiatorbot.webclient.service.functionality.AssistantService
 import org.superapp.negotiatorbot.webclient.service.functionality.openai.AbstractOpenAiService
 import org.superapp.negotiatorbot.webclient.service.functionality.openai.OpenAiAssistantService
