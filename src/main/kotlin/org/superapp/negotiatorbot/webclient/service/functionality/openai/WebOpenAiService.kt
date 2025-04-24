@@ -46,8 +46,12 @@ class WebOpenAiService(
         val assistants = doc.map { getAssistantByDocument(it) }.distinct()
             .ifEmpty { throw TaskException(TaskStatus.ERROR_UPLOADING_TO_ASSISTANT) }
         if (assistants.size > 1) throw TaskException(TaskStatus.ERROR_UPLOADING_TO_ASSISTANT)
-        val result = startDialogWIthUserPrompt(assistants.first(), prompt)
-        deleteFilesFromOpenAi(assistants.first())
+        val assistant = assistants.first()
+        doc.forEach {
+            uploadFile(assistant, s3Service.download(it, taskRecord).inputStream, it.getNameWithExtension(), taskRecord)
+        }
+        val result = startDialogWIthUserPrompt(assistant, prompt)
+        deleteFilesFromOpenAi(assistant)
         return formatTheResultWithoutMarkdown(result)
     }
 
