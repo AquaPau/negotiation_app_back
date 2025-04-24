@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 24
+      author: aquapau
+      changes:
+        - dropUniqueConstraint:
+            tableName: open_ai_files
+            constraintName: open_ai_files_assistant_file_storages_id_key
