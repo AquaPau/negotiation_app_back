@@ -62,6 +62,7 @@ class AnalyseServiceImpl(
         val documents = documentService.getDocumentList(projectId, currentUser.id!!, BusinessType.PROJECT)
         val introPrompt = promptTextService.fetchPrompt(LegalType.ENTERPRISE, PromptType.PROJECT)
         val prompt = "$introPrompt ${project.userGeneratedPrompt}"
+        println(prompt)
         openAiTaskService.execute(project, prompt, PromptType.PROJECT, documents)
 
     }
