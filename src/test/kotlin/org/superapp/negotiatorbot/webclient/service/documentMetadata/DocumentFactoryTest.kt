@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
+import org.superapp.negotiatorbot.webclient.exception.DocumentNotValidException
 
 class DocumentFactoryTest {
 
@@ -40,43 +41,43 @@ class DocumentFactoryTest {
         @Test
         fun `createFile should throw exception for invalid extension`() {
             val fileName = "test.invalid"
-            assertThrows<IllegalArgumentException> { createTestFile(fileName) }
+            assertThrows<DocumentNotValidException> { createTestFile(fileName) }
         }
 
         @Test
         fun `createFile should throw exception for empty extension`() {
             val fileName = "test."
-            assertThrows<IllegalArgumentException> { createTestFile(fileName) }
+            assertThrows<DocumentNotValidException> { createTestFile(fileName) }
         }
 
         @Test
         fun `createFile should throw exception for empty filename`() {
             val fileName = ""
-            assertThrows<IllegalArgumentException> { createTestFile(fileName) }
+            assertThrows<DocumentNotValidException> { createTestFile(fileName) }
         }
 
         @Test
         fun `createFile should throw exception for blank filename`() {
             val fileName = " "
-            assertThrows<IllegalArgumentException> { createTestFile(fileName) }
+            assertThrows<DocumentNotValidException> { createTestFile(fileName) }
         }
 
         @Test
         fun `createFile should throw exception for filename like dot txt`() {
             val fileName = ".txt"
-            assertThrows<IllegalArgumentException> { createTestFile(fileName) }
+            assertThrows<DocumentNotValidException> { createTestFile(fileName) }
         }
 
         @Test
         fun `createFile should throw exception for single dot filename`() {
             val fileName = "."
-            assertThrows<IllegalArgumentException> { createTestFile(fileName) }
+            assertThrows<DocumentNotValidException> { createTestFile(fileName) }
         }
 
         @Test
         fun `createFile should throw exception for filename with multiple dots but no valid name`() {
             val fileName = "..."
-            assertThrows<IllegalArgumentException> { createTestFile(fileName) }
+            assertThrows<DocumentNotValidException> { createTestFile(fileName) }
         }
     }
 

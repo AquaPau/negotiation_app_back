@@ -11,6 +11,7 @@ import org.superapp.negotiatorbot.webclient.enums.DocumentType
 import org.superapp.negotiatorbot.webclient.service.company.CompanyDocumentService
 import org.superapp.negotiatorbot.webclient.service.util.FileTransformationHelper
 import org.superapp.negotiatorbot.webclient.service.util.MultipartFileValidator
+import org.superapp.negotiatorbot.webclient.service.util.MultipartFileValidator.Companion.validate
 
 @RestController
 @RequestMapping("/api/company")
@@ -25,7 +26,7 @@ class CompanyDocumentController(
     ) {
         val (fileNamesWithExtensions, fileContents) = FileTransformationHelper.extractLoadedData(files, types)
 
-        MultipartFileValidator.validate(files, fileNamesWithExtensions)
+        validate(files, fileNamesWithExtensions)
         runBlocking(Dispatchers.IO) {
             launch {
                 companyDocumentService.uploadDocuments(
