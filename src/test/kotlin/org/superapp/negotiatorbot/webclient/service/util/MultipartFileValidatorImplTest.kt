@@ -8,6 +8,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.web.multipart.MultipartFile
+import org.superapp.negotiatorbot.webclient.exception.DocumentNotValidException
 
 @SpringBootTest(
     classes = [MultipartFileValidator::class],
@@ -33,7 +34,7 @@ class MultipartFileValidatorImplTest {
         val fileNameWithException = "test.pdf"
         whenever(multipartFile.size).thenReturn(MAX_ALLOWED_SIZE_IN_MB * 1024 * 1024 + 10)
         //then
-        assertThrows<IllegalArgumentException> {
+        assertThrows<DocumentNotValidException> {
             MultipartFileValidator.validate(multipartFile, fileNameWithException)
         }
     }
@@ -46,7 +47,7 @@ class MultipartFileValidatorImplTest {
         whenever(multipartFile.size).thenReturn(MAX_ALLOWED_SIZE_IN_MB)
 
         //then
-        assertThrows<IllegalArgumentException> {
+        assertThrows<DocumentNotValidException> {
             MultipartFileValidator.validate(multipartFile, fileNameWithException)
         }
     }
@@ -59,7 +60,7 @@ class MultipartFileValidatorImplTest {
         whenever(multipartFile.size).thenReturn(MAX_ALLOWED_SIZE_IN_MB)
 
         //then
-        assertThrows<IllegalArgumentException> {
+        assertThrows<DocumentNotValidException> {
             MultipartFileValidator.validate(multipartFile, fileNameWithException)
         }
     }

@@ -3,6 +3,7 @@ package org.superapp.negotiatorbot.webclient.service.documentMetadata
 import org.superapp.negotiatorbot.webclient.entity.DocumentMetadata
 import org.superapp.negotiatorbot.webclient.enums.BusinessType
 import org.superapp.negotiatorbot.webclient.enums.DocumentType
+import org.superapp.negotiatorbot.webclient.exception.DocumentNotValidException
 import java.util.*
 
 
@@ -73,7 +74,6 @@ class DocumentFactory {
         }
 
 
-        @Throws(IllegalArgumentException::class)
         private fun DocumentMetadata.setNameAndExtension(fileNameWithExtension: String) {
             val extensionIndex = extensionIndex(fileNameWithExtension)
 
@@ -87,17 +87,18 @@ class DocumentFactory {
             this.name = fileName
         }
 
-        @Throws(IllegalArgumentException::class)
         private fun validateExtension(extension: String) {
             if (!supportedExtensions.contains(extension)) {
-                throw IllegalArgumentException("Invalid extension [$extension], supported: $supportedExtensions")
+                throw DocumentNotValidException(
+                    "Расширение файла [$extension] " +
+                            "не поддерживается, допустимые: $supportedExtensions"
+                )
             }
         }
 
-        @Throws(IllegalArgumentException::class)
         private fun validateName(name: String) {
             if (name.isBlank()) {
-                throw IllegalArgumentException("Invalid name [$name], cannot be blank")
+                throw DocumentNotValidException("Некорректное имя [$name], имя не может быть пустым")
             }
         }
 
@@ -108,10 +109,9 @@ class DocumentFactory {
             this.path = s3Path
         }
 
-        @Throws(IllegalArgumentException::class)
         private fun extensionIndex(fileNameWithExtension: String): Int {
             val index = fileNameWithExtension.lastIndexOf(EXTENSION_DELIMITER)
-            return if (index == -1) throw IllegalArgumentException("FileName with extension must contain at least one [$EXTENSION_DELIMITER]") else index
+            return if (index == -1) throw DocumentNotValidException("Невозможно найти расширение файла через делимитер [$EXTENSION_DELIMITER]") else index
         }
     }
 

@@ -1,5 +1,6 @@
 package org.superapp.negotiatorbot.webclient.controller
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.superapp.negotiatorbot.webclient.dto.company.CompanyProfileDto
@@ -9,9 +10,10 @@ import org.superapp.negotiatorbot.webclient.service.company.CompanyCrudService
 @RestController
 @RequestMapping("/api/company")
 class CompanyController(
-    private val companyCrudService: CompanyCrudService,
+    private val companyCrudService: CompanyCrudService
 ) {
 
+    val log = KotlinLogging.logger {}
     @GetMapping()
     fun getCompanies(): List<CompanyProfileDto> {
         return companyCrudService.getAll()
@@ -33,7 +35,9 @@ class CompanyController(
     }
 
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleException(e: IllegalArgumentException): ResponseEntity<String?> =
-        ResponseEntity.badRequest().body(e.message)
+    fun handleException(e: IllegalArgumentException): ResponseEntity<String?> {
+        log.error(e.message, e)
+        return ResponseEntity.badRequest().body("Возникла непредвиденная ошибка сервера")
+    }
 
 }
