@@ -20,7 +20,8 @@ class DocumentUploadQuestion {
         private fun createReplyMessageText(tgDocument: TgDocument): String {
             return """
             Пожалуйста, загрузите договор для анализа.
-            Принимаются только документы в форматах .doc, .docx, .txt, .pdf (не скан)
+            Принимаются только документы в форматах .doc, .docx, .txt, .pdf (не скан).
+            Документ не может превышать размер в 10 мб.
             Выбранный тип договора: ${tgDocument.chosenDocumentType?.getContractName() ?: "не выбран"}
         """.trimIndent()
         }
