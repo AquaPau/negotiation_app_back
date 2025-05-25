@@ -58,5 +58,7 @@ fun UserContractor.toDto(): CompanyProfileDto = CompanyProfileDto(
     ogrn = this.ogrn.toString(),
     fullName = this.fullName,
     residence = this.residence,
-    opportunities = this.opportunities
+    opportunities = this.opportunities,
+    managerName = this.managerName,
+    managerTitle = this.managerTitle
 )
